@@ -67,6 +67,8 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
       playerArmy: null,
       opponentArmy: null,
       sharedDeckCardIds: [],
+      _chessRng: null,
+      _chessIdGen: null,
       pokerCombatState: null,
       pokerDeck: [],
       pokerIsActive: false,

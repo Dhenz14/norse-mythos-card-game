@@ -23,6 +23,7 @@ import {
   PetData,
   CombatAction
 } from '../../types/PokerCombatTypes';
+import type { SeededRng, SeededIdGen } from '@shared/p2p-wire/rng';
 
 export type CombatPhase = 
   | 'SETUP'
@@ -189,6 +190,12 @@ export interface ChessCombatSliceState {
   // Distinct from boardState.moveCount which counts every ply (each side's
   // moves). Used for mission completion telemetry and per-turn boss rules.
   playerTurnCount: number;
+  // Seeded sources for the chess phase. Populated by `initChessWithSeed` on
+  // both peers after `matchSeed` is resolved (see useP2PSync). Null in
+  // single-player paths — consumers fall back to `cryptoRng` / `cryptoIdGen`
+  // (CSPRNG-grade, non-deterministic, fine for SP).
+  _chessRng: SeededRng | null;
+  _chessIdGen: SeededIdGen | null;
 }
 
 export interface ChessCombatSliceActions {
@@ -210,6 +217,11 @@ export interface ChessCombatSliceActions {
   checkWinCondition: () => ChessGameStatus;
   setGameStatus: (status: ChessGameStatus) => void;
   setSharedDeck: (cardIds: number[]) => void;
+  // Seed the chess phase's local RNG/idGen from `matchSeed`. Idempotent on
+  // identical seed; called on BOTH peers (host and joiner) right after the
+  // commit-reveal handshake resolves the seed. Single-player never calls
+  // this — consumers fall back to crypto-grade ambient sources.
+  initChessWithSeed: (matchSeed: string) => void;
   clearPendingCombat: () => void;
   startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => void;
   completeAttackAnimation: () => void;

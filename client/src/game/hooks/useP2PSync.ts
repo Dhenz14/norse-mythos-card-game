@@ -451,6 +451,17 @@ export function useP2PSync() {
 					const matchSeed = await sha256Hash(first + second);
 
 					useGameStore.setState({ matchSeed });
+
+					// Symmetric seeding for the chess phase: both peers mint the
+					// same `_chessRng` / `_chessIdGen` from the resolved seed, so
+					// mine placement (ginnungagap random tiles, mine ids) and any
+					// other chess-side randomness converge across peers. Runs on
+					// host AND joiner; gameStore's `initGameWithSeed` below stays
+					// host-only (it builds the authoritative initial gameState).
+					const combatStore = (globalThis as Record<string, unknown>).__ragnarokCombatStore as
+						{ getState: () => { initChessWithSeed?: (seed: string) => void } } | undefined;
+					combatStore?.getState().initChessWithSeed?.(matchSeed);
+
 					seedResolvedRef.current = true;
 
 					// Session binding: derive matchId from seed + peer IDs

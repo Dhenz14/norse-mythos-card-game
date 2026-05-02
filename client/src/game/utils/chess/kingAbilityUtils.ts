@@ -18,6 +18,7 @@ import {
   BOARD_ROWS,
   BOARD_COLS
 } from '../../types/ChessTypes';
+import { seededShuffle, shuffleArray } from '../seededRng';
 
 /**
  * Direction for line-based mine shapes
@@ -221,7 +222,8 @@ export function getMineShapeTiles(
   kingId: string,
   centerPosition: ChessBoardPosition,
   direction?: MineDirection,
-  enemySide?: 'player' | 'opponent'
+  enemySide?: 'player' | 'opponent',
+  rng?: () => number
 ): ChessBoardPosition[] {
   const config = getKingAbilityConfig(kingId);
   if (!config) return [];
@@ -308,7 +310,13 @@ export function getMineShapeTiles(
         }
       }
       
-      const shuffled = [...availableTiles].sort(() => Math.random() - 0.5);
+      // Determinism: when an rng is provided (P2P matches via initChessWithSeed
+      // → both peers' shuffles converge), use Fisher-Yates with that source.
+      // Otherwise (preview hover, single-player) fall back to crypto-grade
+      // ambient. Either way, no `Math.random` participates.
+      const shuffled = rng
+        ? seededShuffle(availableTiles, rng)
+        : shuffleArray(availableTiles);
       tiles.push(...shuffled.slice(0, 3));
       break;
   }
@@ -450,31 +458,40 @@ export function getActiveMines(mines: ActiveMine[], currentTurn: number): Active
 }
 
 /**
- * Generate unique mine ID
+ * Generate unique mine ID. The id is consumed only for equality checks
+ * (`mine.id === triggeredMine.id`) — no caller parses the prefix — so
+ * delegating to a single `idGen()` keeps determinism without losing
+ * uniqueness. Pass a `SeededIdGen` in P2P, `cryptoIdGen` in single-player.
  */
-export function generateMineId(): string {
-  return `mine_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+export function generateMineId(idGen: () => string): string {
+  return idGen();
 }
 
 /**
- * Create a new active mine
+ * Create a new active mine. `idGen` and `rng` are explicit dependencies of
+ * the write-path: the mine id (entered into state) must be reproducible by
+ * both peers, and ginnungagap's random tile selection must agree across
+ * peers. SP callers pass `cryptoIdGen` / `cryptoRng`; P2P callers thread
+ * the seeded sources from `useUnifiedCombatStore._chessIdGen` / `_chessRng`.
  */
 export function createMine(
   kingId: string,
   owner: 'player' | 'opponent',
   centerPosition: ChessBoardPosition,
   currentTurn: number,
+  idGen: () => string,
   direction?: MineDirection,
-  enemySide?: 'player' | 'opponent'
+  enemySide?: 'player' | 'opponent',
+  rng?: () => number
 ): ActiveMine | null {
   const config = getKingAbilityConfig(kingId);
   if (!config) return null;
 
-  const affectedTiles = getMineShapeTiles(kingId, centerPosition, direction, enemySide);
+  const affectedTiles = getMineShapeTiles(kingId, centerPosition, direction, enemySide, rng);
   if (affectedTiles.length === 0) return null;
 
   return {
-    id: generateMineId(),
+    id: generateMineId(idGen),
     owner,
     kingId,
     centerPosition,

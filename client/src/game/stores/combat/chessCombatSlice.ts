@@ -25,16 +25,17 @@ import {
 } from '../../types/ChessTypes';
 import { NorseElement, NORSE_TO_GAME_ELEMENT } from '../../types/NorseTypes';
 import { CHESS_PIECE_HEROES, pieceHasSpells } from '../../data/ChessPieceConfig';
-import { 
-  ChessPieceState, 
-  InstantKillEvent, 
-  PendingAttackAnimation, 
+import {
+  ChessPieceState,
+  InstantKillEvent,
+  PendingAttackAnimation,
   CombatLogEntry,
   initialBoardState,
   ChessCombatSlice,
   UnifiedCombatStore
 } from './types';
 import { debug } from '../../config/debugConfig';
+import { createSeededRng, createSeededIdGen, cryptoRng } from '../../utils/seededRng';
 
 export const createChessCombatSlice: StateCreator<
   UnifiedCombatStore,
@@ -51,9 +52,19 @@ export const createChessCombatSlice: StateCreator<
   opponentArmy: null,
   sharedDeckCardIds: [],
   playerTurnCount: 0,
+  _chessRng: null,
+  _chessIdGen: null,
 
   incrementPlayerTurn: () => set((s) => ({ playerTurnCount: s.playerTurnCount + 1 })),
   resetPlayerTurnCount: () => set({ playerTurnCount: 0 }),
+
+  initChessWithSeed: (matchSeed: string) => {
+    set({
+      _chessRng: createSeededRng(matchSeed),
+      _chessIdGen: createSeededIdGen(matchSeed, 'chess'),
+    });
+    debug.chess('[Chess] Seeded RNG/idGen initialized from matchSeed');
+  },
 
   initializeCombat: (playerPieces, opponentPieces) => {
     set({
@@ -986,11 +997,12 @@ export const createChessCombatSlice: StateCreator<
         }
       }
       
+      const aiRng = get()._chessRng ?? cryptoRng;
       for (const move of moves) {
         const forwardBonus = (piece.position.row - move.row) * 2;
         const pawnPushBonus = piece.type === 'pawn' ? 3 : 0;
-        const score = 5 + forwardBonus + pawnPushBonus + Math.random() * 3;
-        
+        const score = 5 + forwardBonus + pawnPushBonus + aiRng() * 3;
+
         if (!bestNonAttackMove || score > bestNonAttackMove.score) {
           bestNonAttackMove = { piece, target: move, isAttack: false, score };
         }

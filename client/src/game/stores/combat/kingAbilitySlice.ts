@@ -23,11 +23,12 @@ import {
   createMine,
   MineDirection
 } from '../../utils/chess/kingAbilityUtils';
-import { 
+import {
   KingAbilitySlice,
   UnifiedCombatStore
 } from './types';
 import { debug } from '../../config/debugConfig';
+import { cryptoRng, cryptoIdGen } from '../../utils/seededRng';
 
 const createInitialKingState = (kingId: string): KingDivineCommandState => {
   const config = getKingAbilityConfig(kingId);
@@ -117,13 +118,21 @@ export const createKingAbilitySlice: StateCreator<
 
     const currentTurn = state.boardState.moveCount;
     const enemySide = owner === 'player' ? 'opponent' : 'player';
+    // P2P: both peers seeded the chess slice via `initChessWithSeed(matchSeed)`,
+    // so `_chessIdGen` and `_chessRng` are non-null and produce identical
+    // sequences. SP: nulls fall back to crypto-grade ambient sources, which
+    // are non-deterministic (acceptable, no convergence requirement).
+    const idGen = state._chessIdGen ?? cryptoIdGen;
+    const rng = state._chessRng ?? cryptoRng;
     const newMine = createMine(
       kingState.kingId,
       owner,
       centerPosition,
       currentTurn,
+      idGen,
       direction,
-      enemySide
+      enemySide,
+      rng
     );
 
     if (!newMine) {
