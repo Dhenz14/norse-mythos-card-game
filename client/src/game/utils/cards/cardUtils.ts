@@ -113,14 +113,6 @@ export function createCardInstance(card: CardData, instanceId: string, evolution
 }
 
 /**
- * Get random cards from the card database
- */
-export function getRandomCards(count: number): CardData[] {
-  const shuffled = [...allCards].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
-
-/**
  * Create a starting deck for testing — a curated mix of mechanic
  * archetypes (deathrattle, AoE battlecry, taunt, overload, mana, frenzy,
  * colossal, naga) padded out with a random selection of the remaining
