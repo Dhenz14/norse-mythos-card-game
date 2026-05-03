@@ -301,10 +301,29 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     );
   };
 
+  // Board orientation: standard chess UX (lichess, chess.com) puts the
+  // local viewer's pieces at the bottom of the screen. Canonical state
+  // is unchanged — only the iteration order flips. Click handlers
+  // receive canonical (row, col) directly, so no coordinate translation
+  // is needed elsewhere.
+  //
+  // First-mover (canonical 'player'): default order — row 6→0 top-to-bottom,
+  // col 0→4 left-to-right. Their back rank (row 0) appears at bottom.
+  // Second-mover (canonical 'opponent'): flipped 180° — row 0→6,
+  // col 4→0. Their back rank (row 6) appears at bottom.
+  const isFlipped = myCanonicalSide === 'opponent';
   const cells = [];
-  for (let row = BOARD_ROWS - 1; row >= 0; row--) {
-    for (let col = 0; col < BOARD_COLS; col++) {
-      cells.push(renderCell(row, col));
+  if (isFlipped) {
+    for (let row = 0; row < BOARD_ROWS; row++) {
+      for (let col = BOARD_COLS - 1; col >= 0; col--) {
+        cells.push(renderCell(row, col));
+      }
+    }
+  } else {
+    for (let row = BOARD_ROWS - 1; row >= 0; row--) {
+      for (let col = 0; col < BOARD_COLS; col++) {
+        cells.push(renderCell(row, col));
+      }
     }
   }
 
