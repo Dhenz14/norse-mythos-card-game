@@ -489,10 +489,21 @@ export function useP2PSync() {
 					seedResolvedRef.current = true;
 
 					// Session binding: derive matchId from seed + peer IDs.
+					// Sort peer IDs lexicographically (same pattern as the seed
+					// derivation above) so BOTH peers hash the same string and
+					// arrive at the same matchId. Without sorting, peer A would
+					// hash `seed+A+B` and peer B would hash `seed+B+A` — different
+					// values, breaking symmetric Plan B chess where both peers
+					// validate matchId on incoming chess_command envelopes.
+					// (Cards path didn't surface this bug because only the host
+					// validates matchId there — the client never compares.)
 					// Mirrored onto gameStore so other subsystems (chess wire
 					// sender, transcript builder) can read it without coupling
 					// to useP2PSync internals.
-					const matchId = await sha256Hash(matchSeed + myPeerId + remotePeerId);
+					const [matchIdFirst, matchIdSecond] = myPeerId < remotePeerId
+						? [myPeerId, remotePeerId]
+						: [remotePeerId, myPeerId];
+					const matchId = await sha256Hash(matchSeed + matchIdFirst + matchIdSecond);
 					const truncatedMatchId = matchId.slice(0, 16);
 					matchIdRef.current = truncatedMatchId;
 					useGameStore.setState({ matchId: truncatedMatchId });
