@@ -343,6 +343,26 @@
   animation: matchup-mutual-pulse 1.2s ease-in-out infinite !important;
 }
 
+/*
+ * Capture-target indicator (lichess/chess.com style). Activates when
+ * the slice's `attackMoves` includes this piece's cell — meaning the
+ * currently-selected own piece can legally capture this enemy. Pure
+ * read of the slice's source of truth (no rule recomputation here).
+ */
+.chess-piece-attackable {
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.85), 0 0 36px rgba(239, 68, 68, 0.5), inset 0 0 14px rgba(239, 68, 68, 0.35);
+  animation: chess-piece-attackable-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes chess-piece-attackable-pulse {
+  0%, 100% {
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.85), 0 0 36px rgba(239, 68, 68, 0.5), inset 0 0 14px rgba(239, 68, 68, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(239, 68, 68, 1), 0 0 56px rgba(239, 68, 68, 0.7), inset 0 0 22px rgba(239, 68, 68, 0.55);
+  }
+}
+
 @keyframes matchup-advantage-pulse {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }

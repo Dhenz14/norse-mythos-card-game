@@ -74,6 +74,17 @@ interface ChessPieceProps {
   isPlayerTurn: boolean;
   onClick: () => void;
   matchupGlow?: MatchupGlow;
+  /**
+   * True iff this enemy piece is in the currently-selected piece's
+   * `attackMoves` (computed by `chessCombatSlice.getValidMoves`).
+   * The slice already enforces every game rule (own-piece blocking,
+   * king-in-check filter, pawn diagonal-only, line break on first
+   * enemy, etc.) — this prop is a pure consumer of that source of
+   * truth, never recomputed here. Renders a red ring overlay so the
+   * player sees "click here to capture" the same way lichess /
+   * chess.com do it.
+   */
+  isAttackable?: boolean;
 }
 
 const PIECE_TYPE_NAMES: Record<PieceType, string> = {
@@ -100,7 +111,8 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   isSelected,
   isPlayerTurn,
   onClick,
-  matchupGlow
+  matchupGlow,
+  isAttackable = false
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -149,6 +161,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
         rounded-xl cursor-pointer transition-all relative
         ${isPlayer ? 'bg-linear-to-b from-blue-900 to-blue-950' : 'bg-linear-to-b from-red-900 to-red-950'}
         ${isSelected ? 'ring-4 ring-yellow-400 z-20' : ''}
+        ${isAttackable ? 'ring-4 ring-red-500 ring-opacity-80 chess-piece-attackable z-20' : ''}
         ${canSelect ? 'hover:brightness-110' : ''}
         ${hasElement ? `element-piece element-piece-${piece.element}` : ''}
         ${matchupGlow === 'advantage' ? 'matchup-pulse-advantage' : ''}

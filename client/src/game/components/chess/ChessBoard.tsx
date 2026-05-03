@@ -262,6 +262,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
                 isPlayerTurn={isMyTurn}
                 onClick={() => handleCellClick(row, col)}
                 matchupGlow={matchupGlowMap[piece.id] || null}
+                isAttackable={isAttack}
               />
             </motion.div>
           )}
