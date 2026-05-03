@@ -27,8 +27,6 @@ import { NorseElement, NORSE_TO_GAME_ELEMENT } from '../../types/NorseTypes';
 import { CHESS_PIECE_HEROES, pieceHasSpells } from '../../data/ChessPieceConfig';
 import {
   ChessPieceState,
-  InstantKillEvent,
-  PendingAttackAnimation,
   CombatLogEntry,
   initialBoardState,
   ChessCombatSlice,
@@ -46,8 +44,6 @@ export const createChessCombatSlice: StateCreator<
   chessPieces: [],
   boardState: initialBoardState,
   pendingCombat: null,
-  lastInstantKill: null,
-  pendingAttackAnimation: null,
   playerArmy: null,
   opponentArmy: null,
   sharedDeckCardIds: [],
@@ -178,10 +174,9 @@ export const createChessCombatSlice: StateCreator<
       },
       playerArmy,
       opponentArmy,
-      pendingCombat: null,
-      lastInstantKill: null,
-      pendingAttackAnimation: null
+      pendingCombat: null
     });
+    get().clearChessAnimations();
   },
 
   selectPiece: (piece: ChessPiece | null) => {
@@ -279,7 +274,7 @@ export const createChessCombatSlice: StateCreator<
     debug.chess(`[Chess] Executing instant kill: ${attacker.heroName} -> ${defender.heroName}`);
     
     state.removePiece(defender.id);
-    
+
     const updatedPieces = get().boardState.pieces.map(p => {
       if (p.id === attacker.id) {
         return {
@@ -290,13 +285,9 @@ export const createChessCombatSlice: StateCreator<
       }
       return p;
     });
-    
+
+    state.recordInstantKill(targetPosition, attacker.type);
     set({
-      lastInstantKill: {
-        position: targetPosition,
-        attackerType: attacker.type,
-        timestamp: get()._nextLogTick()
-      },
       boardState: {
         ...get().boardState,
         pieces: updatedPieces,
@@ -306,7 +297,7 @@ export const createChessCombatSlice: StateCreator<
         moveCount: get().boardState.moveCount + 1
       }
     });
-    
+
     state.incrementAllStamina();
     
     const mineResult = state.checkAndTriggerMine(targetPosition, attacker.owner, attacker.id, attacker.type);
@@ -835,24 +826,10 @@ export const createChessCombatSlice: StateCreator<
     set({ pendingCombat: null });
   },
 
-  startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => {
-    debug.chess(`[Chess] Starting attack animation: ${attacker.heroName} -> ${defender.heroName} (instant: ${isInstantKill})`);
-    set({
-      pendingAttackAnimation: {
-        attacker,
-        defender,
-        attackerPosition: { ...attacker.position },
-        defenderPosition: { ...defender.position },
-        isInstantKill,
-        timestamp: get()._nextLogTick()
-      }
-    });
-  },
-
   completeAttackAnimation: () => {
     const state = get();
     const animation = state.pendingAttackAnimation;
-    
+
     if (!animation) {
       debug.chess('[Chess] No pending animation to complete');
       return;
@@ -860,15 +837,15 @@ export const createChessCombatSlice: StateCreator<
 
     debug.chess(`[Chess] Completing attack animation: ${animation.attacker.heroName} -> ${animation.defender.heroName}`);
 
-    set({ pendingAttackAnimation: null });
+    state.clearAttackAnimation();
 
     if (animation.isInstantKill) {
       state.executeInstantKill(animation.attacker, animation.defender, animation.defenderPosition);
     } else {
       const mineResult = state.checkAndTriggerMine(
-        animation.defenderPosition, 
-        animation.attacker.owner, 
-        animation.attacker.id, 
+        animation.defenderPosition,
+        animation.attacker.owner,
+        animation.attacker.id,
         animation.attacker.type
       );
       if (mineResult && mineResult.triggered) {
@@ -879,15 +856,15 @@ export const createChessCombatSlice: StateCreator<
           state.updatePieceStamina(animation.attacker.id, newStamina);
         }
       }
-      
+
       const collision: ChessCollision = {
         attacker: animation.attacker,
         defender: animation.defender,
         attackerPosition: animation.attackerPosition,
         defenderPosition: animation.defenderPosition
       };
-      
-      set({ 
+
+      set({
         pendingCombat: collision,
         boardState: {
           ...state.boardState,
@@ -895,10 +872,6 @@ export const createChessCombatSlice: StateCreator<
         }
       });
     }
-  },
-
-  clearAttackAnimation: () => {
-    set({ pendingAttackAnimation: null });
   },
 
   resolveCombat: (result: ChessCombatResult) => {

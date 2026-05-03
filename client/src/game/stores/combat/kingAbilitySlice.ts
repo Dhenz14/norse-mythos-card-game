@@ -53,7 +53,6 @@ export const createKingAbilitySlice: StateCreator<
   allActiveMines: [],
   minePlacementMode: false,
   selectedMineDirection: null,
-  lastMineTriggered: null,
   pendingManaBoost: { player: 0, opponent: 0 },
   lastClearedTurn: null,
 
@@ -67,9 +66,9 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null,
       lastClearedTurn: null
     });
+    get().clearMineTriggered();
 
     debug.chess('[KingAbility] Initialized:', { playerKingId, opponentKingId });
   },
@@ -225,9 +224,9 @@ export const createKingAbilitySlice: StateCreator<
     const updatedPendingManaBoost = { ...state.pendingManaBoost };
     updatedPendingManaBoost[triggeredMine.owner] += manaBoost;
 
+    state.recordMineTriggered(triggeredMine, movingPieceId);
     set({
       allActiveMines: updatedMines,
-      lastMineTriggered: { mine: triggeredMine, targetPieceId: movingPieceId },
       pendingManaBoost: updatedPendingManaBoost
     });
 
@@ -301,10 +300,10 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null,
       pendingManaBoost: { player: 0, opponent: 0 },
       lastClearedTurn: null
     });
+    get().clearMineTriggered();
   },
 
   canPlaceMine: (owner: 'player' | 'opponent'): boolean => {
@@ -329,10 +328,6 @@ export const createKingAbilitySlice: StateCreator<
   getVisibleMines: (viewerSide: 'player' | 'opponent'): ActiveMine[] => {
     const state = get();
     return state.allActiveMines.filter(m => m.owner === viewerSide && !m.triggered);
-  },
-
-  clearMineTriggered: () => {
-    set({ lastMineTriggered: null });
   },
 
   consumePendingManaBoost: (side: 'player' | 'opponent'): number => {

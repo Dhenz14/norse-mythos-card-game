@@ -181,8 +181,6 @@ export interface ChessCombatSliceState {
   chessPieces: ChessPieceState[];
   boardState: ChessBoardState;
   pendingCombat: ChessCollision | null;
-  lastInstantKill: InstantKillEvent | null;
-  pendingAttackAnimation: PendingAttackAnimation | null;
   playerArmy: ArmySelection | null;
   opponentArmy: ArmySelection | null;
   sharedDeckCardIds: number[];
@@ -196,14 +194,14 @@ export interface ChessCombatSliceState {
   // (CSPRNG-grade, non-deterministic, fine for SP).
   _chessRng: SeededRng | null;
   _chessIdGen: SeededIdGen | null;
-  // Monotonic tick used as both a deterministic id suffix for log entries
-  // and as the `timestamp` field on UI freshness markers (lastInstantKill,
-  // pendingAttackAnimation). The actual wall-clock time was never read by
-  // any consumer — only object identity / increasing-order semantics matter
-  // — so a counter preserves behavior without breaking determinism. P2P
-  // peers converge once chess actions flow through the symmetric pipeline
-  // (C-Chess.4+); pre-pipeline divergence is harmless because these fields
-  // do not enter `computeStateHash`.
+  // Monotonic tick used as a deterministic id suffix for log entries and as
+  // the `timestamp` field on UI freshness markers owned by ChessAnimationSlice
+  // (lastInstantKill, pendingAttackAnimation). The actual wall-clock time
+  // was never read by any consumer — only object identity / increasing-order
+  // semantics matter — so a counter preserves behavior without breaking
+  // determinism. P2P peers converge once chess actions flow through the
+  // symmetric pipeline (C-Chess.4+); pre-pipeline divergence is harmless
+  // because these fields do not enter `computeStateHash`.
   _logCounter: number;
 }
 
@@ -237,9 +235,10 @@ export interface ChessCombatSliceActions {
   // by construction.
   _nextLogTick: () => number;
   clearPendingCombat: () => void;
-  startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => void;
+  // Orchestrator: reads the pending animation (owned by ChessAnimationSlice),
+  // clears it, then either runs the instant-kill resolution or stages
+  // pendingCombat for the poker phase.
   completeAttackAnimation: () => void;
-  clearAttackAnimation: () => void;
   isKingInCheck: (side: ChessPlayerSide, pieces?: ChessPiece[]) => boolean;
   getThreateningPieces: (kingPosition: ChessBoardPosition, attackerSide: ChessPlayerSide, pieces?: ChessPiece[]) => ChessPiece[];
   updateCheckStatus: () => void;
@@ -296,7 +295,6 @@ export interface KingAbilitySliceState {
   allActiveMines: ActiveMine[];
   minePlacementMode: boolean;
   selectedMineDirection: MineDirection | null;
-  lastMineTriggered: { mine: ActiveMine; targetPieceId: string } | null;
   pendingManaBoost: { player: number; opponent: number };
   lastClearedTurn: number | null;
 }
@@ -321,11 +319,53 @@ export interface KingAbilitySliceActions {
   canPlaceMine: (owner: 'player' | 'opponent') => boolean;
   getMinesForOwner: (owner: 'player' | 'opponent') => ActiveMine[];
   getVisibleMines: (viewerSide: 'player' | 'opponent') => ActiveMine[];
-  clearMineTriggered: () => void;
   consumePendingManaBoost: (side: 'player' | 'opponent') => number;
 }
 
 export type KingAbilitySlice = KingAbilitySliceState & KingAbilitySliceActions;
+
+// ==================== CHESS ANIMATION SLICE ====================
+
+/**
+ * Holds non-canonical UI freshness markers for chess-phase cinematic effects:
+ * the in-flight attack animation, the last instant-kill flash, and the last
+ * triggered mine overlay. These fields are NOT part of the canonical game
+ * state and do NOT enter `computeStateHash` — they live separately from the
+ * chess engine slice so that engine logic (executeMove / executeInstantKill
+ * / nextTurn) stays portable to `shared/protocol-core/`.
+ *
+ * Chess-phase writers (chessCombatSlice, kingAbilitySlice) update these
+ * markers via cross-slice setters using `get()` rather than embedding the
+ * fields in their own state.
+ */
+export interface ChessAnimationSliceState {
+  pendingAttackAnimation: PendingAttackAnimation | null;
+  lastInstantKill: InstantKillEvent | null;
+  lastMineTriggered: { mine: ActiveMine; targetPieceId: string } | null;
+}
+
+export interface ChessAnimationSliceActions {
+  // Public constructor: builds the PendingAttackAnimation struct from the
+  // chess pieces involved and stamps the deterministic timestamp via the
+  // chess slice's `_nextLogTick`. Called by both UI (local strike) and the
+  // P2P wire receiver (mirrored remote strike).
+  startAttackAnimation: (attacker: ChessPiece, defender: ChessPiece, isInstantKill: boolean) => void;
+  clearAttackAnimation: () => void;
+  // Internal-style setter consumed only by chessCombatSlice.executeInstantKill
+  // — exposed through the slice surface because Zustand cross-slice writes
+  // route through `get()` against the unified store union.
+  recordInstantKill: (position: ChessBoardPosition, attackerType: ChessPieceType) => void;
+  // Internal-style setter consumed only by kingAbilitySlice.checkAndTriggerMine.
+  recordMineTriggered: (mine: ActiveMine, targetPieceId: string) => void;
+  clearMineTriggered: () => void;
+  // Bulk-clear all chess-phase animation markers. Called from
+  // chessCombatSlice.initializeBoard to scrub stale freshness markers when
+  // a fresh game starts. The global UnifiedCombatStore.reset() resets these
+  // alongside every other field; this is the slice-internal counterpart.
+  clearChessAnimations: () => void;
+}
+
+export type ChessAnimationSlice = ChessAnimationSliceState & ChessAnimationSliceActions;
 
 // ==================== POKER SPELL SLICE ====================
 
@@ -360,12 +400,13 @@ export interface PokerSpellSliceActions {
 
 export type PokerSpellSlice = PokerSpellSliceState & PokerSpellSliceActions;
 
-export type UnifiedCombatStore = 
-  SharedCombatSlice & 
-  PokerCombatSlice & 
-  ChessCombatSlice & 
-  MinionBattleSlice & 
-  KingAbilitySlice & 
+export type UnifiedCombatStore =
+  SharedCombatSlice &
+  PokerCombatSlice &
+  ChessCombatSlice &
+  ChessAnimationSlice &
+  MinionBattleSlice &
+  KingAbilitySlice &
   PokerSpellSlice & {
     reset: () => void;
   };

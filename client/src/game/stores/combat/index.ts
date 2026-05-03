@@ -8,6 +8,7 @@ export * from './types';
 export { createSharedCombatSlice, turnManager } from './sharedCombatSlice';
 export { createPokerCombatSlice, evaluatePokerHand } from './pokerCombatSlice';
 export { createChessCombatSlice } from './chessCombatSlice';
+export { createChessAnimationSlice } from './chessAnimationSlice';
 export { createMinionBattleSlice, battleResolver } from './minionBattleSlice';
 export { createKingAbilitySlice } from './kingAbilitySlice';
 export { createPokerSpellSlice } from './pokerSpellSlice';
