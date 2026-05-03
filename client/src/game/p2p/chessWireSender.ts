@@ -25,6 +25,9 @@ import { usePeerStore } from '../stores/peerStore';
 import type { ChessBoardPosition } from '../types/ChessTypes';
 import type { ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
 import { debug } from '../config/debugConfig';
+import { recordMove } from '../../data/blockchain/transcriptBuilder';
+import { localPlayerId } from '../../data/blockchain/playerIdentity';
+import { getNFTBridge } from '../nft';
 
 let outgoingChessSeq = 0;
 
@@ -84,6 +87,22 @@ export function sendChessMove(move: ChessMoveEmit): boolean {
 		to: move.to,
 	});
 	send(envelope);
+
+	// Transcript: record this peer's move so the local transcript (and the
+	// host's authoritative one when this peer IS the host) reflects the action
+	// under the correct Hive identity. Falls back to a guest sentinel when no
+	// Hive username is bound — see `playerIdentity.ts`.
+	recordMove('chess_move', {
+		pieceId: move.pieceId,
+		from: move.from,
+		to: move.to,
+		commandId: envelope.commandId,
+		seq: envelope.seq,
+	}, localPlayerId({
+		hiveUsername: getNFTBridge().getUsername(),
+		myPeerId: usePeerStore.getState().myPeerId,
+	}));
+
 	debug.chess(`[chessWireSender] sent chess_move seq=${envelope.seq} piece=${move.pieceId.slice(0, 8)} (${move.from.row},${move.from.col})→(${move.to.row},${move.to.col})`);
 	return true;
 }

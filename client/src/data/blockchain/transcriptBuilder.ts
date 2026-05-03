@@ -14,6 +14,7 @@
 
 import type { GameMove, MoveRecord, MerkleProof } from './signedMove';
 import { sha256Hash, canonicalStringify } from './hashUtils';
+export type { GameMove };
 
 export interface TranscriptBundle {
 	version: number;
@@ -46,6 +47,13 @@ const sessionEventBuffer: SessionEvent[] = [];
 
 let activeTranscript: TranscriptBuilder | null = null;
 
+// Module-local monotonic counter feeding `GameMove.moveNumber`. Lives on the
+// singleton (not on TranscriptBuilder) so multiple call sites — useP2PSync
+// (cards/poker), chessWireSender (chess send path), and chess receive handlers
+// — share one numbering sequence per match. Reset by startNewTranscript /
+// clearTranscript so a reconnected session starts at 0.
+let moveCounter = 0;
+
 export function getActiveTranscript(): TranscriptBuilder | null {
 	return activeTranscript;
 }
@@ -53,12 +61,32 @@ export function getActiveTranscript(): TranscriptBuilder | null {
 export function startNewTranscript(): TranscriptBuilder {
 	activeTranscript = new TranscriptBuilder();
 	sessionEventBuffer.length = 0;
+	moveCounter = 0;
 	return activeTranscript;
 }
 
 export function clearTranscript(): void {
 	activeTranscript = null;
 	sessionEventBuffer.length = 0;
+	moveCounter = 0;
+}
+
+/**
+ * Append a move to the active transcript. No-op when no transcript is active
+ * (SP / pre-handshake). `playerId` should come from `playerIdentity.ts` so the
+ * fallback policy (Hive username → guest sentinel) is uniform across sites.
+ */
+export function recordMove(action: string, payload: Record<string, unknown>, playerId: string): void {
+	const transcript = activeTranscript;
+	if (!transcript) return;
+	const move: GameMove = {
+		moveNumber: moveCounter++,
+		action,
+		payload,
+		playerId,
+		timestamp: Date.now(),
+	};
+	transcript.addMove(move);
 }
 
 /**

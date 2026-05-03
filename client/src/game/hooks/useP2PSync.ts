@@ -9,8 +9,8 @@ import { sha256Hash } from '../../data/blockchain/hashUtils';
 import { verifyDeck as verifyDeckOnServer } from '../../data/chainAPI';
 import { getNFTBridge } from '../nft';
 import type { PackagedMatchResult } from '../../data/blockchain/types';
-import { startNewTranscript, getActiveTranscript, clearTranscript, recordSessionEvent, exportSessionLog } from '../../data/blockchain/transcriptBuilder';
-import type { GameMove } from '../../data/blockchain/signedMove';
+import { startNewTranscript, clearTranscript, recordSessionEvent, exportSessionLog, recordMove } from '../../data/blockchain/transcriptBuilder';
+import { localPlayerId, remotePlayerId } from '../../data/blockchain/playerIdentity';
 import { getWasmHash, loadWasmEngine } from '../engine/wasmLoader';
 import { computeStateHash } from '../engine/engineBridge';
 import { isSharedNetworkEnvironment } from '../config/featureFlags';
@@ -54,7 +54,8 @@ function generateSalt(): string {
 	return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-let moveCounter = 0;
+// `moveCounter` was lifted into transcriptBuilder.ts (singleton-scoped) so
+// chessWireSender can share the same monotonic counter for chess moves.
 let outgoingSeqCounter = 0;
 // Chess wire is symmetric P2P (Plan B): both peers send and apply
 // chess_command envelopes independently — no host-only routing. The
@@ -62,18 +63,11 @@ let outgoingSeqCounter = 0;
 // module so the chess UI can emit without dragging in this hook's
 // internals; it's reset on disconnect via `resetChessWireSender()` below.
 
-function recordMove(action: string, payload: Record<string, unknown>, playerId: string): void {
-	const transcript = getActiveTranscript();
-	if (!transcript) return;
-	const move: GameMove = {
-		moveNumber: moveCounter++,
-		action,
-		payload,
-		playerId,
-		timestamp: Date.now(),
-	};
-	transcript.addMove(move);
-}
+// `recordMove` + `moveCounter` previously lived here as module-locals. Both
+// were lifted into `transcriptBuilder.ts` so the chess send path (`chessWireSender`,
+// not a hook) can record without dragging in this file's React context. The
+// counter must be a singleton — splitting it would break monotonic moveNumber
+// across the cards / chess / poker entry points.
 
 export type P2PMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean; matchId?: string }
@@ -174,8 +168,7 @@ export function useP2PSync() {
 			mySaltRef.current = null;
 			theirCommitmentRef.current = null;
 			seedResolvedRef.current = false;
-			clearTranscript();
-			moveCounter = 0;
+			clearTranscript(); // also resets moveCounter inside the transcript module
 			outgoingSeqCounter = 0;
 			lastIncomingSeqRef.current = -1;
 			seenCommandIdsRef.current.clear();
@@ -545,6 +538,13 @@ export function useP2PSync() {
 
 				case 'game_command':
 					if (isHost) {
+						// Resolve the remote peer's transcript identity once for all
+						// recordMove sites in this case. Falls back to a guest sentinel
+						// when the peer never announced a Hive username during seed_reveal.
+						const remoteTranscriptId = remotePlayerId({
+							opponentUsername: opponentUsernameRef.current,
+							remotePeerId: usePeerStore.getState().remotePeerId,
+						});
 						const reject = (cause: string): void => {
 							debug.warn(`[useP2PSync] game_command rejected: ${cause}`, {
 								seq: data.seq,
@@ -667,7 +667,7 @@ export function useP2PSync() {
 									insertionIndex: wireCommand.insertionIndex,
 									commandId: data.commandId,
 									seq: data.seq,
-								}, 'opponent');
+								}, remoteTranscriptId);
 								applyOpponentCommandToStore(wireCommand);
 								markCommandApplied();
 								debouncedSync();
@@ -696,7 +696,7 @@ export function useP2PSync() {
 									defenderId: wireCommand.defenderId,
 									commandId: data.commandId,
 									seq: data.seq,
-								}, 'opponent');
+								}, remoteTranscriptId);
 								applyOpponentCommandToStore(wireCommand);
 								markCommandApplied();
 								debouncedSync();
@@ -705,7 +705,7 @@ export function useP2PSync() {
 								recordMove('endTurn', {
 									commandId: data.commandId,
 									seq: data.seq,
-								}, 'opponent');
+								}, remoteTranscriptId);
 								applyOpponentCommandToStore(wireCommand);
 								markCommandApplied();
 								debouncedSync();
@@ -721,7 +721,7 @@ export function useP2PSync() {
 									targetId: wireCommand.targetId,
 									commandId: data.commandId,
 									seq: data.seq,
-								}, 'opponent');
+								}, remoteTranscriptId);
 								applyOpponentCommandToStore(wireCommand);
 								markCommandApplied();
 								debouncedSync();
@@ -872,6 +872,23 @@ export function useP2PSync() {
 						if (evicted !== undefined) seenChessCommandIdsRef.current.delete(evicted);
 					}
 
+					// Transcript: record the remote peer's move with their Hive identity
+					// so the host's merkle root (the one that goes on-chain via
+					// BlockchainSubscriber.ts:279) attributes the action to the correct
+					// arbitrable account. Falls back to a `'guest:'` sentinel when the
+					// peer never announced a Hive username — the resulting transcript
+					// is still well-formed but flagged non-arbitrable downstream.
+					recordMove('chess_move', {
+						pieceId: envelope.command.pieceId,
+						from: envelope.command.from,
+						to: envelope.command.to,
+						commandId: envelope.commandId,
+						seq: envelope.seq,
+					}, remotePlayerId({
+						opponentUsername: opponentUsernameRef.current,
+						remotePeerId: usePeerStore.getState().remotePeerId,
+					}));
+
 					console.log(`[useP2PSync] chess_command APPLIED: piece=${envelope.command.pieceId.slice(0, 8)} (${envelope.command.from.row},${envelope.command.from.col})→(${envelope.command.to.row},${envelope.command.to.col})`);
 					break;
 				}
@@ -901,7 +918,10 @@ export function useP2PSync() {
 						if (typeof data.playerId !== 'string' || data.playerId.length > 64) break;
 						if (cState.pokerState.activePlayerId !== data.playerId) break;
 
-						recordMove('poker_action', { action: data.action, hpCommitment: data.hpCommitment }, 'opponent');
+						recordMove('poker_action', { action: data.action, hpCommitment: data.hpCommitment }, remotePlayerId({
+							opponentUsername: opponentUsernameRef.current,
+							remotePeerId: usePeerStore.getState().remotePeerId,
+						}));
 						if (cState.performAction) {
 							cState.performAction(data.playerId, data.action, data.hpCommitment);
 						}
@@ -1197,12 +1217,21 @@ export function useP2PSync() {
 		send(envelope);
 	}, [send, isHost]);
 
+	// Local transcript identity: read fresh from the NFT bridge + peer store on
+	// each move. Memoizing would be wrong — `getNFTBridge().getUsername()` can
+	// flip mid-session if the user re-authenticates, and `myPeerId` flips on
+	// reconnect. The function is cheap (two synchronous reads + one branch).
+	const buildLocalTranscriptId = (): string => localPlayerId({
+		hiveUsername: getNFTBridge().getUsername(),
+		myPeerId: usePeerStore.getState().myPeerId,
+	});
+
 	// Sender wrappers: when the local player is the P2P client, the command travels
 	// in the SENDER's perspective (e.g. `targetId: 'opponent-hero'` means "the host's hero
 	// from the client's POV"). The host's applyOpponentCommand swaps player/opponent
 	// before applying — no perspective translation is performed at the wire level.
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => {
-		recordMove('playCard', { cardId, targetId, targetType, insertionIndex }, 'player');
+		recordMove('playCard', { cardId, targetId, targetType, insertionIndex }, buildLocalTranscriptId());
 		if (connectionState === 'connected' && !isHost) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.playCard,
@@ -1218,7 +1247,7 @@ export function useP2PSync() {
 	}, [connectionState, isHost, playCard, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedAttack = useCallback((attackerId: string, defenderId: string) => {
-		recordMove('attack', { attackerId, defenderId }, 'player');
+		recordMove('attack', { attackerId, defenderId }, buildLocalTranscriptId());
 		if (connectionState === 'connected' && !isHost) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.attack,
@@ -1232,7 +1261,7 @@ export function useP2PSync() {
 	}, [connectionState, isHost, attackWithCard, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedEndTurn = useCallback(() => {
-		recordMove('endTurn', {}, 'player');
+		recordMove('endTurn', {}, buildLocalTranscriptId());
 		if (connectionState === 'connected' && !isHost) {
 			sendCommandEnvelope({ type: GAME_COMMAND_TYPES.endTurn });
 		} else {
@@ -1242,7 +1271,7 @@ export function useP2PSync() {
 	}, [connectionState, isHost, endTurn, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedUseHeroPower = useCallback((targetId?: string) => {
-		recordMove('useHeroPower', { targetId }, 'player');
+		recordMove('useHeroPower', { targetId }, buildLocalTranscriptId());
 		if (connectionState === 'connected' && !isHost) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.useHeroPower,
