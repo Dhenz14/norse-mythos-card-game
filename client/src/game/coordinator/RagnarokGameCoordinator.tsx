@@ -219,6 +219,14 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   // the host's `init` envelope is applied (`p2pInitApplied`) and the
   // opponent's army announcement has arrived.
   const matchSeed = useGameStore(s => s.matchSeed);
+  // Local viewer's canonical chess side (decided at handshake from
+  // matchSeed parity). SP defaults to 'player' (human is first-mover).
+  // Drives all viewer-relative presentation in this coordinator AND the
+  // P2P board initialization (canonical first-mover army goes into
+  // PLAYER_INITIAL_POSITIONS so both peers compute identical piece ids).
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+  const enemyCanonicalSide: 'player' | 'opponent' = myCanonicalSide === 'player' ? 'opponent' : 'player';
+  const myWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'player_wins' : 'opponent_wins';
   const p2pInitApplied = usePeerStore(s => s.p2pInitApplied);
   const p2pBoardInitRef = useRef(false);
   useEffect(() => {
@@ -229,8 +237,16 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     if (!initialArmy || !opponentArmy) return;
     p2pBoardInitRef.current = true;
     const idGen = createSeededIdGen(matchSeed, 'chess-pieces');
-    initializeBoard(initialArmy, opponentArmy, idGen);
-  }, [isP2PConnected, p2pInitApplied, matchSeed, initialArmy, opponentArmy, initializeBoard]);
+    // Canonical-frame init: the first-mover's army goes into the canonical
+    // 'player' positions globally. Both peers must agree on which physical
+    // army is the first-mover's. Map local `initialArmy`/`opponentArmy`
+    // (viewer-relative props) to canonical (whiteArmy=first-mover) before
+    // calling `initializeBoard`. Same idGen sequence on identical canonical
+    // layout → identical piece ids on both peers.
+    const canonicalPlayerArmy = myCanonicalSide === 'player' ? initialArmy : opponentArmy;
+    const canonicalOpponentArmy = myCanonicalSide === 'player' ? opponentArmy : initialArmy;
+    initializeBoard(canonicalPlayerArmy, canonicalOpponentArmy, idGen);
+  }, [isP2PConnected, p2pInitApplied, matchSeed, initialArmy, opponentArmy, initializeBoard, myCanonicalSide]);
 
   useCampaignGameBootstrap({
     isCampaign,
@@ -281,7 +297,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     updatePieceHealth,
   });
 
-  const { lastMineTriggered } = useKingChessAbility('player');
+  const { lastMineTriggered } = useKingChessAbility(myCanonicalSide);
 
   const handleCombatTriggered = useCallback((attackerId: string, defenderId: string) => {
 
@@ -319,8 +335,14 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     debug.combat(`Defender ${defender.type} (${defender.owner}): HP=${defender.health}, Stamina=${defender.stamina}`);
     debug.combat(`First strike will be applied via animation in poker combat`);
 
-    const attackerArmy = getArmyForOwner(attacker.owner, playerArmy, opponentArmy);
-    const defenderArmy = getArmyForOwner(defender.owner, playerArmy, opponentArmy);
+    // Map local-viewer-relative props (`playerArmy` = my army, `opponentArmy`
+    // = remote's army) into canonical positions (canonicalPlayerArmy =
+    // first-mover's army globally) so `getArmyForOwner` can resolve a
+    // canonical `owner` field correctly.
+    const canonicalPlayerArmyForLookup = myCanonicalSide === 'player' ? playerArmy : opponentArmy;
+    const canonicalOpponentArmyForLookup = myCanonicalSide === 'player' ? opponentArmy : (playerArmy ?? opponentArmy);
+    const attackerArmy = getArmyForOwner(attacker.owner, canonicalPlayerArmyForLookup, canonicalOpponentArmyForLookup);
+    const defenderArmy = getArmyForOwner(defender.owner, canonicalPlayerArmyForLookup, canonicalOpponentArmyForLookup);
 
     if (!attackerArmy || !defenderArmy) return;
 
@@ -338,8 +360,8 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     debug.combat(`AttackerPet stamina: ${attackerPet.stats.currentStamina}/${attackerPet.stats.maxStamina}`);
     debug.combat(`DefenderPet stamina: ${defenderPet.stats.currentStamina}/${defenderPet.stats.maxStamina}`);
 
-    const attackerName = attackerPet.name || `${attacker.owner === 'player' ? 'Player' : 'Opponent'} ${attacker.type}`;
-    const defenderName = defenderPet.name || `${defender.owner === 'player' ? 'Player' : 'Opponent'} ${defender.type}`;
+    const attackerName = attackerPet.name || `${attacker.owner === myCanonicalSide ? 'Player' : 'Opponent'} ${attacker.type}`;
+    const defenderName = defenderPet.name || `${defender.owner === myCanonicalSide ? 'Player' : 'Opponent'} ${defender.type}`;
 
     // Pass king IDs to apply king passive aura buffs
     const attackerKingId = attackerArmy.king?.id;
@@ -349,7 +371,11 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     //  campaignData.mission.realm. The chess phase needs the realm class
     //  applied before combat starts, not just at piece collision.)
 
-    const { slotsSwapped, firstStrikeTarget } = getCombatSlotMapping(attacker.owner);
+    // Local viewer is the attacker when the chess attacker piece's
+    // canonical owner matches our canonical side. Drives poker slot
+    // orientation so MY piece always shows up in the "player" slot.
+    const localViewerIsAttacker = attacker.owner === myCanonicalSide;
+    const { slotsSwapped, firstStrikeTarget } = getCombatSlotMapping(localViewerIsAttacker);
 
     if (!slotsSwapped) {
       // Human attacks AI: Human (attacker) = player, AI (defender) = opponent
@@ -488,10 +514,14 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     if (gameEndProcessedRef.current) return;
     gameEndProcessedRef.current = true;
 
-    playSoundEffect(winner === 'player' ? 'victory' : 'defeat');
+    // `winner` is the CANONICAL winning side ('player' = first-mover globally).
+    // Translate to viewer-relative for sound + campaign rewards: I won iff
+    // canonical winner matches my canonical side.
+    const iWon = winner === myCanonicalSide;
+    playSoundEffect(iWon ? 'victory' : 'defeat');
     gameOverTimerRef.current = setTimeout(() => {
       gameOverTimerRef.current = null;
-      if (isCampaign && winner === 'player' && campaignMissionId && campaignData) {
+      if (isCampaign && iWon && campaignMissionId && campaignData) {
         completeMission(campaignMissionId, campaignDifficulty, turnCount);
         const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
         if (!alreadyClaimed) {
@@ -616,7 +646,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     if (
       isCampaign &&
       campaignData &&
-      boardState.gameStatus === 'player_wins' &&
+      boardState.gameStatus === myWinStatus &&
       gameOverSubPhase === 'result' &&
       (campaignData.mission.storyBridge?.length ?? 0) > 0
     ) {
@@ -642,8 +672,9 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   }, [resetBoard, opponentArmy, initializeBoard, playSoundEffect, resetPlayerTurnCount, resetBossRulesApplied, clearFlow, startFlow]);
 
   const handleBattleMode = useCallback(() => {
-    const playerPieces = boardState.pieces.filter(p => p.owner === 'player' && p.type !== 'pawn' && p.type !== 'king');
-    const opponentPieces = boardState.pieces.filter(p => p.owner === 'opponent' && p.type !== 'pawn' && p.type !== 'king');
+    // Dev-only Battle Sandbox: pick a random local-side piece vs random enemy-side piece.
+    const playerPieces = boardState.pieces.filter(p => p.owner === myCanonicalSide && p.type !== 'pawn' && p.type !== 'king');
+    const opponentPieces = boardState.pieces.filter(p => p.owner === enemyCanonicalSide && p.type !== 'pawn' && p.type !== 'king');
 
     if (playerPieces.length === 0 || opponentPieces.length === 0) {
       debug.chess('BattleMode: Not enough pieces for test battle');
@@ -718,7 +749,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
 
           {flowState !== null && flowState.tag === 'game_over' && (
             <GameOverPhase
-              isVictory={boardState.gameStatus === 'player_wins'}
+              isVictory={boardState.gameStatus === myWinStatus}
               sub={flowState.sub}
               playerTurnCount={turnCount}
               campaign={isCampaign && campaignData ? { mission: campaignData.mission, chapter: campaignData.chapter, difficulty: campaignDifficulty } : null}

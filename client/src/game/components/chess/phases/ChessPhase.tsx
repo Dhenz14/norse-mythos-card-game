@@ -28,6 +28,7 @@ import {
 } from '../../../utils/chess/kingAbilityUtils';
 import { useKingChessAbility } from '../../../hooks/useKingChessAbility';
 import { resolveHeroPortrait, DEFAULT_PORTRAIT } from '../../../utils/art/artMapping';
+import { useGameStore } from '../../../stores/gameStore';
 import { Tooltip } from '../../ui/Tooltip';
 import ChessBoard from '../ChessBoard';
 
@@ -112,6 +113,8 @@ const PlayerHeroPortrait: React.FC<PlayerPortraitProps> = ({ army, pieceCount })
 	const [isCasting, setIsCasting] = useState(false);
 	const prevMinesRef = useRef<number | null>(null);
 
+	// Drive the local viewer's king (whichever canonical side they hold).
+	const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
 	const {
 		canPlaceMine,
 		minesRemaining,
@@ -120,7 +123,7 @@ const PlayerHeroPortrait: React.FC<PlayerPortraitProps> = ({ army, pieceCount })
 		enterPlacementMode,
 		exitPlacementMode,
 		selectDirection,
-	} = useKingChessAbility('player');
+	} = useKingChessAbility(myCanonicalSide);
 
 	const kingId = king.id || '';
 	const config = getKingAbilityConfig(kingId);
@@ -270,9 +273,11 @@ const ChessPhase: React.FC<ChessPhaseProps> = ({
 	onCombatTriggered,
 	onBattleMode,
 }) => {
-	const { isPlacementMode } = useKingChessAbility('player');
-	const playerPieceCount = boardState.pieces.filter(p => p.owner === 'player').length;
-	const opponentPieceCount = boardState.pieces.filter(p => p.owner === 'opponent').length;
+	const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+	const enemyCanonicalSide: 'player' | 'opponent' = myCanonicalSide === 'player' ? 'opponent' : 'player';
+	const { isPlacementMode } = useKingChessAbility(myCanonicalSide);
+	const playerPieceCount = boardState.pieces.filter(p => p.owner === myCanonicalSide).length;
+	const opponentPieceCount = boardState.pieces.filter(p => p.owner === enemyCanonicalSide).length;
 
 	return (
 		<motion.div
@@ -294,7 +299,7 @@ const ChessPhase: React.FC<ChessPhaseProps> = ({
 						exit={{ opacity: 0, scale: 0.8, y: -20 }}
 						className="check-warning-banner mb-3"
 					>
-						CHECK! {boardState.inCheck === 'player' ? 'Your King is in danger!' : "Enemy King is threatened!"}
+						CHECK! {boardState.inCheck === myCanonicalSide ? 'Your King is in danger!' : "Enemy King is threatened!"}
 					</motion.div>
 				)}
 			</AnimatePresence>

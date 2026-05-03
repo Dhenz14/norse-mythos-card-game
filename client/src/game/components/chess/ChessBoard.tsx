@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessBoardPosition, BOARD_ROWS, BOARD_COLS } from '../../types/ChessTypes';
+import { useGameStore } from '../../stores/gameStore';
 import ChessPieceComponent from './ChessPiece';
 import MovePlate from './MovePlate';
 import ChessAttackAnimation from './ChessAttackAnimation';
@@ -62,6 +63,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
   }, []);
   
   const { currentTurn, selectedPiece, gameStatus } = boardState;
+  // Local viewer's canonical side. SP defaults to 'player' (human is first-mover);
+  // P2P sets via deriveCanonicalSide at handshake. Drives all viewer-relative
+  // presentation: "your turn" banner, victory/defeat text, board orientation.
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+  const isMyTurn = currentTurn === myCanonicalSide;
+  const myWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'player_wins' : 'opponent_wins';
+  const oppWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'opponent_wins' : 'player_wins';
   
   const renderCell = (row: number, col: number) => {
     const position: ChessBoardPosition = { row, col };
@@ -251,7 +259,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
               <ChessPieceComponent
                 piece={piece}
                 isSelected={selectedPiece?.id === piece.id}
-                isPlayerTurn={currentTurn === 'player'}
+                isPlayerTurn={isMyTurn}
                 onClick={() => handleCellClick(row, col)}
                 matchupGlow={matchupGlowMap[piece.id] || null}
               />
@@ -302,17 +310,17 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
 
   return (
     <div className="chess-board-container flex flex-col items-center">
-      <div className={`chess-turn-banner chess-banner-enter ${currentTurn === 'player' ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
+      <div className={`chess-turn-banner chess-banner-enter ${isMyTurn ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
         <span className="chess-turn-text">
-          {currentTurn === 'player' ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
+          {isMyTurn ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
         </span>
         {gameStatus === 'combat' && (
           <span className="ml-2 text-yellow-400 animate-pulse">⚔ Combat!</span>
         )}
-        {gameStatus === 'player_wins' && (
+        {gameStatus === myWinStatus && (
           <span className="ml-2 text-green-400 font-bold">Victory!</span>
         )}
-        {gameStatus === 'opponent_wins' && (
+        {gameStatus === oppWinStatus && (
           <span className="ml-2 text-red-400 font-bold">Defeat</span>
         )}
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessPiece, ChessPieceType, PIECE_DISPLAY_NAMES } from '../../types/ChessTypes';
+import { useGameStore } from '../../stores/gameStore';
 import './VSScreen.css';
 
 interface VSScreenProps {
@@ -17,6 +18,8 @@ const VSScreen: React.FC<VSScreenProps> = ({
   duration = 2000 
 }) => {
   const [phase, setPhase] = useState<'enter' | 'vs' | 'exit'>('enter');
+  // Viewer-relative labeling: "PLAYER" = me locally regardless of canonical side.
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
 
   useEffect(() => {
     const enterTimer = setTimeout(() => setPhase('vs'), 400);
@@ -93,7 +96,7 @@ const VSScreen: React.FC<VSScreenProps> = ({
             </div>
             <div className="vs-fighter-info">
               <span className="vs-fighter-owner">
-                {attacker.owner === 'player' ? 'PLAYER' : 'OPPONENT'}
+                {attacker.owner === myCanonicalSide ? 'PLAYER' : 'OPPONENT'}
               </span>
               <span className="vs-fighter-name">{getPieceTitle(attacker)}</span>
               <span className="vs-fighter-type">{PIECE_DISPLAY_NAMES[attacker.type as ChessPieceType].toUpperCase()}</span>
@@ -145,7 +148,7 @@ const VSScreen: React.FC<VSScreenProps> = ({
             </div>
             <div className="vs-fighter-info">
               <span className="vs-fighter-owner">
-                {defender.owner === 'player' ? 'PLAYER' : 'OPPONENT'}
+                {defender.owner === myCanonicalSide ? 'PLAYER' : 'OPPONENT'}
               </span>
               <span className="vs-fighter-name">{getPieceTitle(defender)}</span>
               <span className="vs-fighter-type">{PIECE_DISPLAY_NAMES[defender.type as ChessPieceType].toUpperCase()}</span>

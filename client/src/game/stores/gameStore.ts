@@ -76,6 +76,19 @@ interface GameStore {
   // Game state
   gameState: GameState;
   matchSeed: string | null;
+  /**
+   * Canonical chess side for the local peer — decided at handshake from
+   * `matchSeed` parity (see `deriveCanonicalSide` in `shared/p2p-wire/chess.ts`).
+   * `'player'` means this peer plays the first-mover side globally;
+   * `'opponent'` means second-mover side. SP defaults to `'player'` (human
+   * always goes first vs AI). Null until a chess match initializes.
+   *
+   * UI uses this to translate canonical board state into viewer-relative
+   * presentation ("your turn" / "your pieces at bottom"). Game logic
+   * (slice, applyChessCommand, hash) does NOT branch on this — it operates
+   * on canonical state only.
+   */
+  myCanonicalSide: 'player' | 'opponent' | null;
   lastStateHash: string | null;
   selectedCard: CardInstance | null;
   // For tracking attack selection
@@ -160,6 +173,7 @@ function readHiveCollection(): HiveCardAsset[] | undefined {
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
   gameState: initializeGame(),
   matchSeed: null,
+  myCanonicalSide: null,
   lastStateHash: null,
   selectedCard: null,
   hoveredCard: null,
@@ -185,6 +199,10 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
         selectedHeroId: selectedHeroId ?? undefined,
         hiveCollection,
       }),
+      // SP convention: human is always first-mover globally → 'player'.
+      // P2P sets this from `deriveCanonicalSide` after seed_reveal instead;
+      // SP never goes through that path.
+      myCanonicalSide: 'player',
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,
@@ -502,6 +520,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     debug.log('Resetting game state to initial values');
     set({
       gameState: initializeGame(),
+      myCanonicalSide: null,
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,

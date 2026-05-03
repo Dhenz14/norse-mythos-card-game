@@ -329,12 +329,18 @@ export function getMineShapeTiles(
  * - Must be on board
  * - Cannot overlap with existing mines from same owner
  * - Cannot place on own pieces
+ *
+ * `owner` is the canonical chess side placing the mine. Pre-canonical-frame
+ * the filter was hardcoded to `'player'` which silently broke validation
+ * for the second-mover side under any non-SP scenario (P2P, multi-king
+ * variants). Caller passes the placing side explicitly.
  */
 export function isValidMinePlacement(
   position: ChessBoardPosition,
   kingId: string,
   existingMines: ActiveMine[],
   ownPiecePositions: ChessBoardPosition[],
+  owner: 'player' | 'opponent',
   direction?: MineDirection
 ): { valid: boolean; reason?: string } {
   if (!isWithinBounds(position)) {
@@ -347,12 +353,12 @@ export function isValidMinePlacement(
   }
 
   const tiles = getMineShapeTiles(kingId, position, direction);
-  
+
   if (tiles.length === 0) {
     return { valid: false, reason: 'No valid tiles in shape' };
   }
 
-  const ownMines = existingMines.filter(m => m.owner === 'player' && !m.triggered);
+  const ownMines = existingMines.filter(m => m.owner === owner && !m.triggered);
   for (const tile of tiles) {
     for (const mine of ownMines) {
       if (mine.affectedTiles.some(t => t.row === tile.row && t.col === tile.col)) {

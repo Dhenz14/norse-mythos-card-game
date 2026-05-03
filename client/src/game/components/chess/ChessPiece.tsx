@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChessPiece as ChessPieceType, ChessPieceType as PieceType, ELEMENT_COLORS, ELEMENT_ICONS, ElementType } from '../../types/ChessTypes';
 import type { MatchupGlow } from '../../utils/chess/elementMatchupUtils';
 import { assetPath } from '../../utils/assetPath';
+import { useGameStore } from '../../stores/gameStore';
 import './ChessPiece.css';
 
 const ELEMENT_IMAGES: Record<ElementType, string | null> = {
@@ -104,7 +105,11 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const isPlayer = piece.owner === 'player';
+  // Viewer-relative: this piece belongs to ME (the local viewer) iff its
+  // canonical owner matches my canonical side. Drives selection eligibility
+  // and visual orientation (e.g., element glow, side-of-board cues).
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+  const isPlayer = piece.owner === myCanonicalSide;
   const canSelect = isPlayerTurn && isPlayer;
   const isPawn = piece.type === 'pawn';
   const isKing = piece.type === 'king';

@@ -108,6 +108,7 @@ export const createKingAbilitySlice: StateCreator<
       kingState.kingId,
       state.allActiveMines,
       ownPieces,
+      owner,
       direction
     );
 

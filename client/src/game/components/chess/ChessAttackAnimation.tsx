@@ -8,6 +8,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessPiece, ChessBoardPosition, ELEMENT_COLORS } from '../../types/ChessTypes';
+import { useGameStore } from '../../stores/gameStore';
 
 interface AttackAnimationData {
   attacker: ChessPiece;
@@ -105,7 +106,11 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
 
   const attackerStart = calculatePixelPosition(animation.attackerPosition);
   const defenderPos = calculatePixelPosition(animation.defenderPosition);
-  const isPlayer = animation.attacker.owner === 'player';
+  // `isPlayer` here means "attacker is MY piece" — drives viewer-relative
+  // animation orientation (color glow, particle direction). Compare against
+  // canonical side so each peer animates from their own perspective.
+  const myCanonicalSide = useGameStore.getState().myCanonicalSide ?? 'player';
+  const isPlayer = animation.attacker.owner === myCanonicalSide;
   const elementColor = ELEMENT_COLORS[animation.attacker.element] || '#ffffff';
 
   return (

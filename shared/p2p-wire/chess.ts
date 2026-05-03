@@ -99,3 +99,34 @@ export function tryParseChessCommandEnvelope(input: unknown): ChessCommandEnvelo
 	const result = ChessCommandEnvelopeSchema.safeParse(input);
 	return result.success ? result.data : null;
 }
+
+// ── Canonical side derivation ──────────────────────────────────────────────
+
+/**
+ * Canonical side type — same string union as `ChessPlayerSide`, intentionally
+ * decoupled from the client types so the wire module remains free of client
+ * imports. `'player'` is the GLOBAL first-mover side (decided at handshake);
+ * `'opponent'` is the second-mover side. NOT viewer-relative — both peers
+ * agree on which side is which.
+ */
+export type CanonicalChessSide = 'player' | 'opponent';
+
+/**
+ * Derive each peer's canonical side from the resolved match seed and their
+ * role in the WS session. Trust-minimized: `matchSeed` comes from
+ * commit-reveal, so first-char parity is unbiased. Convention is "first-mover
+ * is `'player'` globally, plays first" — equivalent to white-moves-first in
+ * traditional chess.
+ *
+ * Symmetry: for any seed, calling with `isHost=true` and `isHost=false` MUST
+ * return opposite values. Property-tested in `chess.test.ts`.
+ */
+export function deriveCanonicalSide(matchSeed: string, isHost: boolean): CanonicalChessSide {
+	if (matchSeed.length === 0) {
+		throw new Error('deriveCanonicalSide: matchSeed must be non-empty');
+	}
+	const firstChar = matchSeed.charCodeAt(0);
+	const seedBit = firstChar & 1;
+	const hostBit = isHost ? 1 : 0;
+	return (seedBit ^ hostBit) === 0 ? 'player' : 'opponent';
+}

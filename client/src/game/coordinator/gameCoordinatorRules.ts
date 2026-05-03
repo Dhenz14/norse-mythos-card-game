@@ -137,11 +137,20 @@ export function getArmyForOwner(
   return owner === 'player' ? playerArmy : opponentArmy;
 }
 
-export function getCombatSlotMapping(attackerOwner: ChessPiece['owner']): CombatSlotMapping {
-  const humanIsAttacker = attackerOwner === 'player';
+/**
+ * Decide whether to swap poker combat slots so the local viewer's piece
+ * always renders in the "player" slot of the poker UI. `localViewerIsAttacker`
+ * = true when the chess attacker is owned by the local viewer's canonical side.
+ * Caller is responsible for computing this (e.g.,
+ * `attacker.owner === myCanonicalSide`).
+ *
+ * `firstStrikeTarget` is in poker-UI vocabulary ('player' = local viewer's
+ * pet slot regardless of canonical chess side).
+ */
+export function getCombatSlotMapping(localViewerIsAttacker: boolean): CombatSlotMapping {
   return {
-    slotsSwapped: !humanIsAttacker,
-    firstStrikeTarget: humanIsAttacker ? 'opponent' : 'player',
+    slotsSwapped: !localViewerIsAttacker,
+    firstStrikeTarget: localViewerIsAttacker ? 'opponent' : 'player',
   };
 }
 

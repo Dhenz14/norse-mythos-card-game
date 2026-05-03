@@ -109,6 +109,7 @@ export function useKingChessAbility(side: 'player' | 'opponent' = 'player'): Kin
       kingState.kingId,
       allActiveMines,
       ownPieces,
+      side,
       selectedMineDirection ?? undefined
     );
     

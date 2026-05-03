@@ -18,6 +18,7 @@ import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockch
 import { GAME_COMMAND_TYPES } from '../core/commands';
 import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from './p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../lib/stores/useWarbandStore';
+import { deriveCanonicalSide } from '../../../../shared/p2p-wire/chess';
 
 export type { GameCommandEnvelope, WireGameCommand } from './p2pEnvelope';
 export { canonicalQuickHash } from './p2pEnvelope';
@@ -450,7 +451,12 @@ export function useP2PSync() {
 						: [theirSalt, mySalt];
 					const matchSeed = await sha256Hash(first + second);
 
-					useGameStore.setState({ matchSeed });
+					// Derive each peer's canonical chess side from the resolved seed.
+					// Both peers compute this BEFORE any chess state initializes so
+					// `myCanonicalSide` is available to UI components on first render.
+					// `isHost` is the WS-resolved hint (see wsTransport handshake).
+					const myCanonicalSide = deriveCanonicalSide(matchSeed, isHost);
+					useGameStore.setState({ matchSeed, myCanonicalSide });
 
 					// Symmetric seeding for the chess phase: both peers mint the
 					// same `_chessRng` / `_chessIdGen` from the resolved seed, so

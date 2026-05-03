@@ -3,6 +3,7 @@ import { useAudio } from '../../../lib/stores/useAudio';
 import { debug } from '../../config/debugConfig';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
+import { useGameStore } from '../../stores/gameStore';
 import type { ChessBoardPosition } from '../../types/ChessTypes';
 import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
 import {
@@ -56,6 +57,12 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     completeAttackAnimation,
   } = useChessCombatAdapter();
 
+  // Local viewer's canonical side. SP defaults to 'player' (human is first-mover);
+  // P2P sets via deriveCanonicalSide at handshake. Each peer drives THEIR OWN
+  // king's ability — `useKingChessAbility(myCanonicalSide)` selects the right
+  // king regardless of who plays first.
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+
   const {
     isPlacementMode,
     visibleMines,
@@ -64,7 +71,7 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     isValidPlacement,
     lastMineTriggered,
     clearMineTriggered,
-  } = useKingChessAbility('player');
+  } = useKingChessAbility(myCanonicalSide);
 
   const { pieces, currentTurn, selectedPiece, validMoves, attackMoves, gameStatus } = boardState;
 
@@ -124,11 +131,11 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
   }, [lastInstantKill]);
 
   const matchupGlowMap = useMemo(() => {
-    if (!selectedPiece || selectedPiece.owner !== 'player' || currentTurn !== 'player') {
+    if (!selectedPiece || selectedPiece.owner !== myCanonicalSide || currentTurn !== myCanonicalSide) {
       return {};
     }
     return computeMatchupGlows(selectedPiece.element, pieces, selectedPiece.owner);
-  }, [selectedPiece, currentTurn, pieces]);
+  }, [selectedPiece, currentTurn, pieces, myCanonicalSide]);
 
   const previewTiles = useMemo(
     () => (hoverPosition ? getPreviewForPosition(hoverPosition) : []),
