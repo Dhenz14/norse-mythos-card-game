@@ -239,7 +239,7 @@ The relay whitelist (`server/routes/p2pRelay.ts:47-69`) MUST stay in sync.
 | `init` | host → client | host only | Phase 2: send authoritative initial gameState |
 | `game_command` (envelope) | client → host | client | Phase 3 cards: requests an action from host |
 | `gameState` | host → client | host | Phase 3 cards: sync authoritative state (debounced) |
-| `chess_command` (envelope) | both | both (symmetric) | Phase 3 chess: a chess_move (Plan B) |
+| `chess_command` (envelope) | both | both (symmetric) | Phase 3 chess: discriminated union of `chess_move` (quiet) and `chess_attack` (instant-kill capture) — see §5 |
 | `poker_action` | client → host | client | Phase 3 poker: action submitted to host |
 | `hash_check` | host → client | host | Periodic state-hash sanity check |
 | `hash_mismatch` | client → host | client | Reports a divergent state hash |
@@ -294,30 +294,82 @@ copy for QA export.
 Pattern: both peers validate AND apply each chess_command independently.
 No host-only routing.
 
-Implementation:
-- Both peers reach `phase === 'chess'` after seed exchange and a P2P-
-  specific board bootstrap (`RagnarokGameCoordinator.tsx:230-249`). The
-  bootstrap uses a seeded id generator
-  (`createSeededIdGen(matchSeed, 'chess-pieces')`) so both peers compute
-  identical `pieceId` strings.
-- Local player click → `executeMove` runs locally → `chessWireSender.sendChessMove`
-  emits `chess_command` envelope (`useChessBoardInteractions.ts:182-205`).
-- Remote receives → validation pipeline (matchId, monotonic seq, commandId
-  dedup, rate limit, piece lookup, position match, ownership boundary,
-  currentTurn) → `executeMove` on local store
-  (`useP2PSync.ts:735-885`).
-- AI is gated by `!matchSeed` (`RagnarokGameCoordinator.ts:573-593`), NOT
-  by `!isP2PConnected`. The earlier gate flipped to false during transient
-  WS reconnects, allowing the AI to mutate the local opponent piece and
-  desync the two peers. Fixed: see commit history.
+**Wire surface** (post C-Chess.8):
+- `chess_move`: quiet move (no capture). Both peers apply via
+  `executeMove`.
+- `chess_attack`: instant-kill capture only. Receiver runs
+  `startAttackAnimation(attacker, defender, true)` and the existing
+  `completeAttackAnimation` → `executeInstantKill` chain handles the
+  apply locally on each peer. Schema in `shared/p2p-wire/chess.ts`
+  (discriminated union; `defenderId` is explicit and verified against
+  the local roster as defense-in-depth).
 
-Determinism contract for chess:
+**Sender invariant** (`useChessBoardInteractions.ts:184-238`):
+**every wire envelope represents a mutation that the sender already
+applied locally**. The sender calls `movePiece` first; only if the slice
+returns a collision (attack) or null with no rejection (quiet) does the
+wire emit fire. This guarantees that if the local validation refused to
+apply (illegal move, animation in progress, missing selection), no
+envelope is sent and the remote never sees a mutation that the sender
+itself didn't perform.
+
+**Instant-kill rule** (single source of truth:
+`shared/p2p-wire/chess.ts` `isChessAttackInstantKill`): an attack is
+instant-kill when `attacker.type ∈ {pawn, king}` (Valkyrie weapon) OR
+`defender.type === pawn` (too weak to defend). The predicate is consulted
+by the sender (to decide between `chess_attack` emit vs the
+non-instant-capture toast) and by the receiver (to reject envelopes that
+claim a non-instant outcome). Same module = no drift.
+
+**Non-instant captures** (queen vs rook, rook vs bishop, etc.) are
+**blocked at the UI layer** with a toast — they require the chess→poker
+phase to be wired symmetrically, which is a separate workstream tracked
+in §10 OPEN-3. The `executeInstantKill` chain bypasses the poker phase
+entirely; it's the only chess→state-mutation path safe to run on both
+peers without coordination today.
+
+**King ability (mine placement) blocked in P2P**: each peer's mines
+live in their local store and don't cross the wire today. If kept
+enabled, an opponent piece landing on a mine triggers stamina penalty
+on the placer's side but not on the opponent's, drifting stats over
+time and surfacing as `attacker_position_mismatch` later. Blocked at
+`useKingChessAbility.enterPlacementMode` with a toast until
+`chess_mine_placement` envelope ships (separate workstream — §10
+OPEN-9).
+
+**Receiver pipeline** (`useP2PSync.ts` case `chess_command`): common
+validations (schema, matchId, monotonic seq, commandId dedup, rate
+limit, attacker lookup, position match, ownership boundary, currentTurn)
+run once; then a branch on `command.type` dispatches to the move or
+attack apply. Reject codes are verbose snake_case (e.g.
+`non_instant_capture_not_supported_p2p`,
+`remote_attempting_to_move_my_piece`, `attacker_not_found_*` with
+roster dump diagnostic).
+
+**Implementation locations**:
+- Schema + predicate: `shared/p2p-wire/chess.ts`.
+- Sender: `client/src/game/p2p/chessWireSender.ts` (`sendChessMove`,
+  `sendChessAttack`, shared `dispatchChessCommand` helper).
+- Receiver: `client/src/game/hooks/useP2PSync.ts` case `chess_command`.
+- Click handler gate: `client/src/game/components/chess/useChessBoardInteractions.ts`.
+- Mine block: `client/src/game/hooks/useKingChessAbility.ts`
+  `enterPlacementMode`.
+
+**Coordination**:
+- Both peers reach `phase === 'chess'` after seed exchange and a P2P-
+  specific board bootstrap (`RagnarokGameCoordinator.tsx:230-249`),
+  which uses `createSeededIdGen(matchSeed, 'chess-pieces')` so both
+  peers compute identical `pieceId` strings.
+- AI is gated by `!matchSeed` (`RagnarokGameCoordinator.ts:573-593`),
+  NOT by `!isP2PConnected`. The earlier gate flipped to false during
+  transient WS reconnects, allowing the AI to mutate the local opponent
+  piece and desync the two peers. Fixed in commit `93daee7`.
+
+**Determinism contract for chess**:
 - `_chessRng = createSeededRng(matchSeed)` on both peers
   (`chessCombatSlice.ts:62-65`).
 - All chess-side randomness must consume from `_chessRng`, never from
   `Math.random()` or `Date.now()`.
-- Mine placements derive from `_chessRng` and produce the same outputs
-  on both peers.
 
 The host still produces the authoritative transcript at match end
 (§7), but the chess move list is identical on both peers if determinism
@@ -524,18 +576,31 @@ hashing? Use a deterministic counter from the wire envelope (the
 `envelope.seq`)? Drop the local transcript entirely on the client and
 only host's counts?
 
-### OPEN-3 — Chess piece-not-found has no recovery path
+### OPEN-3 — Chess non-instant captures + state recovery
 
-**Where**: `useP2PSync.ts:830-844` — when an incoming chess_command
-references a piece id that doesn't exist locally, the envelope is
-rejected with a diagnostic dump. No state recovery is attempted; the
-match effectively freezes.
+**Where**: `useChessBoardInteractions.ts` blocks non-instant captures
+(queen vs rook etc.) with a toast. The chess→poker phase is not wired
+symmetrically: poker init uses `uuidv4()` for combat IDs (non-deterministic
+across peers), `Math.random()` for wager bonuses, and viewer-relative
+`pokerSlotsSwapped`. Adapting it for P2P requires a separate workstream
+similar in scope to chess Plan B applied to the poker phase.
 
-**Decision needed**: implement state recovery (request a snapshot
-from the remote peer? force a re-sync? abandon the match?). For beta,
-the assumption is that with the AI-gate fix and ownership-boundary
-checks the divergence path is closed; this is a fallback for residual
-bugs.
+Additionally: when chess_command is rejected mid-match with
+`attacker_not_found` / `defender_not_found` (post C-Chess.8 these are
+rarer but possible under residual bugs), no state recovery is attempted.
+The roster dump diagnostic helps debug from logs but the match
+effectively freezes.
+
+**Decision needed (poker sync)**: design and implement
+`chess_combat_initiated` + symmetric poker phase wire envelopes, OR
+keep poker host-auth and design the cross-peer init handoff. Multi-step
+refactor; needs grilling.
+
+**Decision needed (state recovery)**: implement snapshot request
+between peers when divergence is detected, OR keep current
+"freeze + console diagnostic" semantics for beta and rely on the fact
+that the typical divergence sources (AI gate, mines, captures) are now
+each individually blocked or guarded.
 
 ### OPEN-4 — Poker phase is host-only — should it migrate to symmetric?
 
@@ -582,6 +647,32 @@ is shorter wins.
 **Decision needed**: pick one. Probably 300s (matches the WS keepalive
 budget). Trivial fix.
 
+### OPEN-8 — Audit gameState wire and migrate to recovery-on-mismatch
+
+**Where**: today the host sends full `gameState` snapshots (~10KB)
+debounced post-command (host→client) regardless of whether the client
+needs it. `hash_check` exists but only triggers `slash_evidence`, not
+state recovery.
+
+**Decision needed**: refactor so `gameState` flows ONLY when a
+`hash_mismatch` is observed by the receiver — i.e., the wire becomes
+push-on-recovery instead of push-on-every-action. This requires
+migrating cards from host-auth-broadcast to symmetric-replay-with-
+recovery (similar to chess Plan B applied to cards). Multi-step
+workstream (~500+ LoC). Tracked in the project task queue.
+
+### OPEN-9 — Chess king ability (mine placement) sync
+
+**Where**: `useKingChessAbility.enterPlacementMode` blocks mine
+placement in P2P with a toast. The ability is fully functional in SP.
+
+**Decision needed**: design `chess_mine_placement` envelope (likely a
+new variant added to `ChessCommandSchema`), receiver pipeline that
+mirrors the placement on both peers, and visibility rules (does the
+opponent see the mine? Same as SP today which is hidden until trigger?).
+Same shape as C-Chess.8 — small, scoped, can land as one commit when
+the design is settled.
+
 ---
 
 ## §11 Glossary
@@ -594,6 +685,7 @@ budget). Trivial fix.
 | **envelope** | A wire frame — `chess_command`, `game_command`, `result_propose`, etc. |
 | **guest sentinel** | The `'guest:' + peerId.slice(0, 8)` playerId used when no Hive username is bound. Indicates a non-arbitrable move. |
 | **host** | The peer that arrived first at the relay. Authoritative for cards/poker; tied for chess. NOT a server. |
+| **instant-kill** | Chess capture that resolves without entering the poker phase. Triggered when attacker is `pawn`/`king` (Valkyrie weapon) OR defender is `pawn`. Predicate `isChessAttackInstantKill` in `shared/p2p-wire/chess.ts`. |
 | **isHost** | The transport-level hint emitted by the relay's `__sys.open`. |
 | **matchId** | `SHA256(matchSeed + sortedPeerIds)`, 16 hex chars. Binds every action to one match. |
 | **matchSeed** | `SHA256(sortedSalts)`, derived in seed_reveal. The root of all per-match randomness. |

@@ -5,8 +5,9 @@ import { debug } from '../../config/debugConfig';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { useGameStore } from '../../stores/gameStore';
-import { sendChessMove } from '../../p2p/chessWireSender';
+import { sendChessAttack, sendChessMove } from '../../p2p/chessWireSender';
 import type { ChessBoardPosition } from '../../types/ChessTypes';
+import { isChessAttackInstantKill } from '../../../../../shared/p2p-wire/chess';
 import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
 import {
   containsPosition,
@@ -182,37 +183,59 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     }
 
     if (action.kind === 'move_or_attack') {
-      // P2P chess: block captures until C-Chess.8 lands the wire envelope
-      // for attacks + the cross-peer combat-to-poker transition. Without
-      // them, calling movePiece() on an attack square triggers a local-only
-      // animation + state change that the remote peer never sees, leaving
-      // the two boards diverged and locking both sides out of further
-      // moves (their respective turn guards stop matching). Detected
-      // pre-call via isAttackMove so the local store is never mutated.
+      // P2P chess pre-flight gate: only INSTANT-KILL captures cross the
+      // wire today (C-Chess.8 scope). Non-instant captures (queen vs
+      // rook etc.) require the chess<->poker phase to be wired
+      // symmetrically — separate workstream — so we block them here
+      // before any state mutation. Quiet moves and instant-kills fall
+      // through to movePiece + the appropriate wire emitter below.
       const matchId = useGameStore.getState().matchId;
       if (matchId && isAttackMove) {
-        toast.error('Capturas aún no soportadas en multiplayer chess (C-Chess.8 pendiente)', {
-          description: 'Por ahora, jugá solo movimientos sin captura. La partida puede terminar en empate.',
-          duration: 5000,
-        });
-        return;
+        const defenderPiece = getPieceAt(position);
+        if (selectedPiece && defenderPiece) {
+          const instantKill = isChessAttackInstantKill({
+            attackerType: selectedPiece.type,
+            defenderType: defenderPiece.type,
+          });
+          if (!instantKill) {
+            toast.error('Captura compleja aún no soportada en multiplayer', {
+              description: 'Esta captura entraría a la fase de combate (poker) que aún no se sincroniza entre peers. Por ahora solo capturas instantáneas (peón vs cualquiera, rey ataca, o defensor peón).',
+              duration: 5000,
+            });
+            return;
+          }
+        }
       }
+
       // Capture the moving piece BEFORE movePiece — it clears selectedPiece
-      // as part of the move, so we can't read it post-call. We need pieceId
-      // and from-position for the wire envelope.
+      // as part of the move, so we can't read it post-call. Same with the
+      // defender for instant-kill emit (movePiece removes it).
       const movingPiece = selectedPiece;
       const fromPos = movingPiece?.position;
+      const defender = isAttackMove ? getPieceAt(position) : null;
+
       const collision = movePiece(position);
       if (collision) {
         debug.chess(`Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
-        // Wire emit for attacks deferred to C-Chess.8 (combat transitions).
+        // P2P instant-kill: emit chess_attack so the remote peer triggers
+        // the same animation + executeInstantKill chain. Non-instant
+        // attacks were rejected above. Invariante: envelope = mutación
+        // ya aplicada local (movePiece returned a collision => the
+        // attack animation has been queued in the slice).
+        if (matchId && movingPiece && fromPos && defender) {
+          sendChessAttack({
+            pieceId: movingPiece.id,
+            from: fromPos,
+            to: position,
+            defenderId: defender.id,
+          });
+        }
         return;
       }
       playSoundEffect('card_play');
-      // P2P (Plan B symmetric): emit chess_command so the remote peer can
-      // apply the same quiet move. No-ops in SP — chessWireSender checks
-      // gameStore.matchId. Attacks/captures use a different envelope path
-      // landing in C-Chess.8.
+      // P2P quiet move: emit chess_move. Same invariant — movePiece
+      // returned null with no collision means the slice applied the
+      // quiet move locally.
       if (movingPiece && fromPos) {
         sendChessMove({
           pieceId: movingPiece.id,

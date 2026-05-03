@@ -1,20 +1,35 @@
 /**
- * Chess wire schemas — alpha.
+ * Chess wire schemas.
  *
  * Why this file exists: chess phase actions cross the P2P wire as their
  * own envelope shape (separate from `GameCommandEnvelope` for cards),
- * because the chess pipeline (`applyChessCommand`) is independent of
- * the cards pipeline (`applyGameCommand`). See session-2 grilling Q1/Q4.
+ * because the chess pipeline is symmetric (Plan B) and independent of
+ * the cards pipeline (`applyGameCommand`, host-auth). See session-2
+ * grilling Q1/Q4 for the original split.
  *
- * Alpha surface (Q2): only `chess_move`. Concede / draw / mine placement
- * are deferred. When a second command type lands, refactor `command` to a
- * `z.discriminatedUnion('type', [...])` — until then a single schema keeps
- * the surface honest about what actually crosses the wire.
+ * Surface today (post C-Chess.8):
+ *   - `chess_move`: quiet move (no capture). Both peers apply via
+ *     `executeMove` independently.
+ *   - `chess_attack`: instant-kill capture only (attacker is pawn/king
+ *     OR defender is pawn — see `isChessAttackInstantKill` below).
+ *     Receiver runs `startAttackAnimation` with isInstantKill=true and
+ *     the existing `completeAttackAnimation -> executeInstantKill`
+ *     chain handles the apply. Non-instant captures stay blocked at the
+ *     UI layer (toast in `useChessBoardInteractions`) until the
+ *     chess<->poker phase sync lands as a separate workstream.
  *
- * State hash policy (Q3): `prevStateHash` is the COMBINED hash of
+ * Future surface (deferred): `chess_concede`, `chess_draw_offer`,
+ * `chess_draw_accept`, `chess_mine_placement`. Each adds a member to
+ * the discriminated union — receiver's exhaustive switch will break
+ * the typecheck if a case is forgotten, which is the entire point of
+ * keeping `ChessCommandSchema` discriminated rather than flag-bagged.
+ *
+ * State hash policy: `prevStateHash` is the COMBINED hash of
  * `boardState` + `gameState`, computed by `computeChessStateHash`
- * (C-Chess.5). Defense in depth at chess<->poker transitions: a
- * client-side desync in either slice blocks the next chess move.
+ * (deferred — see C-Chess.5). Defense in depth at chess<->poker
+ * transitions: a client-side desync in either slice blocks the next
+ * chess move. Today the receiver accepts any non-empty string for the
+ * placeholder.
  *
  * Board dimensions are re-declared here at the trust boundary
  * (BOARD_ROWS=7, BOARD_COLS=5 in client/types/ChessTypes.ts). If the
@@ -48,6 +63,15 @@ export type WireChessBoardPosition = z.infer<typeof ChessBoardPositionSchema>;
  * (via the seeded `SeededIdGen`). The 128-char cap is a guardrail against
  * a malformed peer flooding the buffer; real ids are UUID-shaped (~36
  * chars) but staying lenient lets debug tooling pass through.
+ *
+ * NOTE: cross-field refinements (`from !== to`, `pieceId !== defenderId`)
+ * live on `ChessCommandSchema` below, NOT on the per-variant object
+ * schemas. Reason: zod v3's `z.discriminatedUnion` requires raw
+ * `ZodObject` members and rejects `ZodEffects` (the type returned by
+ * `.refine`). Centralizing the refinements on the union (via
+ * `superRefine`) is functionally equivalent because every variant of
+ * the union flows through the envelope's `tryParseChessCommandEnvelope`
+ * — the only entry point on the wire boundary.
  */
 export const ChessMoveCommandSchema = z
 	.object({
@@ -56,20 +80,55 @@ export const ChessMoveCommandSchema = z
 		from: ChessBoardPositionSchema,
 		to: ChessBoardPositionSchema,
 	})
-	.strict()
-	.refine(
-		(cmd) => cmd.from.row !== cmd.to.row || cmd.from.col !== cmd.to.col,
-		{ message: 'chess_move: from and to must differ' },
-	);
+	.strict();
 
 export type ChessMoveCommand = z.infer<typeof ChessMoveCommandSchema>;
 
 /**
- * Sum type for chess commands. Single-member today; refactor to
- * `z.discriminatedUnion` when a second command (concede, draw, mine)
- * is added.
+ * Capture envelope. `defenderId` is REDUNDANT with what `getPieceAt(to)`
+ * would return on a synced board, but carrying it explicitly is
+ * defense-in-depth: the receiver verifies the wire's claim against its
+ * local roster, so a peer that tries to attack a defender id that
+ * doesn't match the piece at `to` is rejected before any state mutation.
+ *
+ * Scope: only instant-kill captures cross the wire (attacker pawn/king
+ * or defender pawn). Non-instant captures (queen vs rook etc.) require
+ * the chess<->poker phase to be wired symmetrically, which is a
+ * separate workstream. The receiver verifies the instant-kill rule
+ * via `isChessAttackInstantKill` and rejects anything that isn't.
  */
-export const ChessCommandSchema = ChessMoveCommandSchema;
+export const ChessAttackCommandSchema = z
+	.object({
+		type: z.literal('chess_attack'),
+		pieceId: z.string().min(1).max(128),
+		from: ChessBoardPositionSchema,
+		to: ChessBoardPositionSchema,
+		defenderId: z.string().min(1).max(128),
+	})
+	.strict();
+
+export type ChessAttackCommand = z.infer<typeof ChessAttackCommandSchema>;
+
+/**
+ * Sum type for chess commands. Discriminated on `type` so consumers'
+ * switch over `command.type` gets exhaustive checking from TypeScript —
+ * forgetting a new variant breaks the typecheck instead of silently
+ * dropping a category of moves.
+ *
+ * Kept as a RAW discriminated union (no `.superRefine` wrapper) so the
+ * inferred type stays a true discriminated union. Wrapping in
+ * `ZodEffects` would lose the discriminator narrowing at every consumer
+ * (`if (cmd.type === 'chess_attack') cmd.defenderId` would fail to type
+ * check). Cross-field refinements that span the variants live on
+ * `ChessCommandEnvelopeSchema` instead — every legitimate variant flows
+ * through the envelope at the wire boundary, so the validation point is
+ * unchanged.
+ */
+export const ChessCommandSchema = z.discriminatedUnion('type', [
+	ChessMoveCommandSchema,
+	ChessAttackCommandSchema,
+]);
+
 export type ChessCommand = z.infer<typeof ChessCommandSchema>;
 
 // ── Envelope ───────────────────────────────────────────────────────────────
@@ -85,7 +144,28 @@ export const ChessCommandEnvelopeSchema = z
 		prevStateHash: z.string().min(1),
 		command: ChessCommandSchema,
 	})
-	.strict();
+	.strict()
+	.superRefine((env, ctx) => {
+		// Cross-field refinements live here (NOT on the inner command
+		// schemas) so the discriminated union of `command` keeps narrowing
+		// for downstream consumers. The envelope is the wire boundary;
+		// every legitimate variant flows through here.
+		const cmd = env.command;
+		if (cmd.from.row === cmd.to.row && cmd.from.col === cmd.to.col) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: `${cmd.type}: from and to must differ`,
+				path: ['command', 'to'],
+			});
+		}
+		if (cmd.type === 'chess_attack' && cmd.pieceId === cmd.defenderId) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'chess_attack: pieceId and defenderId must differ',
+				path: ['command', 'defenderId'],
+			});
+		}
+	});
 
 export type ChessCommandEnvelope = z.infer<typeof ChessCommandEnvelopeSchema>;
 
@@ -129,4 +209,39 @@ export function deriveCanonicalSide(matchSeed: string, isHost: boolean): Canonic
 	const seedBit = firstChar & 1;
 	const hostBit = isHost ? 1 : 0;
 	return (seedBit ^ hostBit) === 0 ? 'player' : 'opponent';
+}
+
+// ── Instant-kill predicate ────────────────────────────────────────────────
+
+/**
+ * String-literal union of chess piece types accepted by the predicate.
+ * Decoupled from the client's `ChessPieceType` so this module stays in
+ * `shared/` without dragging client types. Callers adapt at the boundary
+ * (`{ attackerType: piece.type, defenderType: defender.type }`); if the
+ * client union ever drifts, TypeScript reports the mismatch at the call
+ * site instead of letting bad strings through.
+ */
+export type ChessAttackPieceKind = 'pawn' | 'knight' | 'bishop' | 'rook' | 'queen' | 'king';
+
+/**
+ * Single source of truth for the instant-kill rule. Both the sender
+ * (`useChessBoardInteractions`) and the receiver (`useP2PSync`
+ * chess_attack branch) consult this before accepting a capture: if the
+ * predicate returns false, the capture cannot cross the wire under the
+ * C-Chess.8 contract. Keeping the rule in one place guarantees the two
+ * extremes never disagree about what counts as instant-kill.
+ *
+ * Rule (mirrors `chessCombatSlice.movePiece` lines 693-695): an attack
+ * is instant-kill when the attacker is a pawn or king (Valkyrie weapon)
+ * OR the defender is a pawn (too weak to defend). Anything else needs
+ * the chess<->poker resolution phase, which is not wired yet.
+ */
+export function isChessAttackInstantKill(input: {
+	readonly attackerType: ChessAttackPieceKind;
+	readonly defenderType: ChessAttackPieceKind;
+}): boolean {
+	if (input.attackerType === 'pawn') return true;
+	if (input.attackerType === 'king') return true;
+	if (input.defenderType === 'pawn') return true;
+	return false;
 }

@@ -18,7 +18,7 @@ import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockch
 import { GAME_COMMAND_TYPES } from '../core/commands';
 import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from './p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../lib/stores/useWarbandStore';
-import { deriveCanonicalSide, tryParseChessCommandEnvelope, type ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
+import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
 import { resetChessWireSender } from '../p2p/chessWireSender';
 
 export type { GameCommandEnvelope, WireGameCommand } from './p2pEnvelope';
@@ -738,10 +738,13 @@ export function useP2PSync() {
 					// canonical board state is identical on both peers (post-3.5),
 					// so the same envelope produces the same state transition.
 					//
-					// Prelim scope (this commit): handle quiet moves only — call
-					// slice `executeMove` directly. Combat-trigger paths (hero
-					// captures → poker phase) deferred to C-Chess.8. Hash check is
-					// a stub until `computeChessStateHash` lands in C-Chess.5.
+					// Surface (post C-Chess.8):
+					//   - chess_move: quiet moves via `executeMove`.
+					//   - chess_attack: instant-kill captures only — receiver runs
+					//     `startAttackAnimation(attacker, defender, true)` and the
+					//     existing animation->completeAttackAnimation->executeInstantKill
+					//     chain handles the apply locally.
+					// Non-instant captures stay blocked at the UI layer (toast).
 					console.log('[useP2PSync] RECV chess_command', {
 						seq: (data as { seq?: unknown }).seq,
 						commandId: typeof (data as { commandId?: unknown }).commandId === 'string'
@@ -776,11 +779,6 @@ export function useP2PSync() {
 					// Symmetric P2P: monotonic-non-decreasing seq instead of strict
 					// contiguous. Each peer maintains its OWN outgoing counter; the
 					// receiver only needs replay protection (seq must not regress).
-					// commandId dedup catches exact duplicates. Strict +1 was the
-					// host-auth idiom from the cards transport — wrong shape for
-					// chess and a freeze-prone cliff if either peer's counter ever
-					// drifts (e.g., schema-rejected envelope at sender that still
-					// incremented its outgoing).
 					if (envelope.seq < lastIncomingChessSeqRef.current) {
 						reject(`seq_regressed_last_${lastIncomingChessSeqRef.current}_got_${envelope.seq}`);
 						break;
@@ -791,9 +789,7 @@ export function useP2PSync() {
 						break;
 					}
 
-					// Rate limit shares the cards/poker bucket — flooding either
-					// channel still throttles. Acceptable because chess and poker
-					// don't run concurrently within a match.
+					// Rate limit shares the cards/poker bucket.
 					const nowChess = Date.now();
 					actionTimestampsRef.current = actionTimestampsRef.current.filter(t => nowChess - t < 1000);
 					if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) {
@@ -802,13 +798,27 @@ export function useP2PSync() {
 					}
 					actionTimestampsRef.current.push(nowChess);
 
-					// Resolve piece + apply via slice. Both peers run identical canonical
-					// state, so `from` resolves to the same piece on each side.
+					// Combat store access pattern (D4 of the typescript-senior review —
+					// known debt; preserved here to avoid circular imports). Inline
+					// type extended with `startAttackAnimation` + `pendingAttackAnimation`
+					// for the chess_attack branch, plus piece `type` for the
+					// instant-kill predicate.
+					interface RemotePieceShape {
+						readonly id: string;
+						readonly type: ChessAttackPieceKind;
+						readonly position: { row: number; col: number };
+						readonly owner: 'player' | 'opponent';
+					}
 					const combatStore = (globalThis as Record<string, unknown>).__ragnarokCombatStore as
 						| {
 								getState: () => {
-									boardState?: { pieces?: Array<{ id: string; position: { row: number; col: number }; owner: 'player' | 'opponent' }>; currentTurn?: 'player' | 'opponent' };
+									boardState?: {
+										pieces?: ReadonlyArray<RemotePieceShape>;
+										currentTurn?: 'player' | 'opponent';
+									};
+									pendingAttackAnimation?: unknown;
 									executeMove?: (from: { row: number; col: number }, to: { row: number; col: number }) => void;
+									startAttackAnimation?: (attacker: RemotePieceShape, defender: RemotePieceShape, isInstantKill: boolean) => void;
 								};
 						  }
 						| undefined;
@@ -818,50 +828,107 @@ export function useP2PSync() {
 					}
 					const cs = combatStore.getState();
 					const pieces = cs.boardState?.pieces ?? [];
-					const piece = pieces.find(p => p.id === envelope.command.pieceId);
-					if (!piece) {
+
+					// Capture command in a const so TS preserves discriminated-union
+					// narrowing across the branches below — accessing
+					// `envelope.command` repeatedly loses the narrow because TS
+					// treats property reads on objects as pessimistic.
+					const cmd = envelope.command;
+
+					// Common: locate attacker piece and verify position.
+					const attacker = pieces.find(p => p.id === cmd.pieceId);
+					if (!attacker) {
 						// Divergence diagnostic — dump local roster so we can see
 						// what id/owner/position set the receiver has versus what
-						// the sender claimed. Keeps the rejection path cheap (no
-						// stringify of full piece objects) but enough to tell
-						// "missing piece because removed locally" from "id never
-						// existed" from "wrong namespace counter".
-						console.warn('[useP2PSync] chess piece_not_found roster dump', {
-							expectedId: envelope.command.pieceId,
-							from: envelope.command.from,
-							to: envelope.command.to,
+						// the sender claimed.
+						console.warn('[useP2PSync] chess attacker_not_found roster dump', {
+							expectedId: cmd.pieceId,
+							commandType: cmd.type,
+							from: cmd.from,
+							to: cmd.to,
 							localPieceCount: pieces.length,
 							localIds: pieces.map(p => p.id.slice(0, 8)),
 						});
-						reject(`piece_not_found_${envelope.command.pieceId.slice(0, 8)}`);
+						reject(`attacker_not_found_${cmd.pieceId.slice(0, 8)}`);
 						break;
 					}
-					if (piece.position.row !== envelope.command.from.row || piece.position.col !== envelope.command.from.col) {
-						reject('piece_position_mismatch');
+					if (attacker.position.row !== cmd.from.row || attacker.position.col !== cmd.from.col) {
+						reject('attacker_position_mismatch');
 						break;
 					}
-					// Ownership boundary: the remote MUST be moving their own piece.
-					// `myCanonicalSide` was set at seed_reveal; if absent we fail
-					// closed (no envelope before handshake completes).
+
+					// Common: ownership boundary. Remote can only move their own
+					// pieces. `myCanonicalSide` set at seed_reveal; absent => fail
+					// closed (no envelope before handshake).
 					const mySide = useGameStore.getState().myCanonicalSide;
 					if (!mySide) {
 						reject('canonical_side_unresolved');
 						break;
 					}
-					if (piece.owner === mySide) {
+					if (attacker.owner === mySide) {
 						reject('remote_attempting_to_move_my_piece');
 						break;
 					}
-					if (cs.boardState?.currentTurn !== piece.owner) {
+					if (cs.boardState?.currentTurn !== attacker.owner) {
 						reject('not_current_turn');
 						break;
 					}
 
-					if (!cs.executeMove) {
-						reject('execute_move_unavailable');
-						break;
+					// Branch by command discriminator.
+					let transcriptAction: 'chess_move' | 'chess_attack';
+					let transcriptExtra: Record<string, unknown> = {};
+
+					if (cmd.type === 'chess_move') {
+						if (!cs.executeMove) {
+							reject('execute_move_unavailable');
+							break;
+						}
+						cs.executeMove(cmd.from, cmd.to);
+						transcriptAction = 'chess_move';
+					} else {
+						// chess_attack — instant-kill capture only.
+						const defender = pieces.find(p => p.id === cmd.defenderId);
+						if (!defender) {
+							console.warn('[useP2PSync] chess defender_not_found roster dump', {
+								expectedId: cmd.defenderId,
+								to: cmd.to,
+								localPieceCount: pieces.length,
+								localIds: pieces.map(p => p.id.slice(0, 8)),
+							});
+							reject(`defender_not_found_${cmd.defenderId.slice(0, 8)}`);
+							break;
+						}
+						if (defender.position.row !== cmd.to.row || defender.position.col !== cmd.to.col) {
+							reject('defender_position_mismatch');
+							break;
+						}
+						if (defender.owner === attacker.owner) {
+							reject('cannot_attack_own_piece');
+							break;
+						}
+						if (!isChessAttackInstantKill({ attackerType: attacker.type, defenderType: defender.type })) {
+							reject('non_instant_capture_not_supported_p2p');
+							break;
+						}
+						if (cs.pendingAttackAnimation) {
+							reject('attack_animation_in_progress');
+							break;
+						}
+						if (!cs.startAttackAnimation) {
+							reject('start_attack_animation_unavailable');
+							break;
+						}
+						// Apply: trigger the same animation chain the sender ran.
+						// `completeAttackAnimation` (called from the receiver's UI
+						// when its animation finishes) sees `isInstantKill=true` and
+						// invokes `executeInstantKill` locally — see chessCombatSlice.
+						cs.startAttackAnimation(attacker, defender, true);
+						transcriptAction = 'chess_attack';
+						transcriptExtra = {
+							defenderId: cmd.defenderId,
+							isInstantKill: true,
+						};
 					}
-					cs.executeMove(envelope.command.from, envelope.command.to);
 
 					// Mark applied: advance chess seq + register commandId in dedup ring.
 					lastIncomingChessSeqRef.current = envelope.seq;
@@ -872,24 +939,22 @@ export function useP2PSync() {
 						if (evicted !== undefined) seenChessCommandIdsRef.current.delete(evicted);
 					}
 
-					// Transcript: record the remote peer's move with their Hive identity
-					// so the host's merkle root (the one that goes on-chain via
-					// BlockchainSubscriber.ts:279) attributes the action to the correct
-					// arbitrable account. Falls back to a `'guest:'` sentinel when the
-					// peer never announced a Hive username — the resulting transcript
-					// is still well-formed but flagged non-arbitrable downstream.
-					recordMove('chess_move', {
-						pieceId: envelope.command.pieceId,
-						from: envelope.command.from,
-						to: envelope.command.to,
+					// Transcript: record under the remote peer's Hive identity so
+					// the host's merkle root (which goes on-chain via
+					// BlockchainSubscriber.ts:279) attributes the action correctly.
+					recordMove(transcriptAction, {
+						pieceId: cmd.pieceId,
+						from: cmd.from,
+						to: cmd.to,
 						commandId: envelope.commandId,
 						seq: envelope.seq,
+						...transcriptExtra,
 					}, remotePlayerId({
 						opponentUsername: opponentUsernameRef.current,
 						remotePeerId: usePeerStore.getState().remotePeerId,
 					}));
 
-					console.log(`[useP2PSync] chess_command APPLIED: piece=${envelope.command.pieceId.slice(0, 8)} (${envelope.command.from.row},${envelope.command.from.col})→(${envelope.command.to.row},${envelope.command.to.col})`);
+					console.log(`[useP2PSync] chess_command APPLIED: ${transcriptAction} piece=${cmd.pieceId.slice(0, 8)} (${cmd.from.row},${cmd.from.col})→(${cmd.to.row},${cmd.to.col})`);
 					break;
 				}
 
