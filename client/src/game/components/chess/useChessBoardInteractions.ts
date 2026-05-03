@@ -5,6 +5,7 @@ import { debug } from '../../config/debugConfig';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { useGameStore } from '../../stores/gameStore';
+import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
 import { sendChessAttack, sendChessMove } from '../../p2p/chessWireSender';
 import type { ChessBoardPosition } from '../../types/ChessTypes';
 import { isChessAttackInstantKill } from '../../../../../shared/p2p-wire/chess';
@@ -183,16 +184,38 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     }
 
     if (action.kind === 'move_or_attack') {
+      // Read fresh slice state (NOT React-subscribed) for the gating
+      // decisions below. React subscriptions lag the zustand slice by
+      // one render frame, so a click handler firing during that window
+      // sees stale `selectedPiece` / `validMoves` / `pendingAttackAnimation`
+      // and would happily emit a phantom envelope based on values the
+      // slice has already moved past. The post-strike + double-click
+      // freeze cascades both traced back to this race.
+      const freshSlice = useUnifiedCombatStore.getState();
+
       // Animation guard: while the previous attack's animation is still
       // running, the slice's movePiece silently no-ops (chessCombatSlice
-      // line 673-676). Without this guard a click during the animation
-      // window passes through, movePiece returns null without applying,
-      // and the wire emit below would still fire — the receiver applies
-      // a phantom move that the sender never executed. That violates the
-      // sender invariant ("envelope = mutation already applied local")
-      // and was the root cause of the post-strike freeze cascade.
-      if (pendingAttackAnimation) {
+      // line 673-676). Reading from the slice (not React) catches the
+      // case where the animation just started but React hasn't propagated
+      // the flag yet.
+      if (freshSlice.pendingAttackAnimation) {
         return;
+      }
+
+      // Stale-React-state guard: confirm that the slice agrees the
+      // selected piece is still at the position React thinks it is. If
+      // the slice already moved it (because a prior click went through
+      // synchronously and React hasn't re-rendered), the click handler
+      // is racing — abort before any further work, including movePiece
+      // which would silently no-op anyway.
+      if (selectedPiece) {
+        const slicePiece = freshSlice.boardState.pieces.find(p => p.id === selectedPiece.id);
+        if (!slicePiece) {
+          return;
+        }
+        if (slicePiece.position.row !== selectedPiece.position.row || slicePiece.position.col !== selectedPiece.position.col) {
+          return;
+        }
       }
 
       // P2P chess pre-flight gate: only INSTANT-KILL captures cross the
