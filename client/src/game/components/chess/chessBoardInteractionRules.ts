@@ -50,11 +50,18 @@ export function getCellClickAction(input: {
   readonly isAttackMove: boolean;
   readonly pieceAtPosition: ChessPiece | null;
   readonly currentTurn: ChessPlayerSide;
+  readonly mySide: ChessPlayerSide;
 }): CellClickAction {
   if (input.disabled && !input.isPlacementMode) return { kind: 'ignored' };
   if (input.isPlacementMode) return { kind: 'place_mine' };
+  // Symmetric P2P: each peer can only act on its OWN turn. SP keeps the same
+  // rule (mySide always 'player', AI takes opponent's turn via executeAITurn).
+  if (input.currentTurn !== input.mySide) return { kind: 'ignored' };
   if (input.isValidMove || input.isAttackMove) return { kind: 'move_or_attack' };
   if (!input.pieceAtPosition) return { kind: 'clear_selection' };
-  if (input.pieceAtPosition.owner !== input.currentTurn) return { kind: 'ignored' };
+  // Ownership boundary: never allow selecting an opponent piece, even when
+  // currentTurn coincidentally matches. Defense-in-depth against any future
+  // turn-tracking drift.
+  if (input.pieceAtPosition.owner !== input.mySide) return { kind: 'ignored' };
   return { kind: 'select_piece', piece: input.pieceAtPosition };
 }

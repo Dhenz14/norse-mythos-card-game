@@ -773,9 +773,16 @@ export function useP2PSync() {
 						break;
 					}
 
-					const expectedChessSeq = lastIncomingChessSeqRef.current + 1;
-					if (envelope.seq !== expectedChessSeq) {
-						reject(`seq_non_contiguous_expected_${expectedChessSeq}_got_${envelope.seq}`);
+					// Symmetric P2P: monotonic-non-decreasing seq instead of strict
+					// contiguous. Each peer maintains its OWN outgoing counter; the
+					// receiver only needs replay protection (seq must not regress).
+					// commandId dedup catches exact duplicates. Strict +1 was the
+					// host-auth idiom from the cards transport — wrong shape for
+					// chess and a freeze-prone cliff if either peer's counter ever
+					// drifts (e.g., schema-rejected envelope at sender that still
+					// incremented its outgoing).
+					if (envelope.seq < lastIncomingChessSeqRef.current) {
+						reject(`seq_regressed_last_${lastIncomingChessSeqRef.current}_got_${envelope.seq}`);
 						break;
 					}
 
@@ -813,11 +820,36 @@ export function useP2PSync() {
 					const pieces = cs.boardState?.pieces ?? [];
 					const piece = pieces.find(p => p.id === envelope.command.pieceId);
 					if (!piece) {
+						// Divergence diagnostic — dump local roster so we can see
+						// what id/owner/position set the receiver has versus what
+						// the sender claimed. Keeps the rejection path cheap (no
+						// stringify of full piece objects) but enough to tell
+						// "missing piece because removed locally" from "id never
+						// existed" from "wrong namespace counter".
+						console.warn('[useP2PSync] chess piece_not_found roster dump', {
+							expectedId: envelope.command.pieceId,
+							from: envelope.command.from,
+							to: envelope.command.to,
+							localPieceCount: pieces.length,
+							localIds: pieces.map(p => p.id.slice(0, 8)),
+						});
 						reject(`piece_not_found_${envelope.command.pieceId.slice(0, 8)}`);
 						break;
 					}
 					if (piece.position.row !== envelope.command.from.row || piece.position.col !== envelope.command.from.col) {
 						reject('piece_position_mismatch');
+						break;
+					}
+					// Ownership boundary: the remote MUST be moving their own piece.
+					// `myCanonicalSide` was set at seed_reveal; if absent we fail
+					// closed (no envelope before handshake completes).
+					const mySide = useGameStore.getState().myCanonicalSide;
+					if (!mySide) {
+						reject('canonical_side_unresolved');
+						break;
+					}
+					if (piece.owner === mySide) {
+						reject('remote_attempting_to_move_my_piece');
 						break;
 					}
 					if (cs.boardState?.currentTurn !== piece.owner) {

@@ -157,6 +157,7 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
       isAttackMove,
       pieceAtPosition,
       currentTurn,
+      mySide: myCanonicalSide,
     });
 
     if (action.kind === 'ignored') return;
@@ -235,6 +236,8 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     getPieceAt,
     selectPiece,
     currentTurn,
+    selectedPiece,
+    myCanonicalSide,
     getValidMoves,
   ]);
 
