@@ -17,6 +17,7 @@ npm run lint:css  # Stylelint (runs in pre-commit)
 - **Card registry** (actual card definitions) → `client/src/game/data/cardRegistry/`
 - **Game rules** → `docs/RULEBOOK.md`
 - **On-chain protocol** → `docs/RAGNAROK_PROTOCOL_V1.md`
+- **PvP wire protocol** → `docs/PVP_WIRE_PROTOCOL.md` (transport, lifecycle, envelopes, authority model, transcript)
 - **Genesis ceremony** → `docs/GENESIS_RUNBOOK.md`
 - **Element interactions** → `docs/ElementWeaknessSystem.md`
 
