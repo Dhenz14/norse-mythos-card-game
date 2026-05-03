@@ -100,8 +100,19 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
       if (animationIdRef.current !== animationSignature) return;
       setPhase('done');
       onAnimationComplete();
-      // Clear the ref so this same animation could theoretically play again if null is passed in between
-      animationIdRef.current = null;
+      // NOTE: do NOT clear animationIdRef here. onAnimationComplete()
+      // calls completeAttackAnimation() in the slice which sets
+      // pendingAttackAnimation = null synchronously, but React doesn't
+      // propagate that change to this component's prop until the next
+      // render. If any other parent state change triggers a re-render
+      // BEFORE the prop nulls (boardState mutation, gameStatus update,
+      // window resize), this effect re-runs with `animation` still
+      // truthy. With the ref nulled here, the signature-equality guard
+      // would fail and the animation would replay -- visible as a
+      // flicker (the user-reported "parpadeo"). Leaving the ref set
+      // means the guard catches the stale-prop re-run, and the
+      // legitimate cleanup happens when the prop genuinely transitions
+      // to null via the early-return at the top of this effect.
     }, 800);
 
     return () => {
