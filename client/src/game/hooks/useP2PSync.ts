@@ -496,6 +496,12 @@ export function useP2PSync() {
 					const truncatedMatchId = matchId.slice(0, 16);
 					matchIdRef.current = truncatedMatchId;
 					useGameStore.setState({ matchId: truncatedMatchId });
+					console.log('[useP2PSync] seed_reveal RESOLVED', {
+						matchSeed: matchSeed.slice(0, 12),
+						matchId: truncatedMatchId,
+						myCanonicalSide,
+						isHost,
+					});
 
 					// Identity binding: capture opponent's Hive username
 					if (data.hiveUsername) {
@@ -725,8 +731,15 @@ export function useP2PSync() {
 					// slice `executeMove` directly. Combat-trigger paths (hero
 					// captures → poker phase) deferred to C-Chess.8. Hash check is
 					// a stub until `computeChessStateHash` lands in C-Chess.5.
+					console.log('[useP2PSync] RECV chess_command', {
+						seq: (data as { seq?: unknown }).seq,
+						commandId: typeof (data as { commandId?: unknown }).commandId === 'string'
+							? ((data as { commandId: string }).commandId).slice(0, 8)
+							: undefined,
+						isHost,
+					});
 					const reject = (cause: string): void => {
-						debug.warn(`[useP2PSync] chess_command rejected: ${cause}`, {
+						console.warn(`[useP2PSync] chess_command REJECTED: ${cause}`, {
 							seq: (data as { seq?: unknown }).seq,
 							commandId: (data as { commandId?: unknown }).commandId,
 						});
@@ -816,7 +829,7 @@ export function useP2PSync() {
 						if (evicted !== undefined) seenChessCommandIdsRef.current.delete(evicted);
 					}
 
-					debug.chess(`[useP2PSync] chess_command applied: piece=${envelope.command.pieceId.slice(0, 8)} (${envelope.command.from.row},${envelope.command.from.col})→(${envelope.command.to.row},${envelope.command.to.col})`);
+					console.log(`[useP2PSync] chess_command APPLIED: piece=${envelope.command.pieceId.slice(0, 8)} (${envelope.command.from.row},${envelope.command.from.col})→(${envelope.command.to.row},${envelope.command.to.col})`);
 					break;
 				}
 

@@ -41,16 +41,20 @@ export interface ChessMoveEmit {
  * false when no P2P session is active (silent no-op for SP).
  */
 export function sendChessMove(move: ChessMoveEmit): boolean {
-	const { matchId } = useGameStore.getState();
+	const { matchId, myCanonicalSide } = useGameStore.getState();
 	if (!matchId) {
 		// SP or pre-handshake — nothing to send.
+		console.warn('[chessWireSender] SKIP: no matchId (SP or pre-handshake)', {
+			move,
+			myCanonicalSide,
+		});
 		return false;
 	}
 
 	const send = usePeerStore.getState().send;
 	const connectionState = usePeerStore.getState().connectionState;
 	if (connectionState !== 'connected') {
-		debug.warn('[chessWireSender] not connected — dropping chess_move emit');
+		console.warn('[chessWireSender] SKIP: not connected', { connectionState });
 		return false;
 	}
 
@@ -68,6 +72,17 @@ export function sendChessMove(move: ChessMoveEmit): boolean {
 		},
 	};
 
+	// Unconditional console.log — temporary diagnostic for prelim. Will move
+	// back to debug.chess once the channel is verified active for users.
+	console.log('[chessWireSender] SEND chess_command', {
+		seq: envelope.seq,
+		commandId: envelope.commandId.slice(0, 8),
+		matchId: matchId.slice(0, 8),
+		mySide: myCanonicalSide,
+		piece: move.pieceId.slice(0, 8),
+		from: move.from,
+		to: move.to,
+	});
 	send(envelope);
 	debug.chess(`[chessWireSender] sent chess_move seq=${envelope.seq} piece=${move.pieceId.slice(0, 8)} (${move.from.row},${move.from.col})→(${move.to.row},${move.to.col})`);
 	return true;

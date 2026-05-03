@@ -308,8 +308,25 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     }
   }
 
+  // P2P diagnostic strip — only when canonical handshake has resolved.
+  // Shows mySide / current turn / connection so the user can see exactly
+  // why a move is or isn't allowed. Strictly debug; remove once Plan B
+  // smoke is stable.
+  const matchId = useGameStore(s => s.matchId);
+  const isP2P = !!matchId;
+
   return (
     <div className="chess-board-container flex flex-col items-center">
+      {isP2P && (
+        <div className="mb-2 px-3 py-1 rounded bg-slate-900/70 border border-slate-600 text-xs font-mono text-slate-200 flex gap-3 items-center">
+          <span>P2P</span>
+          <span>mySide=<b className="text-yellow-300">{myCanonicalSide}</b></span>
+          <span>turn=<b className={isMyTurn ? 'text-green-400' : 'text-red-400'}>{currentTurn}</b></span>
+          <span className={isMyTurn ? 'text-green-400 font-bold' : 'text-slate-400'}>
+            {isMyTurn ? 'TU TURNO — mueve una pieza' : 'ESPERANDO AL OPONENTE…'}
+          </span>
+        </div>
+      )}
       <div className={`chess-turn-banner chess-banner-enter ${isMyTurn ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
         <span className="chess-turn-text">
           {isMyTurn ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
