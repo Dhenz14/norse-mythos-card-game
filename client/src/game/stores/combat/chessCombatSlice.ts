@@ -5,18 +5,15 @@
  */
 
 import { StateCreator } from 'zustand';
-import { 
-  ChessPiece, 
-  ChessBoardPosition, 
-  ChessBoardState, 
+import {
+  ChessPiece,
+  ChessBoardPosition,
+  ChessBoardState,
   ChessPlayerSide,
   ChessGameStatus,
   ChessPieceType,
   ChessCollision,
   CombatResult as ChessCombatResult,
-  BOARD_ROWS,
-  BOARD_COLS,
-  PIECE_MOVEMENT_PATTERNS,
   PIECE_BASE_STATS,
   PLAYER_INITIAL_POSITIONS,
   OPPONENT_INITIAL_POSITIONS,
@@ -34,6 +31,14 @@ import {
 } from './types';
 import { debug } from '../../config/debugConfig';
 import { createSeededRng, createSeededIdGen, cryptoRng } from '../../utils/seededRng';
+import {
+  getValidMoves as pureGetValidMoves,
+  getThreateningPieces as pureGetThreateningPieces,
+  isKingInCheck as pureIsKingInCheck,
+  isCheckmate as pureIsCheckmate,
+  checkPawnPromotion as pureCheckPawnPromotion,
+  checkWinCondition as pureCheckWinCondition
+} from '@shared/protocol-core/chess';
 
 export const createChessCombatSlice: StateCreator<
   UnifiedCombatStore,
@@ -340,125 +345,9 @@ export const createChessCombatSlice: StateCreator<
     });
   },
 
-  getValidMoves: (piece: ChessPiece) => {
-    const state = get();
-    const { pieces } = state.boardState;
-    const moves: ChessBoardPosition[] = [];
-    const attacks: ChessBoardPosition[] = [];
-    
-    const pattern = PIECE_MOVEMENT_PATTERNS[piece.type];
-    if (!pattern.directions) return { moves, attacks };
-    
-    const checkPosition = (row: number, col: number): 'empty' | 'ally' | 'enemy' | 'invalid' => {
-      if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
-        return 'invalid';
-      }
-      const occupant = pieces.find(p => p.position.row === row && p.position.col === col);
-      if (!occupant) return 'empty';
-      return occupant.owner === piece.owner ? 'ally' : 'enemy';
-    };
-    
-    const wouldLeaveKingInCheck = (targetPos: ChessBoardPosition, isCapture: boolean): boolean => {
-      const simulatedPieces = pieces.map(p => {
-        if (p.id === piece.id) {
-          return { ...p, position: targetPos };
-        }
-        return p;
-      }).filter(p => {
-        if (isCapture) {
-          const targetPiece = pieces.find(tp => 
-            tp.position.row === targetPos.row && tp.position.col === targetPos.col
-          );
-          if (targetPiece && p.id === targetPiece.id) return false;
-        }
-        return true;
-      });
-      
-      return state.isKingInCheck(piece.owner, simulatedPieces);
-    };
-    
-    if (piece.type === 'pawn') {
-      const forwardDir = piece.owner === 'player' ? 1 : -1;
-      
-      const oneStep = { row: piece.position.row + forwardDir, col: piece.position.col };
-      if (checkPosition(oneStep.row, oneStep.col) === 'empty') {
-        moves.push(oneStep);
-        
-        if (!piece.hasMoved) {
-          const twoStep = { row: piece.position.row + 2 * forwardDir, col: piece.position.col };
-          if (checkPosition(twoStep.row, twoStep.col) === 'empty') {
-            moves.push(twoStep);
-          }
-        }
-      }
-      
-      const leftAttack = { row: piece.position.row + forwardDir, col: piece.position.col - 1 };
-      const rightAttack = { row: piece.position.row + forwardDir, col: piece.position.col + 1 };
-      
-      if (checkPosition(leftAttack.row, leftAttack.col) === 'enemy') {
-        attacks.push(leftAttack);
-      }
-      if (checkPosition(rightAttack.row, rightAttack.col) === 'enemy') {
-        attacks.push(rightAttack);
-      }
-    } else if (pattern.type === 'line') {
-      for (const dir of pattern.directions) {
-        let currentRow = piece.position.row + dir.row;
-        let currentCol = piece.position.col + dir.col;
-        
-        while (currentRow >= 0 && currentRow < BOARD_ROWS && currentCol >= 0 && currentCol < BOARD_COLS) {
-          const status = checkPosition(currentRow, currentCol);
-          
-          if (status === 'empty') {
-            moves.push({ row: currentRow, col: currentCol });
-          } else if (status === 'enemy') {
-            attacks.push({ row: currentRow, col: currentCol });
-            break;
-          } else {
-            break;
-          }
-          
-          currentRow += dir.row;
-          currentCol += dir.col;
-        }
-      }
-    } else {
-      for (const dir of pattern.directions) {
-        const targetRow = piece.position.row + dir.row;
-        const targetCol = piece.position.col + dir.col;
-        const status = checkPosition(targetRow, targetCol);
-        
-        if (status === 'empty') {
-          moves.push({ row: targetRow, col: targetCol });
-        } else if (status === 'enemy') {
-          attacks.push({ row: targetRow, col: targetCol });
-        }
-      }
-    }
-
-    const safeMoves: ChessBoardPosition[] = [];
-    const safeAttacks: ChessBoardPosition[] = [];
-    
-    for (const move of moves) {
-      if (!wouldLeaveKingInCheck(move, false)) {
-        safeMoves.push(move);
-      }
-    }
-    
-    for (const attack of attacks) {
-      if (!wouldLeaveKingInCheck(attack, true)) {
-        safeAttacks.push(attack);
-      }
-    }
-    
-    // Kings cannot be directly attacked — win condition is checkmate only
-    const finalAttacks = safeAttacks.filter(pos => {
-      const target = pieces.find(p => p.position.row === pos.row && p.position.col === pos.col);
-      return !target || target.type !== 'king';
-    });
-
-    return { moves: safeMoves, attacks: finalAttacks };
-  },
+  // Thin wrapper. Rule logic lives in shared/protocol-core/chess (portable,
+  // testable, no Zustand). Slice signature unchanged so consumers don't move.
+  getValidMoves: (piece: ChessPiece) => pureGetValidMoves(piece, get().boardState.pieces),
 
   getPieceAt: (position: ChessBoardPosition): ChessPiece | null => {
     const state = get();
@@ -467,90 +356,16 @@ export const createChessCombatSlice: StateCreator<
     ) || null;
   },
 
-  getThreateningPieces: (kingPosition: ChessBoardPosition, attackerSide: ChessPlayerSide, pieces?: ChessPiece[]): ChessPiece[] => {
-    const state = get();
-    const boardPieces = pieces || state.boardState.pieces;
-    const threateners: ChessPiece[] = [];
-    
-    const attackerPieces = boardPieces.filter(p => p.owner === attackerSide);
-    
-    for (const piece of attackerPieces) {
-      const pattern = PIECE_MOVEMENT_PATTERNS[piece.type];
-      if (!pattern.directions) continue;
-      
-      if (piece.type === 'pawn') {
-        const forwardDir = piece.owner === 'player' ? 1 : -1;
-        const leftAttack = { row: piece.position.row + forwardDir, col: piece.position.col - 1 };
-        const rightAttack = { row: piece.position.row + forwardDir, col: piece.position.col + 1 };
-        
-        if ((leftAttack.row === kingPosition.row && leftAttack.col === kingPosition.col) ||
-            (rightAttack.row === kingPosition.row && rightAttack.col === kingPosition.col)) {
-          threateners.push(piece);
-        }
-      } else if (pattern.type === 'line') {
-        for (const dir of pattern.directions) {
-          let currentRow = piece.position.row + dir.row;
-          let currentCol = piece.position.col + dir.col;
-          
-          while (currentRow >= 0 && currentRow < BOARD_ROWS && currentCol >= 0 && currentCol < BOARD_COLS) {
-            if (currentRow === kingPosition.row && currentCol === kingPosition.col) {
-              threateners.push(piece);
-              break;
-            }
-            const blockingPiece = boardPieces.find(p => 
-              p.position.row === currentRow && p.position.col === currentCol
-            );
-            if (blockingPiece) break;
-            
-            currentRow += dir.row;
-            currentCol += dir.col;
-          }
-        }
-      } else {
-        for (const dir of pattern.directions) {
-          const targetRow = piece.position.row + dir.row;
-          const targetCol = piece.position.col + dir.col;
-          
-          if (targetRow === kingPosition.row && targetCol === kingPosition.col) {
-            threateners.push(piece);
-            break;
-          }
-        }
-      }
-    }
-    
-    return threateners;
-  },
+  getThreateningPieces: (kingPosition: ChessBoardPosition, attackerSide: ChessPlayerSide, pieces?: ChessPiece[]): ChessPiece[] =>
+    pureGetThreateningPieces(kingPosition, attackerSide, pieces ?? get().boardState.pieces),
 
-  isKingInCheck: (side: ChessPlayerSide, pieces?: ChessPiece[]): boolean => {
-    const state = get();
-    const boardPieces = pieces || state.boardState.pieces;
-    const king = boardPieces.find(p => p.type === 'king' && p.owner === side);
-    
-    if (!king) return false;
-    
-    const enemySide = side === 'player' ? 'opponent' : 'player';
-    const threateners = state.getThreateningPieces(king.position, enemySide, boardPieces);
-    
-    return threateners.length > 0;
-  },
+  isKingInCheck: (side: ChessPlayerSide, pieces?: ChessPiece[]): boolean =>
+    pureIsKingInCheck(side, pieces ?? get().boardState.pieces),
 
   isCheckmate: (side: ChessPlayerSide): boolean => {
-    const state = get();
-    
-    if (!state.isKingInCheck(side)) return false;
-    
-    const sidePieces = state.boardState.pieces.filter(p => p.owner === side);
-    
-    for (const piece of sidePieces) {
-      const { moves, attacks } = state.getValidMoves(piece);
-      if (moves.length > 0 || attacks.length > 0) {
-        return false;
-      }
-    }
-    
-    debug.chess(`[Chess] CHECKMATE! ${side} has no legal moves while in check`);
-    return true;
+    const mate = pureIsCheckmate(side, get().boardState.pieces);
+    if (mate) debug.chess(`[Chess] CHECKMATE! ${side} has no legal moves while in check`);
+    return mate;
   },
 
   updateCheckStatus: () => {
@@ -599,12 +414,7 @@ export const createChessCombatSlice: StateCreator<
     });
   },
 
-  checkPawnPromotion: (piece: ChessPiece): boolean => {
-    if (piece.type !== 'pawn') return false;
-    if (piece.owner === 'player' && piece.position.row === BOARD_ROWS - 1) return true;
-    if (piece.owner === 'opponent' && piece.position.row === 0) return true;
-    return false;
-  },
+  checkPawnPromotion: (piece: ChessPiece): boolean => pureCheckPawnPromotion(piece),
 
   promotePawn: (pieceId: string, newType: ChessPieceType) => {
     const state = get();
@@ -794,19 +604,7 @@ export const createChessCombatSlice: StateCreator<
     state.clearExpiredMines(currentBoardState.moveCount);
   },
 
-  checkWinCondition: (): ChessGameStatus => {
-    const state = get();
-    const playerKing = state.boardState.pieces.find(
-      p => p.type === 'king' && p.owner === 'player'
-    );
-    const opponentKing = state.boardState.pieces.find(
-      p => p.type === 'king' && p.owner === 'opponent'
-    );
-
-    if (!opponentKing) return 'player_wins';
-    if (!playerKing) return 'opponent_wins';
-    return 'playing';
-  },
+  checkWinCondition: (): ChessGameStatus => pureCheckWinCondition(get().boardState.pieces),
 
   setGameStatus: (status: ChessGameStatus) => {
     const currentBoardState = get().boardState;
