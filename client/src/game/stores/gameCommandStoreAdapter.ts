@@ -2,7 +2,7 @@ import { showStatus } from '../components/ui/GameStatusBanner';
 import type { ApplyGameCommandResult, GameCommand, GameCommandEffect } from '../core/commands';
 import type { CardInstance, GameState } from '../types';
 import { debug } from '../config/debugConfig';
-import { useAudio } from '../../lib/stores/useAudio';
+import { audioEventBus } from '../audio/audioEventBus';
 import { logActivity } from './activityLogStore';
 import { useTargetingStore } from './targetingStore';
 
@@ -85,7 +85,7 @@ function applyGameCommandEffect(
 			applyCardPlayedEffect(effect);
 			return;
 		case 'play_sound':
-			useAudio.getState().playSoundEffect(effect.sound);
+			audioEventBus.emit(effect.sound);
 			return;
 		case 'show_status':
 			showStatus(effect.message, effect.level);
@@ -102,16 +102,14 @@ function applyGameCommandEffect(
 }
 
 function applyCardPlayedEffect(effect: Extract<GameCommandEffect, { readonly type: 'card_played' }>): void {
-	const audioStore = useAudio.getState();
-
 	if (effect.causedDiscovery) {
-		audioStore.playSoundEffect('discover');
+		audioEventBus.emit('discover');
 	} else if (effect.rarity === 'mythic') {
-		audioStore.playSoundEffect('legendary');
+		audioEventBus.emit('legendary');
 	} else if (effect.cardType === 'minion' && effect.keywords.includes('battlecry') && effect.battlecryType === 'damage') {
-		audioStore.playSoundEffect('damage');
+		audioEventBus.emit('damage');
 	} else {
-		audioStore.playSoundEffect('card_play');
+		audioEventBus.emit('card_play');
 	}
 
 	if (effect.cardType === 'spell') {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { toggleCardSelection, confirmMulligan, skipMulligan } from '../utils/mulliganUtils';
-import { useAudio } from '../../lib/stores/useAudio';
+import { audioEventBus } from '../audio/audioEventBus';
 import { debug } from '../config/debugConfig';
 import type { GameState } from '../types';
 
@@ -26,15 +26,12 @@ export const useMulliganStore = create<MulliganStore>()(() => ({
 	},
 
 	confirmMulligan: (gameState: GameState): GameState | null => {
-		const audioStore = useAudio.getState();
 		try {
 			if (gameState.gamePhase !== 'mulligan' || !gameState.mulligan?.active) {
 				throw new Error('Not in mulligan phase');
 			}
 			const newState = confirmMulligan(gameState);
-			if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-				audioStore.playSoundEffect('battlecry');
-			}
+			audioEventBus.emit('battlecry');
 			debug.log('Mulligan confirmed, replacing selected cards');
 			return newState;
 		} catch (error) {
@@ -44,15 +41,12 @@ export const useMulliganStore = create<MulliganStore>()(() => ({
 	},
 
 	skipMulligan: (gameState: GameState): GameState | null => {
-		const audioStore = useAudio.getState();
 		try {
 			if (gameState.gamePhase !== 'mulligan' || !gameState.mulligan?.active) {
 				throw new Error('Not in mulligan phase');
 			}
 			const newState = skipMulligan(gameState);
-			if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-				audioStore.playSoundEffect('battlecry');
-			}
+			audioEventBus.emit('battlecry');
 			debug.log('Mulligan skipped, keeping all cards');
 			return newState;
 		} catch (error) {

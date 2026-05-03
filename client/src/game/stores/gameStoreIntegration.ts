@@ -15,6 +15,7 @@
 
 import { GameEventBus } from '@/core/events/GameEventBus';
 import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
+import { initializeAudioBusSubscriber } from '@/game/subscribers/AudioBusSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
 import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
@@ -43,6 +44,7 @@ export function initializeGameStoreIntegration(): () => void {
 
   // Initialize UI subscribers
   cleanupFunctions.push(initializeAudioSubscriber());
+  cleanupFunctions.push(initializeAudioBusSubscriber());
   cleanupFunctions.push(initializeNotificationSubscriber());
   cleanupFunctions.push(initializeAnimationSubscriber());
   cleanupFunctions.push(initializeDailyQuestSubscriber());
