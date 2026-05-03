@@ -183,6 +183,18 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     }
 
     if (action.kind === 'move_or_attack') {
+      // Animation guard: while the previous attack's animation is still
+      // running, the slice's movePiece silently no-ops (chessCombatSlice
+      // line 673-676). Without this guard a click during the animation
+      // window passes through, movePiece returns null without applying,
+      // and the wire emit below would still fire — the receiver applies
+      // a phantom move that the sender never executed. That violates the
+      // sender invariant ("envelope = mutation already applied local")
+      // and was the root cause of the post-strike freeze cascade.
+      if (pendingAttackAnimation) {
+        return;
+      }
+
       // P2P chess pre-flight gate: only INSTANT-KILL captures cross the
       // wire today (C-Chess.8 scope). Non-instant captures (queen vs
       // rook etc.) require the chess<->poker phase to be wired
@@ -232,10 +244,22 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
         }
         return;
       }
+
+      // Defense-in-depth: confirm the slice actually applied the quiet
+      // move before emitting. movePiece returns null both when the move
+      // was applied successfully AND when it silently rejected (no
+      // selected piece, position not in validMoves, ambient state
+      // mismatch). Without this check we could emit a phantom envelope
+      // for a move the local store never executed — exactly the bug
+      // chain that produced the post-strike freeze before the
+      // pendingAttackAnimation guard above.
+      const movedPiece = movingPiece ? getPieceAt(position) : null;
+      const moveApplied = movedPiece !== null && movingPiece !== null && movedPiece.id === movingPiece.id;
+      if (!moveApplied) {
+        return;
+      }
+
       playSoundEffect('card_play');
-      // P2P quiet move: emit chess_move. Same invariant — movePiece
-      // returned null with no collision means the slice applied the
-      // quiet move locally.
       if (movingPiece && fromPos) {
         sendChessMove({
           pieceId: movingPiece.id,
@@ -277,6 +301,7 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     currentTurn,
     selectedPiece,
     myCanonicalSide,
+    pendingAttackAnimation,
     getValidMoves,
   ]);
 
