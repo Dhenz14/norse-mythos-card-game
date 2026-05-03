@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { useAudio } from '../../../lib/stores/useAudio';
 import { debug } from '../../config/debugConfig';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
@@ -181,6 +182,21 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     }
 
     if (action.kind === 'move_or_attack') {
+      // P2P chess: block captures until C-Chess.8 lands the wire envelope
+      // for attacks + the cross-peer combat-to-poker transition. Without
+      // them, calling movePiece() on an attack square triggers a local-only
+      // animation + state change that the remote peer never sees, leaving
+      // the two boards diverged and locking both sides out of further
+      // moves (their respective turn guards stop matching). Detected
+      // pre-call via isAttackMove so the local store is never mutated.
+      const matchId = useGameStore.getState().matchId;
+      if (matchId && isAttackMove) {
+        toast.error('Capturas aún no soportadas en multiplayer chess (C-Chess.8 pendiente)', {
+          description: 'Por ahora, jugá solo movimientos sin captura. La partida puede terminar en empate.',
+          duration: 5000,
+        });
+        return;
+      }
       // Capture the moving piece BEFORE movePiece — it clears selectedPiece
       // as part of the move, so we can't read it post-call. We need pieceId
       // and from-position for the wire envelope.
