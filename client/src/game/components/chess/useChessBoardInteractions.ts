@@ -4,6 +4,7 @@ import { debug } from '../../config/debugConfig';
 import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { useGameStore } from '../../stores/gameStore';
+import { sendChessMove } from '../../p2p/chessWireSender';
 import type { ChessBoardPosition } from '../../types/ChessTypes';
 import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
 import {
@@ -179,12 +180,29 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     }
 
     if (action.kind === 'move_or_attack') {
+      // Capture the moving piece BEFORE movePiece — it clears selectedPiece
+      // as part of the move, so we can't read it post-call. We need pieceId
+      // and from-position for the wire envelope.
+      const movingPiece = selectedPiece;
+      const fromPos = movingPiece?.position;
       const collision = movePiece(position);
       if (collision) {
         debug.chess(`Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
+        // Wire emit for attacks deferred to C-Chess.8 (combat transitions).
         return;
       }
       playSoundEffect('card_play');
+      // P2P (Plan B symmetric): emit chess_command so the remote peer can
+      // apply the same quiet move. No-ops in SP — chessWireSender checks
+      // gameStore.matchId. Attacks/captures use a different envelope path
+      // landing in C-Chess.8.
+      if (movingPiece && fromPos) {
+        sendChessMove({
+          pieceId: movingPiece.id,
+          from: fromPos,
+          to: position,
+        });
+      }
       return;
     }
 

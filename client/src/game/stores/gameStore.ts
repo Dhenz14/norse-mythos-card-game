@@ -89,6 +89,13 @@ interface GameStore {
    * on canonical state only.
    */
   myCanonicalSide: 'player' | 'opponent' | null;
+  /**
+   * P2P session matchId — derived as sha256(matchSeed + myPeerId + remotePeerId)
+   * truncated to 16 chars. Set by `useP2PSync` after seed_reveal so any other
+   * subsystem (e.g. chess wire sender) can read it without depending on
+   * useP2PSync internals. Null in non-P2P modes.
+   */
+  matchId: string | null;
   lastStateHash: string | null;
   selectedCard: CardInstance | null;
   // For tracking attack selection
@@ -174,6 +181,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   gameState: initializeGame(),
   matchSeed: null,
   myCanonicalSide: null,
+  matchId: null,
   lastStateHash: null,
   selectedCard: null,
   hoveredCard: null,
@@ -521,6 +529,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     set({
       gameState: initializeGame(),
       myCanonicalSide: null,
+      matchId: null,
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,

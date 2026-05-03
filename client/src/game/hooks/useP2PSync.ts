@@ -19,6 +19,7 @@ import { GAME_COMMAND_TYPES } from '../core/commands';
 import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from './p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../lib/stores/useWarbandStore';
 import { deriveCanonicalSide, tryParseChessCommandEnvelope, type ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
+import { resetChessWireSender } from '../p2p/chessWireSender';
 
 export type { GameCommandEnvelope, WireGameCommand } from './p2pEnvelope';
 export { canonicalQuickHash } from './p2pEnvelope';
@@ -56,10 +57,10 @@ function generateSalt(): string {
 let moveCounter = 0;
 let outgoingSeqCounter = 0;
 // Chess wire is symmetric P2P (Plan B): both peers send and apply
-// chess_command envelopes independently — no host-only routing. Counters
-// are tracked separately from cards so the two phases' seq spaces never
-// interleave.
-let outgoingChessSeqCounter = 0;
+// chess_command envelopes independently — no host-only routing. The
+// outgoing seq counter for chess lives in the dedicated `chessWireSender`
+// module so the chess UI can emit without dragging in this hook's
+// internals; it's reset on disconnect via `resetChessWireSender()` below.
 
 function recordMove(action: string, payload: Record<string, unknown>, playerId: string): void {
 	const transcript = getActiveTranscript();
@@ -176,13 +177,13 @@ export function useP2PSync() {
 			clearTranscript();
 			moveCounter = 0;
 			outgoingSeqCounter = 0;
-			outgoingChessSeqCounter = 0;
 			lastIncomingSeqRef.current = -1;
 			seenCommandIdsRef.current.clear();
 			seenCommandIdsOrderRef.current.length = 0;
 			lastIncomingChessSeqRef.current = -1;
 			seenChessCommandIdsRef.current.clear();
 			seenChessCommandIdsOrderRef.current.length = 0;
+			resetChessWireSender();
 			lastEnvelopeSentAtRef.current = 0;
 			return;
 		}
@@ -487,9 +488,14 @@ export function useP2PSync() {
 
 					seedResolvedRef.current = true;
 
-					// Session binding: derive matchId from seed + peer IDs
+					// Session binding: derive matchId from seed + peer IDs.
+					// Mirrored onto gameStore so other subsystems (chess wire
+					// sender, transcript builder) can read it without coupling
+					// to useP2PSync internals.
 					const matchId = await sha256Hash(matchSeed + myPeerId + remotePeerId);
-					matchIdRef.current = matchId.slice(0, 16);
+					const truncatedMatchId = matchId.slice(0, 16);
+					matchIdRef.current = truncatedMatchId;
+					useGameStore.setState({ matchId: truncatedMatchId });
 
 					// Identity binding: capture opponent's Hive username
 					if (data.hiveUsername) {
