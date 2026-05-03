@@ -18,7 +18,7 @@ import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockch
 import { GAME_COMMAND_TYPES } from '../core/commands';
 import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from './p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../lib/stores/useWarbandStore';
-import { deriveCanonicalSide } from '../../../../shared/p2p-wire/chess';
+import { deriveCanonicalSide, tryParseChessCommandEnvelope, type ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
 
 export type { GameCommandEnvelope, WireGameCommand } from './p2pEnvelope';
 export { canonicalQuickHash } from './p2pEnvelope';
@@ -55,6 +55,11 @@ function generateSalt(): string {
 
 let moveCounter = 0;
 let outgoingSeqCounter = 0;
+// Chess wire is symmetric P2P (Plan B): both peers send and apply
+// chess_command envelopes independently — no host-only routing. Counters
+// are tracked separately from cards so the two phases' seq spaces never
+// interleave.
+let outgoingChessSeqCounter = 0;
 
 function recordMove(action: string, payload: Record<string, unknown>, playerId: string): void {
 	const transcript = getActiveTranscript();
@@ -87,7 +92,8 @@ export type P2PMessage =
 	| { type: 'wasm_hash_check'; wasmHash: string }
 	| { type: 'hash_check'; stateHash: string; turnNumber: number }
 	| { type: 'hash_mismatch'; turnNumber: number; myHash: string }
-	| { type: 'poker_action'; playerId: string; action: string; hpCommitment?: number };
+	| { type: 'poker_action'; playerId: string; action: string; hpCommitment?: number }
+	| ChessCommandEnvelope;
 
 const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
@@ -138,6 +144,13 @@ export function useP2PSync() {
 	const seenCommandIdsRef = useRef<Set<string>>(new Set());
 	const seenCommandIdsOrderRef = useRef<string[]>([]);
 
+	// Chess-wire dedup ring + monotonic seq tracking. Independent of the
+	// cards-wire counters above so chess and poker phases don't share seq
+	// space (would otherwise look like seq gaps when phases switch).
+	const lastIncomingChessSeqRef = useRef<number>(-1);
+	const seenChessCommandIdsRef = useRef<Set<string>>(new Set());
+	const seenChessCommandIdsOrderRef = useRef<string[]>([]);
+
 	// Last envelope send timestamp — used by `sendCommandEnvelope` to enforce a
 	// short cooldown that avoids the prevStateHash race when the user clicks
 	// faster than the host's gameState sync round-trip. Reset on disconnect via
@@ -163,9 +176,13 @@ export function useP2PSync() {
 			clearTranscript();
 			moveCounter = 0;
 			outgoingSeqCounter = 0;
+			outgoingChessSeqCounter = 0;
 			lastIncomingSeqRef.current = -1;
 			seenCommandIdsRef.current.clear();
 			seenCommandIdsOrderRef.current.length = 0;
+			lastIncomingChessSeqRef.current = -1;
+			seenChessCommandIdsRef.current.clear();
+			seenChessCommandIdsOrderRef.current.length = 0;
 			lastEnvelopeSentAtRef.current = 0;
 			return;
 		}
@@ -691,6 +708,111 @@ export function useP2PSync() {
 						}
 					}
 					break;
+
+				case 'chess_command': {
+					// Plan B chess: SYMMETRIC P2P. Both peers receive, validate, and
+					// apply chess_command independently — no host-only routing. The
+					// canonical board state is identical on both peers (post-3.5),
+					// so the same envelope produces the same state transition.
+					//
+					// Prelim scope (this commit): handle quiet moves only — call
+					// slice `executeMove` directly. Combat-trigger paths (hero
+					// captures → poker phase) deferred to C-Chess.8. Hash check is
+					// a stub until `computeChessStateHash` lands in C-Chess.5.
+					const reject = (cause: string): void => {
+						debug.warn(`[useP2PSync] chess_command rejected: ${cause}`, {
+							seq: (data as { seq?: unknown }).seq,
+							commandId: (data as { commandId?: unknown }).commandId,
+						});
+						recordSessionEvent('chess_command_rejected', { cause });
+					};
+
+					const envelope: ChessCommandEnvelope | null = tryParseChessCommandEnvelope(data);
+					if (!envelope) {
+						reject('schema_invalid');
+						break;
+					}
+
+					const expectedMatchId = matchIdRef.current;
+					if (!expectedMatchId) {
+						reject('no_match_id_yet');
+						break;
+					}
+					if (envelope.matchId !== expectedMatchId) {
+						reject('match_id_mismatch');
+						break;
+					}
+
+					const expectedChessSeq = lastIncomingChessSeqRef.current + 1;
+					if (envelope.seq !== expectedChessSeq) {
+						reject(`seq_non_contiguous_expected_${expectedChessSeq}_got_${envelope.seq}`);
+						break;
+					}
+
+					if (seenChessCommandIdsRef.current.has(envelope.commandId)) {
+						reject(`duplicate_command_id_${envelope.commandId.slice(0, 8)}`);
+						break;
+					}
+
+					// Rate limit shares the cards/poker bucket — flooding either
+					// channel still throttles. Acceptable because chess and poker
+					// don't run concurrently within a match.
+					const nowChess = Date.now();
+					actionTimestampsRef.current = actionTimestampsRef.current.filter(t => nowChess - t < 1000);
+					if (actionTimestampsRef.current.length >= MAX_ACTIONS_PER_SEC) {
+						reject('rate_limit_exceeded');
+						break;
+					}
+					actionTimestampsRef.current.push(nowChess);
+
+					// Resolve piece + apply via slice. Both peers run identical canonical
+					// state, so `from` resolves to the same piece on each side.
+					const combatStore = (globalThis as Record<string, unknown>).__ragnarokCombatStore as
+						| {
+								getState: () => {
+									boardState?: { pieces?: Array<{ id: string; position: { row: number; col: number }; owner: 'player' | 'opponent' }>; currentTurn?: 'player' | 'opponent' };
+									executeMove?: (from: { row: number; col: number }, to: { row: number; col: number }) => void;
+								};
+						  }
+						| undefined;
+					if (!combatStore) {
+						reject('combat_store_unavailable');
+						break;
+					}
+					const cs = combatStore.getState();
+					const pieces = cs.boardState?.pieces ?? [];
+					const piece = pieces.find(p => p.id === envelope.command.pieceId);
+					if (!piece) {
+						reject(`piece_not_found_${envelope.command.pieceId.slice(0, 8)}`);
+						break;
+					}
+					if (piece.position.row !== envelope.command.from.row || piece.position.col !== envelope.command.from.col) {
+						reject('piece_position_mismatch');
+						break;
+					}
+					if (cs.boardState?.currentTurn !== piece.owner) {
+						reject('not_current_turn');
+						break;
+					}
+
+					if (!cs.executeMove) {
+						reject('execute_move_unavailable');
+						break;
+					}
+					cs.executeMove(envelope.command.from, envelope.command.to);
+
+					// Mark applied: advance chess seq + register commandId in dedup ring.
+					lastIncomingChessSeqRef.current = envelope.seq;
+					seenChessCommandIdsRef.current.add(envelope.commandId);
+					seenChessCommandIdsOrderRef.current.push(envelope.commandId);
+					while (seenChessCommandIdsOrderRef.current.length > SEEN_COMMAND_IDS_MAX) {
+						const evicted = seenChessCommandIdsOrderRef.current.shift();
+						if (evicted !== undefined) seenChessCommandIdsRef.current.delete(evicted);
+					}
+
+					debug.chess(`[useP2PSync] chess_command applied: piece=${envelope.command.pieceId.slice(0, 8)} (${envelope.command.from.row},${envelope.command.from.col})→(${envelope.command.to.row},${envelope.command.to.col})`);
+					break;
+				}
 
 				case 'poker_action':
 					if (isHost) {
