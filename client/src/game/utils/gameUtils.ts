@@ -1224,7 +1224,7 @@ function resolveProphecy(state: GameState, prophecy: import('../types').Prophecy
       if (bf.length < MAX_BATTLEFIELD_SIZE) {
         const kw: string[] = effect.keywords || [];
         bf.push({
-          instanceId: `prophecy-summon-${Date.now()}`,
+          instanceId: `prophecy-summon-${cryptoIdGen()}`,
           card: {
             id: 9999,
             name: effect.summonName || 'Summoned Minion',
@@ -2133,7 +2133,7 @@ function processAttackForOpponent(
     if (attacker.isFrozen) {
       return state;
     }
-    if (attacker.isParalyzed && Math.random() < 0.5) {
+    if (attacker.isParalyzed && cryptoRng() < 0.5) {
       return state;
     }
     
@@ -2478,7 +2478,7 @@ function processAttackForPlayer(
     if (attacker.isFrozen) {
       return state;
     }
-    if (attacker.isParalyzed && Math.random() < 0.5) {
+    if (attacker.isParalyzed && cryptoRng() < 0.5) {
       return state;
     }
     
