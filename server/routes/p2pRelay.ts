@@ -40,12 +40,14 @@ const MAX_PAYLOAD_BYTES = 64 * 1024; // 64 KB per frame — sane upper bound for
  * for both directions: a tampered client can't push exotic message types,
  * and the recipient's `useP2PSync` switch never receives surprises.
  *
- * Keep in sync with `P2PMessage` in `client/src/game/hooks/useP2PSync.ts`
- * and `GameCommandEnvelope.type` in `client/src/game/hooks/p2pEnvelope.ts`.
+ * Keep in sync with `P2PMessage` in `client/src/game/hooks/useP2PSync.ts`,
+ * `GameCommandEnvelope.type` in `client/src/game/hooks/p2pEnvelope.ts`, and
+ * `ChessCommandEnvelope.type` in `shared/p2p-wire/chess.ts`.
  */
 const RELAY_ALLOWED_MESSAGE_TYPES: ReadonlySet<string> = new Set([
 	'init',
 	'game_command',
+	'chess_command',
 	'gameState',
 	'opponentDisconnected',
 	'ping',
