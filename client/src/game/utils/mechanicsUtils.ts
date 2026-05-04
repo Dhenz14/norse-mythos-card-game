@@ -36,13 +36,13 @@ import { destroyCard } from './zoneUtils';
 import { dealDamage, dealDamageToAllEnemyMinions } from './effects/damageUtils';
 import { addKeyword, hasKeyword } from './cards/keywordUtils';
 import allCards from '../data/allCards';
-import { cryptoIdGen } from './seededRng';
+import { cryptoRng, cryptoIdGen } from './seededRng';
 
 function pickRandom<T>(arr: T[], count: number): T[] {
 	const pool = [...arr];
 	const result: T[] = [];
 	for (let i = 0; i < count && pool.length > 0; i++) {
-		const idx = Math.floor(Math.random() * pool.length);
+		const idx = Math.floor(cryptoRng() * pool.length);
 		result.push(pool.splice(idx, 1)[0]);
 	}
 	return result;
@@ -224,7 +224,7 @@ export const handleTradeable = (
   newGameState.players[player].deck.push(cardData);
   
   // Shuffle the deck (simplified for this example)
-  newGameState.players[player].deck.sort(() => Math.random() - 0.5);
+  newGameState.players[player].deck.sort(() => cryptoRng() - 0.5);
   
   // Draw a card (simplified implementation)
   if (newGameState.players[player].deck.length > 0 && newGameState.players[player].hand.length < MAX_HAND_SIZE) {
@@ -584,7 +584,7 @@ export const handleSecretTrigger = (
           
           // Find a random friendly minion to buff
           if (friendlyBattlefield.length > 0) {
-            const randomIndex = Math.floor(Math.random() * friendlyBattlefield.length);
+            const randomIndex = Math.floor(cryptoRng() * friendlyBattlefield.length);
             const minionToBuff = friendlyBattlefield[randomIndex];
             
             // Apply buff
@@ -837,7 +837,7 @@ export const handleRecruit = (
   
   for (let i = 0; i < recruitsToSummon; i++) {
     // Choose a random eligible minion
-    const randomIndex = Math.floor(Math.random() * eligibleMinions.length);
+    const randomIndex = Math.floor(cryptoRng() * eligibleMinions.length);
     const recruitedMinion = eligibleMinions[randomIndex];
     
     // Remove from eligibleMinions array to avoid duplicates
@@ -1010,7 +1010,7 @@ export const handleKazakusGolemDiscover = (
   // Select random 3 abilities from the pool
   const availableAbilities = abilityPool[costChoice];
   const selectedOptions: CardData[] = [];
-  const shuffledOptions = [...availableAbilities].sort(() => Math.random() - 0.5);
+  const shuffledOptions = [...availableAbilities].sort(() => cryptoRng() - 0.5);
   
   // Take the first 3 options
   for (let i = 0; i < Math.min(3, shuffledOptions.length); i++) {

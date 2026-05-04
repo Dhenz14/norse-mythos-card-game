@@ -9,6 +9,7 @@ import { create } from 'zustand';
 import { ArmySelection, ChessPieceType } from '../types/ChessTypes';
 import { useHeroDeckStore, PieceType } from './heroDeckStore';
 import { debug } from '../config/debugConfig';
+import { cryptoRng, cryptoIdGen } from '../utils/seededRng';
 
 export interface CardInstance {
   instanceId: string;
@@ -80,14 +81,14 @@ const createInitialState = (): SharedDeckState => ({
 function shuffleArray<T>(array: T[]): T[] {
   const result = [...array];
   for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(cryptoRng() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
 }
 
 function generateInstanceId(): string {
-  return `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return cryptoIdGen();
 }
 
 export const useSharedDeckStore = create<SharedDeckState & SharedDeckActions>((set, get) => ({

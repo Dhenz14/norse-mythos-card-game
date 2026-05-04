@@ -9,6 +9,7 @@
 
 import { PokerSpellCard, PokerSpellEffectType, PokerSpellTiming } from '../../types/CardTypes';
 import { PokerCard } from '../../types/PokerCombatTypes';
+import { cryptoRng } from '../seededRng';
 
 // ==================== TYPES ====================
 
@@ -217,7 +218,7 @@ const resolveFatePeek = (
     };
   }
   
-  const revealIndex = Math.floor(Math.random() * unrevealed.length);
+  const revealIndex = Math.floor(cryptoRng() * unrevealed.length);
   const cardIndex = targetCards.indexOf(unrevealed[revealIndex]);
   
   return {
@@ -253,8 +254,8 @@ const resolveHoleSwap = (
   currentState: PokerSpellState,
   context: { playerHoleCards: PokerCard[]; opponentHoleCards: PokerCard[] }
 ): SpellCastResult => {
-  const playerCardIndex = Math.floor(Math.random() * context.playerHoleCards.length);
-  const opponentCardIndex = Math.floor(Math.random() * context.opponentHoleCards.length);
+  const playerCardIndex = Math.floor(cryptoRng() * context.playerHoleCards.length);
+  const opponentCardIndex = Math.floor(cryptoRng() * context.opponentHoleCards.length);
   
   return {
     success: true,

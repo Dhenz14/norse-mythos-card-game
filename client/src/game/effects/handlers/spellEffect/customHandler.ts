@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeCustom(
   context: GameContext, 
@@ -54,13 +55,13 @@ export default function executeCustom(
         const handCards = [...context.currentPlayer.hand];
         context.currentPlayer.deck.push(...handCards);
         context.currentPlayer.hand = [];
-        context.currentPlayer.deck.sort(() => Math.random() - 0.5);
+        context.currentPlayer.deck.sort(() => cryptoRng() - 0.5);
         context.logGameEvent(`Shuffled hand into deck`);
         break;
         
       case 'discard_random':
         if (context.currentPlayer.hand.length > 0) {
-          const randomIndex = Math.floor(Math.random() * context.currentPlayer.hand.length);
+          const randomIndex = Math.floor(cryptoRng() * context.currentPlayer.hand.length);
           const discarded = context.currentPlayer.hand.splice(randomIndex, 1)[0];
           context.logGameEvent(`Discarded ${discarded.card.name}`);
         }

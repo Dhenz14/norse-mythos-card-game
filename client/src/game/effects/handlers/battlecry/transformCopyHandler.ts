@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeTransformCopy(
   context: GameContext,
@@ -52,7 +53,7 @@ export default function executeTransformCopy(
     const boardIndex = context.currentPlayer.board.indexOf(sourceOnBoard);
     
     const copiedMinion: CardInstance = {
-      instanceId: `copy-transform-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `copy-transform-${cryptoIdGen()}`,
       card: { ...target.card },
       currentHealth: keepStats ? (sourceOnBoard.currentHealth || sourceCard.health || 3) : (target.currentHealth || target.card.health),
       currentAttack: keepStats ? (sourceOnBoard.currentAttack || sourceCard.attack || 3) : (target.currentAttack || target.card.attack),

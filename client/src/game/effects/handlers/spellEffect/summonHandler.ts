@@ -10,6 +10,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeSummonSummon(
 	context: GameContext,
@@ -48,7 +49,7 @@ export default function executeSummonSummon(
 
 			const minionHealth = getHealth(cardToSummon);
 			const summonedMinion: any = {
-				instanceId: `summon-${summonCardId}-${Date.now()}-${i}`,
+				instanceId: `summon-${summonCardId}-${cryptoIdGen()}-${i}`,
 				card: cardToSummon,
 				currentHealth: minionHealth,
 				maxHealth: minionHealth,

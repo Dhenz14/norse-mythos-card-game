@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a Equip Special Weapon effect
@@ -39,7 +40,7 @@ export default function executeEquipSpecialWeapon(
     const weaponCardId = (effect as any).weaponCardId;
 
     const weaponCard: any = {
-      id: weaponCardId || `weapon-${Date.now()}`,
+      id: weaponCardId || `weapon-${cryptoIdGen()}`,
       name: sourceCard.name + ' Weapon',
       type: 'weapon',
       attack: attack,
@@ -48,7 +49,7 @@ export default function executeEquipSpecialWeapon(
     };
 
     const weaponInstance: any = {
-      instanceId: `weapon-${Date.now()}`,
+      instanceId: `weapon-${cryptoIdGen()}`,
       card: weaponCard,
       canAttack: true,
       isPlayed: true,

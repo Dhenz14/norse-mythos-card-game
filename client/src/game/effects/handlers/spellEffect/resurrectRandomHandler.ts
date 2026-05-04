@@ -8,6 +8,7 @@ import { GameState, CardInstance, GameLogEvent, MinionCardData } from '../../../
 import { SpellEffect } from '../../../types/CardTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { hasKeyword } from '../../../utils/cards/keywordUtils';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a resurrect_random spellEffect effect
@@ -29,7 +30,7 @@ export function executeResurrectRandomResurrectRandom(
 
   if (deadMinions.length === 0) {
     const logEntry: GameLogEvent = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: cryptoIdGen(),
       type: 'spell_cast',
       player: currentPlayerId,
       text: `${sourceCard.card.name} found no minions to resurrect`,
@@ -53,7 +54,7 @@ export function executeResurrectRandomResurrectRandom(
     return state;
   }
 
-  const shuffled = [...deadMinions].sort(() => Math.random() - 0.5);
+  const shuffled = [...deadMinions].sort(() => cryptoRng() - 0.5);
   const toResurrect = shuffled.slice(0, resurrectionCount);
 
   const logEntries: GameLogEvent[] = [];
@@ -75,7 +76,7 @@ export function executeResurrectRandomResurrectRandom(
     newBattlefield.push(resurrectedMinion);
 
     logEntries.push({
-      id: Math.random().toString(36).substring(2, 15),
+      id: cryptoIdGen(),
       type: 'spell_cast',
       player: currentPlayerId,
       text: `${sourceCard.card.name} resurrected ${resurrectedMinion.card.name}`,

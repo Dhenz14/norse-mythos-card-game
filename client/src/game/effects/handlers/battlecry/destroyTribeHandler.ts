@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a destroy_tribe battlecry effect
@@ -46,7 +47,7 @@ export default function executeDestroyTribe(
     
     const targetMinion = effect.requiresTarget 
       ? tribeMinions[0]
-      : tribeMinions[Math.floor(Math.random() * tribeMinions.length)];
+      : tribeMinions[Math.floor(cryptoRng() * tribeMinions.length)];
     
     const isFriendly = context.getFriendlyMinions().includes(targetMinion);
     const board = isFriendly 

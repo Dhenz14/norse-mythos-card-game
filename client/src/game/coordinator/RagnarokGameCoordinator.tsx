@@ -19,7 +19,7 @@ import { debug } from '../config/debugConfig';
 import { useWarbandStore, selectArmy, selectDeckCardIds } from '../../lib/stores/useWarbandStore';
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
-import { cryptoIdGen, createSeededIdGen } from '../utils/seededRng';
+import { createSeededIdGen, cryptoIdGen, cryptoRng } from '../utils/seededRng';
 import { useCraftingStore } from '../crafting/craftingStore';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { useCampaignGameBootstrap } from './hooks/useCampaignGameBootstrap';
@@ -689,8 +689,8 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
       return;
     }
 
-    const attacker = playerPieces[Math.floor(Math.random() * playerPieces.length)];
-    const defender = opponentPieces[Math.floor(Math.random() * opponentPieces.length)];
+    const attacker = playerPieces[Math.floor(cryptoRng() * playerPieces.length)];
+    const defender = opponentPieces[Math.floor(cryptoRng() * opponentPieces.length)];
 
     dispatchFlow({ type: 'COMBAT_TRIGGERED', pieces: { attacker, defender } });
     playSoundEffect('card_draw');

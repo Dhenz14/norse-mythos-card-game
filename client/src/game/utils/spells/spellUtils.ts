@@ -23,8 +23,7 @@ import { debug } from '../../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../constants/gameConstants';
 import { checkPetEvolutionTrigger } from '../petEvolutionTriggers';
 import { addKeyword, removeKeyword, hasKeyword } from '../cards/keywordUtils';
-import { shuffleInPlace, shuffleArray } from '../seededRng';
-import { cryptoIdGen } from '../seededRng';
+import { shuffleInPlace, shuffleArray, cryptoRng, cryptoIdGen } from '../seededRng';
 
 function getSpellEffectType(effectType: string): SpellEffectType {
   const typeMap: Record<string, SpellEffectType> = {
@@ -51,7 +50,7 @@ function queueSpellDamagePopup(spellName: string, damage: number, targetName?: s
   try {
     const addAnimation = useAnimationStore.getState().addAnimation;
     addAnimation({
-      id: `spell-damage-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `spell-damage-${cryptoIdGen()}`,
       type: 'spell_damage_popup',
       startTime: Date.now(),
       duration: 3500,
@@ -814,7 +813,7 @@ export function executeSpell(
         }
       }
       newState.gameLog.push({
-        id: `realm-shift-${Date.now()}`,
+        id: `realm-shift-${cryptoIdGen()}`,
         type: 'effect' as any,
         player: newState.currentTurn,
         text: eff.realmId === 'midgard'
@@ -831,7 +830,7 @@ export function executeSpell(
       if (!eff.resolveEffect) return state;
       const prophecies = [...(state.prophecies || [])];
       prophecies.push({
-        id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: `prophecy-${cryptoIdGen()}-${cryptoRng().toString(36).slice(2, 8)}`,
         name: eff.prophecyName || 'Prophecy',
         description: eff.prophecyDescription || '',
         turnsRemaining: eff.turnsRemaining || 3,
@@ -841,7 +840,7 @@ export function executeSpell(
       });
       const gameLog = [...(state.gameLog || [])];
       gameLog.push({
-        id: `prophecy-cast-${Date.now()}`,
+        id: `prophecy-cast-${cryptoIdGen()}`,
         type: 'effect' as any,
         player: state.currentTurn,
         text: `Prophecy inscribed: ${eff.prophecyName} — ${eff.prophecyDescription} (${eff.turnsRemaining} turns)`,
@@ -894,10 +893,10 @@ export function executeSpell(
         resultState = state;
         break;
       }
-      const source = friendly[Math.floor(Math.random() * friendly.length)];
+      const source = friendly[Math.floor(cryptoRng() * friendly.length)];
       const copy = {
         ...JSON.parse(JSON.stringify(source)),
-        id: `prophecy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id: `prophecy-${cryptoIdGen()}-${cryptoRng().toString(36).slice(2, 8)}`,
       };
       resultState = { ...state, prophecies: [...prophecies, copy] };
       break;
@@ -961,7 +960,7 @@ export function executeSpell(
         if (oppHand.length > 0) {
           const wasPaidWithBlood = (revealState as any).lastCardPaidWithBloodPrice === true;
           if (!eff.bonusEffect.condition || eff.bonusEffect.condition !== 'blood_price_paid' || wasPaidWithBlood) {
-            const pick = oppHand[Math.floor(Math.random() * oppHand.length)];
+            const pick = oppHand[Math.floor(cryptoRng() * oppHand.length)];
             const playerHand = revealState.players[casterSide].hand;
             if (playerHand.length < MAX_HAND_SIZE) {
               const copy = createCardInstance(pick.card, cryptoIdGen());
@@ -1203,7 +1202,7 @@ function executeSetHealthSpell(
         description: 'Internal effect source',
         keywords: []
       },
-      instanceId: 'source-' + Math.random().toString(36).substring(2, 10),
+      instanceId: 'source-' + cryptoRng().toString(36).substring(2, 10),
       isPlayed: true,
       attacksPerformed: 0,
       canAttack: false,
@@ -1959,7 +1958,7 @@ function executeDiscoverSpell(
 
   // Shuffle and pick
   const discoveryOptions = pool
-    .sort(() => 0.5 - Math.random())
+    .sort(() => 0.5 - cryptoRng())
     .slice(0, discoveryCount);
 
   if (discoveryOptions.length === 0) {
@@ -2220,7 +2219,7 @@ function executeQuestSpell(
 
   // Add event to game log
   newState.gameLog.push({
-    id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    id: `event_${cryptoIdGen()}`,
     type: 'quest_started' as GameLogEventType,
     turn: state.turnNumber,
     timestamp: Date.now(),
@@ -3421,7 +3420,7 @@ function executeAddCardSpell(
     // Add random cards of a type
     const validCards = allCards.filter(c => c.type === effect.addRandomType && c.collectible);
     for (let i = 0; i < count && playerHand.length < 10; i++) {
-      const randomCard = validCards[Math.floor(Math.random() * validCards.length)];
+      const randomCard = validCards[Math.floor(cryptoRng() * validCards.length)];
       if (randomCard) {
         const instance: CardInstance = {
           instanceId: uuidv4(),
@@ -3473,7 +3472,7 @@ function executeRandomDamageSpell(
   }
   
   // Pick random target
-  const target = targets[Math.floor(Math.random() * targets.length)];
+  const target = targets[Math.floor(cryptoRng() * targets.length)];
   
   if (target.type === 'hero') {
     const enemyType: 'player' | 'opponent' = currentPlayer === 'player' ? 'opponent' : 'player';
@@ -3508,7 +3507,7 @@ function executeDestroyRandomSpell(
     return state;
   }
   
-  const randomIdx = Math.floor(Math.random() * enemyBattlefield.length);
+  const randomIdx = Math.floor(cryptoRng() * enemyBattlefield.length);
   const destroyed = enemyBattlefield[randomIdx];
   const targetOwner = currentPlayer === 'player' ? 'opponent' : 'player';
   newState = destroyCardFromZone(newState, destroyed.instanceId, targetOwner);
@@ -3815,7 +3814,7 @@ function executeSummonRandomSpell(
   }
   
   // Pick a random minion
-  const randomMinion = minions[Math.floor(Math.random() * minions.length)];
+  const randomMinion = minions[Math.floor(cryptoRng() * minions.length)];
   
   // Create a card instance
   const summonedInstance: CardInstance = {
@@ -3967,7 +3966,7 @@ function executeSummonFromGraveyardSpell(
   }
   
   // Pick a random minion from graveyard
-  const randomIndex = Math.floor(Math.random() * graveyard.length);
+  const randomIndex = Math.floor(cryptoRng() * graveyard.length);
   const minionToSummon = { ...graveyard[randomIndex] };
   
   // Reset minion state
@@ -4102,7 +4101,7 @@ function executeResurrectMultipleSpell(
     }
     
     // Pick a random minion from graveyard
-    const randomIndex = Math.floor(Math.random() * graveyard.length);
+    const randomIndex = Math.floor(cryptoRng() * graveyard.length);
     const minionToResurrect = { ...graveyard[randomIndex] };
     
     // Reset minion state
@@ -4144,7 +4143,7 @@ function executeResurrectDeathrattleSpell(
   }
   
   // Pick a random minion from graveyard
-  const randomIndex = Math.floor(Math.random() * graveyard.length);
+  const randomIndex = Math.floor(cryptoRng() * graveyard.length);
   const minionToResurrect = { ...graveyard[randomIndex] };
   
   // Reset minion state
@@ -4635,7 +4634,7 @@ function executeTransformRandomSpell(
   }
   
   // Pick a random minion to transform
-  const randomIdx = Math.floor(Math.random() * opponentState.battlefield.length);
+  const randomIdx = Math.floor(cryptoRng() * opponentState.battlefield.length);
   const targetMinion = opponentState.battlefield[randomIdx];
   
   // Create a default sheep transformation
@@ -4760,7 +4759,7 @@ function executeTransformRandomInHandSpell(
   }
   
   // Pick a random card from hand
-  const randomIdx = Math.floor(Math.random() * playerState.hand.length);
+  const randomIdx = Math.floor(cryptoRng() * playerState.hand.length);
   const cardToTransform = playerState.hand[randomIdx];
   
   // Create a transformation card - use type assertion for discriminated union
@@ -4929,7 +4928,7 @@ function executeTransformCopyFromDeckSpell(
     return newState;
   }
   
-  const randomDeckCardIdx = Math.floor(Math.random() * playerState.deck.length);
+  const randomDeckCardIdx = Math.floor(cryptoRng() * playerState.deck.length);
   const deckEntry = playerState.deck[randomDeckCardIdx] as any;
   const deckCardData = deckEntry.card ? deckEntry.card : deckEntry;
   
@@ -5321,7 +5320,7 @@ function executeRandomDamageAndBuffSpell(
   
   // Deal random damage to a random enemy minion
   if (enemyState.battlefield.length > 0) {
-    const randomTarget = enemyState.battlefield[Math.floor(Math.random() * enemyState.battlefield.length)];
+    const randomTarget = enemyState.battlefield[Math.floor(cryptoRng() * enemyState.battlefield.length)];
     const damage = effect.value;
     
     if (randomTarget.currentHealth !== undefined) {
@@ -5370,7 +5369,7 @@ function executeRandomDamageWithSelfDamageSpell(
   // Deal random damage to a random enemy minion
   const enemyBattlefield = newState.players[enemyType].battlefield;
   if (enemyBattlefield.length > 0) {
-    const randomTarget = enemyBattlefield[Math.floor(Math.random() * enemyBattlefield.length)];
+    const randomTarget = enemyBattlefield[Math.floor(cryptoRng() * enemyBattlefield.length)];
 
     if (randomTarget.currentHealth !== undefined) {
       randomTarget.currentHealth -= damage;
@@ -5403,12 +5402,12 @@ function executeRandomWeaponSpell(
   const playerState = currentPlayer === 'player' ? newState.players.player : newState.players.opponent;
   
   // Create a random weapon
-  const weaponAttack = effect.attack || Math.floor(Math.random() * 5) + 1; // 1-5 attack
-  const weaponDurability = effect.durability || Math.floor(Math.random() * 3) + 1; // 1-3 durability
+  const weaponAttack = effect.attack || Math.floor(cryptoRng() * 5) + 1; // 1-5 attack
+  const weaponDurability = effect.durability || Math.floor(cryptoRng() * 3) + 1; // 1-3 durability
   
   const weaponCardData: CardData = {
-    id: Math.floor(Math.random() * 10000),
-    name: `Random ${['Battle', 'War', 'Steel', 'Frost', 'Fire'][Math.floor(Math.random() * 5)]} Axe`,
+    id: Math.floor(cryptoRng() * 10000),
+    name: `Random ${['Battle', 'War', 'Steel', 'Frost', 'Fire'][Math.floor(cryptoRng() * 5)]} Axe`,
     type: 'weapon',
     manaCost: 2,
     attack: weaponAttack,
@@ -5505,7 +5504,7 @@ function executeShuffleCardsSpell(
     const cardsOfType = allCards.filter(c => c.type === effect.cardType);
     
     for (let i = 0; i < count && cardsOfType.length > 0; i++) {
-      const randomCard = cardsOfType[Math.floor(Math.random() * cardsOfType.length)];
+      const randomCard = cardsOfType[Math.floor(cryptoRng() * cardsOfType.length)];
       const cardInstance = {
         card: randomCard,
         instanceId: uuidv4(),
@@ -5541,7 +5540,7 @@ function executeMindControlRandomSpell(
     return newState;
   }
   
-  const randomIndex = Math.floor(Math.random() * opponentState.battlefield.length);
+  const randomIndex = Math.floor(cryptoRng() * opponentState.battlefield.length);
   const stolenMinion = opponentState.battlefield[randomIndex];
   
   opponentState.battlefield = [...opponentState.battlefield.slice(0, randomIndex), ...opponentState.battlefield.slice(randomIndex + 1)];
@@ -5641,7 +5640,7 @@ function executeSummonFromHandSpell(
     return newState;
   }
   
-  const randomMinion = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
+  const randomMinion = minionsInHand[Math.floor(cryptoRng() * minionsInHand.length)];
   playerState.hand = playerState.hand.filter(c => c.instanceId !== randomMinion.instanceId);
   playerState.battlefield = [...playerState.battlefield, { ...randomMinion, canAttack: false, isSummoningSick: true }];
   
@@ -5768,7 +5767,7 @@ function executeStealCardSpell(
     return newState;
   }
 
-  const randomIndex = Math.floor(Math.random() * opponentState.hand.length);
+  const randomIndex = Math.floor(cryptoRng() * opponentState.hand.length);
   const stolenCard = opponentState.hand[randomIndex];
   
   opponentState.hand = [...opponentState.hand.slice(0, randomIndex), ...opponentState.hand.slice(randomIndex + 1)];
@@ -5951,7 +5950,7 @@ function executeResurrectSpell(
   }
   
   // Pick a random dead minion
-  const randomIndex = Math.floor(Math.random() * graveyard.length);
+  const randomIndex = Math.floor(cryptoRng() * graveyard.length);
   const minionToResurrect = graveyard[randomIndex];
   
   // Create a fresh copy with full health
@@ -6397,7 +6396,7 @@ function executeDiscardSpell(
   if (currentPlayer === 'player') {
     const hand = [...newState.players.player.hand];
     for (let i = 0; i < count && hand.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * hand.length);
+      const randomIndex = Math.floor(cryptoRng() * hand.length);
       hand.splice(randomIndex, 1);
     }
     newState.players = {
@@ -6410,7 +6409,7 @@ function executeDiscardSpell(
   } else {
     const hand = [...newState.players.opponent.hand];
     for (let i = 0; i < count && hand.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * hand.length);
+      const randomIndex = Math.floor(cryptoRng() * hand.length);
       hand.splice(randomIndex, 1);
     }
     newState.players = {
@@ -6784,7 +6783,7 @@ function executeCopyFromOpponentDeckSpell(
     const hand = currentPlayer === 'player' ? newState.players.player.hand : newState.players.opponent.hand;
     if (hand.length >= MAX_HAND_SIZE) break;
 
-    const randomIndex = Math.floor(Math.random() * opponentDeck.length);
+    const randomIndex = Math.floor(cryptoRng() * opponentDeck.length);
     const deckEntry = opponentDeck[randomIndex] as any;
     const cardData = deckEntry.card ? deckEntry.card : deckEntry;
     const copiedCard: CardInstance = {
@@ -7627,7 +7626,7 @@ function executeDiscoverAndSummonSpell(
   const condition = (effect as any).discoverCondition;
   if (condition === 'cost_8_or_more') pool = pool.filter(c => (c.manaCost || 0) >= 8);
   else if (condition === 'cost_4_or_less') pool = pool.filter(c => (c.manaCost || 0) <= 4);
-  const options = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
+  const options = pool.sort(() => 0.5 - cryptoRng()).slice(0, 3);
   if (options.length === 0) return state;
   return {
     ...state,
@@ -7716,7 +7715,7 @@ function executeRecruitSpell(state: GameState, effect: SpellEffect): GameState {
       return true;
     });
     if (eligible.length === 0) break;
-    const picked = eligible[Math.floor(Math.random() * eligible.length)];
+    const picked = eligible[Math.floor(cryptoRng() * eligible.length)];
     const cardData = (picked as any).card ? (picked as any).card : picked;
     const idx = playerState.deck.indexOf(picked);
     if (idx !== -1) playerState.deck.splice(idx, 1);
@@ -7752,7 +7751,7 @@ function executeSummonCopyFromHandSpell(state: GameState): GameState {
   if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) return state;
   const minionsInHand = playerState.hand.filter((c: CardInstance) => c.card.type === 'minion');
   if (minionsInHand.length === 0) return state;
-  const picked = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
+  const picked = minionsInHand[Math.floor(cryptoRng() * minionsInHand.length)];
   const instance: CardInstance = {
     instanceId: uuidv4(),
     card: { ...picked.card },
@@ -7776,7 +7775,7 @@ function executeSummonFromBothHandsSpell(state: GameState): GameState {
     if (playerState.battlefield.length >= MAX_BATTLEFIELD_SIZE) continue;
     const minionsInHand = playerState.hand.filter((c: CardInstance) => c.card.type === 'minion');
     if (minionsInHand.length === 0) continue;
-    const picked = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
+    const picked = minionsInHand[Math.floor(cryptoRng() * minionsInHand.length)];
     playerState.hand = playerState.hand.filter((c: CardInstance) => c.instanceId !== picked.instanceId);
     const instance: CardInstance = {
       instanceId: picked.instanceId,

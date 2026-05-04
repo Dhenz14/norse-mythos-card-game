@@ -11,6 +11,7 @@ import { CardData, CardInstance, DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { v4 as uuidv4 } from 'uuid';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a shuffle_card deathrattle effect
@@ -50,7 +51,7 @@ export default function executeShuffleCardShuffleCard(
         attacksPerformed: 0
       };
       
-      const randomIndex = Math.floor(Math.random() * (context.currentPlayer.deck.length + 1));
+      const randomIndex = Math.floor(cryptoRng() * (context.currentPlayer.deck.length + 1));
       context.currentPlayer.deck.splice(randomIndex, 0, newCardInstance as any);
       shuffledCount++;
       context.logGameEvent(`Shuffled ${cardToShuffle.name} into your deck`);
@@ -68,7 +69,7 @@ export default function executeShuffleCardShuffleCard(
           attacksPerformed: 0
         };
         
-        const randomIndex = Math.floor(Math.random() * (context.opponentPlayer.deck.length + 1));
+        const randomIndex = Math.floor(cryptoRng() * (context.opponentPlayer.deck.length + 1));
         context.opponentPlayer.deck.splice(randomIndex, 0, opponentCardInstance as any);
         context.logGameEvent(`Shuffled ${cardToShuffle.name} into opponent's deck`);
       }

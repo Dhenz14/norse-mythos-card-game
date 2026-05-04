@@ -6,6 +6,7 @@
  */
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a destroy_random spellEffect effect
@@ -29,13 +30,13 @@ export function executeDestroyRandomDestroyRandom(
   }
 
   const battlefield = [...player.battlefield];
-  const randomIndex = Math.floor(Math.random() * battlefield.length);
+  const randomIndex = Math.floor(cryptoRng() * battlefield.length);
   const targetMinion = battlefield[randomIndex];
 
   const newBattlefield = battlefield.filter(m => m.instanceId !== targetMinion.instanceId);
 
   const logEntry: GameLogEvent = {
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'spell_cast',
     player: currentPlayerId,
     text: `${sourceCard.card.name} destroyed ${targetMinion.card.name}`,

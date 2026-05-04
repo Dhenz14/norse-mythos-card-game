@@ -14,10 +14,11 @@ import { debug } from '@/game/config/debugConfig';
 import { FeatureFlags, isBattleHistoryEnabled } from '@/game/config/featureFlags';
 function generateBattleSessionId(mode: 'pvp' | 'pve' | 'practice') {
 	const ts = Date.now();
-	const rand = Math.random().toString(36).substring(2, 8);
+	const rand = cryptoRng().toString(36).substring(2, 8);
 	return { sessionId: `battle_${ts}_${rand}_${mode}`, startedAt: ts, mode };
 }
 import type { BattleHistoryEntry, BattleHistoryState } from './types';
+import { cryptoRng } from '../../utils/seededRng';
 
 interface BattleHistoryStore extends BattleHistoryState {
         // Actions

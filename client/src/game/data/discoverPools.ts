@@ -10,6 +10,7 @@ import allCards from './allCards';
 const fullCardDatabase = allCards;
 // Import helpers from discoveryHelper to avoid circular dependencies
 import { DiscoverPoolOption, hasRace, getAllDiscoverPoolOptions } from './discoveryHelper';
+import { cryptoRng } from '../utils/seededRng';
 
 // Type for the discovery pool
 export interface DiscoveryPool {
@@ -358,7 +359,7 @@ export function getRandomCardsFromPool(poolId: string,   count: number = 3): Car
    const usedIndices = new Set<number>();
   
   while (result.length < count && usedIndices.size < allCards.length) {
-            const randomIndex = Math.floor(Math.random() * allCards.length);
+            const randomIndex = Math.floor(cryptoRng() * allCards.length);
     
     if (!usedIndices.has(randomIndex)) {
               usedIndices.add(randomIndex);

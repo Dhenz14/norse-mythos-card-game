@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeAoeDamage(
   context: GameContext, 
@@ -20,7 +21,7 @@ export default function executeAoeDamage(
     const minVal = (effect as any).minValue;
     const maxVal = (effect as any).maxValue;
     const damageValue = (minVal !== undefined && maxVal !== undefined)
-      ? Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal
+      ? Math.floor(cryptoRng() * (maxVal - minVal + 1)) + minVal
       : (effect.value || 1);
     const includeHeroes = effect.includeHeroes || false;
     const includeFriendly = effect.includeFriendly || false;

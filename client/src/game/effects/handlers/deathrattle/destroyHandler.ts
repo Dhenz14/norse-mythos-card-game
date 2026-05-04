@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a destroy deathrattle effect
@@ -48,7 +49,7 @@ export default function executeDestroyDestroy(
       case 'random_enemy_minion':
         const enemies = context.getEnemyMinions();
         if (enemies.length > 0) {
-          targets = [enemies[Math.floor(Math.random() * enemies.length)]];
+          targets = [enemies[Math.floor(cryptoRng() * enemies.length)]];
         }
         break;
       case 'enemy_hero':

@@ -3,7 +3,7 @@ import { getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { createCardInstance } from './cards/cardUtils';
 import { MAX_HAND_SIZE } from '../constants/gameConstants';
-import { cryptoIdGen } from './seededRng';
+import { cryptoIdGen, cryptoRng } from './seededRng';
 
 /**
  * Draw a card from player's deck and add it to their hand
@@ -72,7 +72,7 @@ export function shuffleDeck(state: GameState, playerType: 'player' | 'opponent')
   
   // Fisher-Yates shuffle algorithm
   for (let i = player.deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(cryptoRng() * (i + 1));
     [player.deck[i], player.deck[j]] = [player.deck[j], player.deck[i]];
   }
   

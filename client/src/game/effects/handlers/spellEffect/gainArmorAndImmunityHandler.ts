@@ -6,6 +6,7 @@
  */
 import { GameState, CardInstance } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a gain_armor_and_immunity spellEffect effect
@@ -42,7 +43,7 @@ export function executeGainArmorAndImmunityGainArmorAndImmunity(
 
   newState.gameLog = newState.gameLog || [];
   newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'effect',
     player: newState.currentTurn,
     text: `${sourceCard.card.name} gained ${armorValue} armor and immunity`,

@@ -40,6 +40,7 @@ import { getCachedHandEvaluation, clearHandCache } from '../../utils/poker/handC
 import { compareHands } from '../../combat/modules/HandEvaluator';
 import { debug } from '../../config/debugConfig';
 import { applyStaminaShield, getExtraFoldPenalty } from '../../utils/poker/pokerSpellUtils';
+import { cryptoRng } from '../../utils/seededRng';
 
 // ── v1.1: Wager Keyword Utilities ──
 
@@ -1101,7 +1102,7 @@ export const createPokerCombatSlice: StateCreator<
               if (isWinner) { if (side === 'player') wagerHealPlayer += (wager.value || 0); else wagerHealOpponent += (wager.value || 0); }
               break;
             case 'showdown_coin_flip':
-              if (Math.random() < (wager.chance || 0.5)) { if (side === 'player') wagerBonusDamagePlayer += (wager.damage || 0); else wagerBonusDamageOpponent += (wager.damage || 0); }
+              if (cryptoRng() < (wager.chance || 0.5)) { if (side === 'player') wagerBonusDamagePlayer += (wager.damage || 0); else wagerBonusDamageOpponent += (wager.damage || 0); }
               break;
             case 'showdown_win_rank_damage':
               if (isWinner) { if (side === 'player') wagerBonusDamagePlayer += hand.rank; else wagerBonusDamageOpponent += hand.rank; }

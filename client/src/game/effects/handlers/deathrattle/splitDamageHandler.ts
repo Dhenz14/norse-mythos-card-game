@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a split_damage deathrattle effect
@@ -76,7 +77,7 @@ export default function executeSplitDamageSplitDamage(
       
       if (validTargets.length === 0) break;
       
-      const randomTarget = validTargets[Math.floor(Math.random() * validTargets.length)];
+      const randomTarget = validTargets[Math.floor(cryptoRng() * validTargets.length)];
       damageDistribution.set(randomTarget, (damageDistribution.get(randomTarget) || 0) + 1);
     }
     

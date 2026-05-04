@@ -5,7 +5,7 @@ import { debug } from '../../config/debugConfig';
 import allCards from '../../data/allCards';
 import { createCardInstance } from '../cards/cardUtils';
 import { destroyCard } from '../zoneUtils';
-import { cryptoIdGen } from '../seededRng';
+import { cryptoRng, cryptoIdGen } from '../seededRng';
 
 export function processSpellburst(state: GameState, spellCard: CardData): GameState {
 	const currentPlayer = state.currentTurn;
@@ -46,7 +46,7 @@ function executeSpellburstEffect(
 			if (targets.length === 0) break;
 			let remaining = totalDmg;
 			while (remaining > 0 && targets.length > 0) {
-				const idx = Math.floor(Math.random() * targets.length);
+				const idx = Math.floor(cryptoRng() * targets.length);
 				const t = targets[idx];
 				if (t.hasDivineShield) {
 					t.hasDivineShield = false;
@@ -97,7 +97,7 @@ function executeSpellburstEffect(
 			if (classSpells.length === 0) break;
 			for (let i = 0; i < count; i++) {
 				if (player.hand.length >= MAX_HAND_SIZE) break;
-				const pick = classSpells[Math.floor(Math.random() * classSpells.length)];
+				const pick = classSpells[Math.floor(cryptoRng() * classSpells.length)];
 				const inst = createCardInstance(pick, cryptoIdGen());
 				player.hand.push(inst);
 			}

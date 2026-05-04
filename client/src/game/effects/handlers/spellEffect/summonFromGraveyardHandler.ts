@@ -13,6 +13,7 @@ import { getGraveyard, getRandomGraveyardMinion } from '../../../data/cardManage
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a spell effect that summons a random minion from the graveyard
@@ -69,7 +70,7 @@ function executeSummonFromGraveyardSummonFromGraveyard(
     
     // Create a card instance for summoning
     const summonedInstance = {
-      instanceId: `graveyard-${Date.now()}`,
+      instanceId: `graveyard-${cryptoIdGen()}`,
       card: cardToSummon as any,
       currentHealth: getHealth(cardToSummon),
       canAttack: false,

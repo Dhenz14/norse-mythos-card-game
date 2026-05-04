@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeCopyLastPlayedCard(
   context: GameContext, 
@@ -66,7 +67,7 @@ export default function executeCopyLastPlayedCard(
     }
     
     const copy = {
-      instanceId: 'copy-' + Date.now() + '-' + Math.random().toString(36).substring(7),
+      instanceId: cryptoIdGen(),
       card: { ...lastPlayedCard },
       canAttack: false,
       isPlayed: false,

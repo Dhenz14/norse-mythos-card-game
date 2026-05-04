@@ -11,6 +11,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { hasKeyword } from '../../../utils/cards/keywordUtils';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeSummonDeadEinherjar(
 	context: GameContext,
@@ -42,7 +43,7 @@ export default function executeSummonDeadEinherjar(
 			const cardData = graveyardInstance.card || graveyardInstance;
 			const minionHealth = getHealth(cardData);
 			const instance: any = {
-				instanceId: `einherjar-resummon-${Date.now()}-${i}`,
+				instanceId: `einherjar-resummon-${cryptoIdGen()}-${i}`,
 				card: cardData,
 				currentHealth: minionHealth,
 				maxHealth: minionHealth,

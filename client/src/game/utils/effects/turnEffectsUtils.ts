@@ -14,6 +14,7 @@ import { debug } from '../../config/debugConfig';
 import { executeDeathrattle } from '../deathrattleUtils';
 import { removeDeadMinions } from '../zoneUtils';
 import { getCardById } from '../../data/allCards';
+import { cryptoRng } from '../seededRng';
 
 // Helper to create type-safe game log entries for effects
 function createEffectLogEntry(
@@ -229,7 +230,7 @@ function processGenericStartOfTurnEffect(
         debug.log(`[StartOfTurn] ${minion.card.name}: no friendly minions to buff`);
         break;
       }
-      const target = otherMinions[Math.floor(Math.random() * otherMinions.length)];
+      const target = otherMinions[Math.floor(cryptoRng() * otherMinions.length)];
       const bAttack = typeof effect.buffAttack === 'number' ? effect.buffAttack : (typeof effect.attackBuff === 'number' ? effect.attackBuff : 1);
       const bHealth = typeof effect.buffHealth === 'number' ? effect.buffHealth : (typeof effect.healthBuff === 'number' ? effect.healthBuff : 1);
 
@@ -282,7 +283,7 @@ function processGenericStartOfTurnEffect(
         debug.log(`[StartOfTurn] ${minion.card.name}: no enemy minions to transform`);
         break;
       }
-      const targetIdx = Math.floor(Math.random() * enemyMinions.length);
+      const targetIdx = Math.floor(cryptoRng() * enemyMinions.length);
       const targetMinion = enemyMinions[targetIdx];
       const updatedEnemyBattlefield = enemyMinions.filter((_: CardInstance, i: number) => i !== targetIdx);
 
@@ -405,7 +406,7 @@ function processFishingMasterEffect(
   currentPlayer: 'player' | 'opponent'
 ): GameState {
   // 50% chance to draw an extra card
-  const shouldDraw = Math.random() >= 0.5;
+  const shouldDraw = cryptoRng() >= 0.5;
   
   if (shouldDraw) {
     // Add a game log entry
@@ -480,7 +481,7 @@ function processClockworkAutomatonEffect(
   }
   
   // Pick a random minion from hand
-  const randomIndex = Math.floor(Math.random() * minionsInHand.length);
+  const randomIndex = Math.floor(cryptoRng() * minionsInHand.length);
   const handMinion = minionsInHand[randomIndex];
   
   // Find the indices
@@ -751,7 +752,7 @@ function processCustomEndOfTurnEffect(
       for (let i = 0; i < damageValue; i++) {
         const currentEnemies = newState.players[opponentPlayer]?.battlefield || [];
         if (currentEnemies.length === 0) break;
-        const randomIdx = Math.floor(Math.random() * currentEnemies.length);
+        const randomIdx = Math.floor(cryptoRng() * currentEnemies.length);
         const target = currentEnemies[randomIdx];
         const hp = target.currentHealth ?? (getHealth(target.card) ?? 0);
         newState.players[opponentPlayer].battlefield[randomIdx] = {

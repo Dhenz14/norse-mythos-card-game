@@ -24,6 +24,7 @@ import type {
 	RarityStats
 } from './types';
 import './packs.css';
+import { cryptoRng, cryptoIdGen } from '../../utils/seededRng';
 
 const RARITY_ORDER = ['mythic', 'epic', 'rare', 'common'] as const;
 
@@ -70,12 +71,12 @@ function openPackLocally(pack: PackType): RevealedCard[] {
 	const pick = (rarity: string) => {
 		const pool = byRarity[rarity] ?? byRarity['common'] ?? [];
 		if (pool.length === 0) return null;
-		return pool[Math.floor(Math.random() * pool.length)];
+		return pool[Math.floor(cryptoRng() * pool.length)];
 	};
 	const odds = pack.rarityOdds;
 	const totalWeight = odds.common + odds.rare + odds.epic + odds.mythic;
 	const rollRarity = () => {
-		let roll = Math.random() * totalWeight;
+		let roll = cryptoRng() * totalWeight;
 		if ((roll -= odds.mythic) < 0) return 'mythic';
 		if ((roll -= odds.epic) < 0) return 'epic';
 		if ((roll -= odds.rare) < 0) return 'rare';
@@ -285,9 +286,9 @@ export default function PacksPage() {
 			const testCards = [];
 			const pool = cardRegistry.filter(c => c.rarity && Number(c.id) >= 1000);
 			for (let i = 0; i < 5; i++) {
-				const card = pool[Math.floor(Math.random() * pool.length)];
+				const card = pool[Math.floor(cryptoRng() * pool.length)];
 				testCards.push({
-					nft_id: `test-${Date.now()}-${i}`,
+					nft_id: `test-${cryptoIdGen()}-${i}`,
 					card_id: Number(card.id),
 					rarity: (card.rarity ?? 'common').toLowerCase(),
 					name: card.name,

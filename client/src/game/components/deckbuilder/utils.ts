@@ -6,6 +6,7 @@
 
 import type { CardData } from '../../types';
 import { isStarterEntitlementCardId } from '@shared/schemas/starterEntitlement';
+import { cryptoRng } from '../../utils/seededRng';
 
 export const DECK_SIZE = 30;
 export const MAX_COPIES = 2;
@@ -192,7 +193,7 @@ export function generateAutoFillCards(
   const newCards: number[] = [];
   
   // Shuffle cards for randomness
-  const shuffled = [...validCards].sort(() => Math.random() - 0.5);
+  const shuffled = [...validCards].sort(() => cryptoRng() - 0.5);
   
   for (const card of shuffled) {
     if (newCards.length >= remaining) break;

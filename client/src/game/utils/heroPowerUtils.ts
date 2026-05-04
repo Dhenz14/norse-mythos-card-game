@@ -12,6 +12,7 @@ import { trackQuestProgress } from './quests/questProgress';
 import { debug } from '../config/debugConfig';
 import { dealDamage, addArmor } from './effects/damageUtils';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
+import { cryptoRng, cryptoIdGen } from './seededRng';
 
 // Type for animation callback function
 // Used to trigger animations when hero power is used
@@ -384,7 +385,7 @@ function executeNorseHeroPower(
       if (opponent.hand.length > 0) {
         const actualReveal = Math.min(revealCount, opponent.hand.length);
         for (let i = 0; i < actualReveal; i++) {
-          const randomIdx = Math.floor(Math.random() * opponent.hand.length);
+          const randomIdx = Math.floor(cryptoRng() * opponent.hand.length);
           (opponent.hand[randomIdx] as any).isRevealed = true;
           debug.log(`[Hero Power] Revealed: ${opponent.hand[randomIdx].card.name}`);
         }
@@ -457,7 +458,7 @@ function executeNorseHeroPower(
         debug.log('[Hero Power] No enemy minions to damage');
         return state;
       }
-      const randomIdx = Math.floor(Math.random() * opponent.battlefield.length);
+      const randomIdx = Math.floor(cryptoRng() * opponent.battlefield.length);
       const target = opponent.battlefield[randomIdx];
       if (target.currentHealth !== undefined) {
         target.currentHealth -= damage;
@@ -496,7 +497,7 @@ function executeNorseHeroPower(
       const healthValue = power.secondaryValue ?? value;
       
       if (!targetId && power.targetType === 'random_friendly' && player.battlefield.length > 0) {
-        const randomIdx = Math.floor(Math.random() * player.battlefield.length);
+        const randomIdx = Math.floor(cryptoRng() * player.battlefield.length);
         const target = player.battlefield[randomIdx];
         if (isMinion(target.card)) {
           target.card.attack = (target.card.attack ?? 0) + value;
@@ -622,7 +623,7 @@ function executeNorseHeroPower(
       }
       
       for (let i = 0; i < copyCount && opponent.hand.length > 0; i++) {
-        const randomIdx = Math.floor(Math.random() * opponent.hand.length);
+        const randomIdx = Math.floor(cryptoRng() * opponent.hand.length);
         const cardToCopy = opponent.hand[randomIdx].card;
         state = addCardToHand(state, playerType, { ...cardToCopy });
         debug.log(`[Hero Power] Copied ${cardToCopy.name} from opponent's hand`);
@@ -644,9 +645,9 @@ function executeNorseHeroPower(
       }
       
       const summonedMinion: CardInstance = {
-        instanceId: `${playerType}_summon_${Date.now()}`,
+        instanceId: `${playerType}_summon_${cryptoIdGen()}`,
         card: {
-          id: 99000 + Math.floor(Math.random() * 1000),
+          id: 99000 + Math.floor(cryptoRng() * 1000),
           name: summonData.name,
           manaCost: 1,
           attack: summonData.attack,
@@ -702,15 +703,15 @@ function executeNorseHeroPower(
         return state;
       }
       
-      const selected = availablePool[Math.floor(Math.random() * availablePool.length)];
+      const selected = availablePool[Math.floor(cryptoRng() * availablePool.length)];
       const totemData = totemDefinitions[selected] || { name: 'Totem', attack: 0, health: 2, keywords: [] };
       
       const bonusStats = power.bonusStats || { attack: 0, health: 0 };
       
       const totem: CardInstance = {
-        instanceId: `${playerType}_totem_${Date.now()}`,
+        instanceId: `${playerType}_totem_${cryptoIdGen()}`,
         card: {
-          id: 99100 + Math.floor(Math.random() * 100),
+          id: 99100 + Math.floor(cryptoRng() * 100),
           name: totemData.name,
           manaCost: 1,
           attack: totemData.attack + bonusStats.attack,
@@ -756,9 +757,9 @@ function executeNorseHeroPower(
       const summonData = power.summonData;
       if (summonData) {
         const minion: CardInstance = {
-          instanceId: `${playerType}_summon_${Date.now()}`,
+          instanceId: `${playerType}_summon_${cryptoIdGen()}`,
           card: {
-            id: 99200 + Math.floor(Math.random() * 100),
+            id: 99200 + Math.floor(cryptoRng() * 100),
             name: summonData.name,
             manaCost: 1,
             attack: summonData.attack,
@@ -920,7 +921,7 @@ function executeNorseHeroPower(
       
       const weapon: EquippedWeapon = {
         card: {
-          id: 99300 + Math.floor(Math.random() * 100),
+          id: 99300 + Math.floor(cryptoRng() * 100),
           name: weaponData.name || 'Wicked Knife',
           manaCost: power.weaponCost || 1,
           attack: weaponData.attack,
@@ -1040,9 +1041,9 @@ function executeNorseHeroPower(
         const summonData = power.summonData;
         if (summonData && player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
           const minion: CardInstance = {
-            instanceId: `${playerType}_shade_${Date.now()}`,
+            instanceId: `${playerType}_shade_${cryptoIdGen()}`,
             card: {
-              id: 99400 + Math.floor(Math.random() * 100),
+              id: 99400 + Math.floor(cryptoRng() * 100),
               name: summonData.name,
               manaCost: 1,
               attack: summonData.attack,
@@ -1246,7 +1247,7 @@ function executePaladinPower(state: GameState, playerType: 'player' | 'opponent'
   
   // Create a 1/1 Silver Hand Recruit
   const recruit: CardInstance = {
-    instanceId: `${playerType}_recruit_${Date.now()}`,
+    instanceId: `${playerType}_recruit_${cryptoIdGen()}`,
     card: {
       id: 9999, // Special ID for Silver Hand Recruit
       name: 'Silver Hand Recruit',
@@ -1481,11 +1482,11 @@ function executeShamanPower(state: GameState, playerType: 'player' | 'opponent')
   }
   
   // Randomly select one of the available totems
-  const selectedTotem = availableTotems[Math.floor(Math.random() * availableTotems.length)];
+  const selectedTotem = availableTotems[Math.floor(cryptoRng() * availableTotems.length)];
   
   // Create a totem instance
   const totem: CardInstance = {
-    instanceId: `${playerType}_totem_${Date.now()}`,
+    instanceId: `${playerType}_totem_${cryptoIdGen()}`,
     card: selectedTotem,
     currentHealth: getHealth(selectedTotem) || 1,
     canAttack: false, // Cannot attack on the turn it's summoned

@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeSummonCopyFromDeck(
   context: GameContext, 
@@ -46,11 +47,11 @@ export default function executeSummonCopyFromDeck(
         break;
       }
       
-      const randomIndex = Math.floor(Math.random() * minionsInDeck.length);
+      const randomIndex = Math.floor(cryptoRng() * minionsInDeck.length);
       const selectedMinion = minionsInDeck[randomIndex];
       
       const copyInstance: any = {
-        instanceId: `copy-${Date.now()}-${i}`,
+        instanceId: `copy-${cryptoIdGen()}-${i}`,
         card: { ...selectedMinion.card },
         canAttack: false,
         isPlayed: true,

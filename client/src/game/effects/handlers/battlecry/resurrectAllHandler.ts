@@ -10,6 +10,7 @@ import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
 import { hasKeyword } from '../../../utils/cards/keywordUtils';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeResurrectAll(
   context: GameContext,
@@ -58,7 +59,7 @@ export default function executeResurrectAll(
       if (context.currentPlayer.board.length >= MAX_BATTLEFIELD_SIZE) break;
       
       const resurrectedMinion: CardInstance = {
-        instanceId: `resurrected-${deadMinion.card.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        instanceId: `resurrected-${deadMinion.card.id}-${cryptoIdGen()}`,
         card: { ...deadMinion.card },
         currentHealth: deadMinion.card.health,
         currentAttack: deadMinion.card.attack,

@@ -10,6 +10,7 @@ import { GameState, CardInstance as LegacyCardInstance, CardData, Player as Lega
 import { Card, CardInstance as EffectCardInstance, BattlecryEffect, DeathrattleEffect, SpellEffect } from '../../types/CardTypes';
 import { GameContext, Player as ContextPlayer } from '../../GameContext';
 import { debug } from '../../config/debugConfig';
+import { cryptoRng } from '../seededRng';
 
 /**
  * Type guard to check if a card ID is a number
@@ -162,7 +163,7 @@ function createHeroPowerCardInstance(player: LegacyPlayer): EffectCardInstance {
  */
 function createMockCardInstance(cardData: CardData): EffectCardInstance {
   return {
-    instanceId: `deck-${cardData.id}-${Math.random().toString(36).substr(2, 9)}`,
+    instanceId: `deck-${cardData.id}-${cryptoRng().toString(36).substr(2, 9)}`,
     card: adaptCardDataToCard(cardData)
   } as EffectCardInstance;
 }

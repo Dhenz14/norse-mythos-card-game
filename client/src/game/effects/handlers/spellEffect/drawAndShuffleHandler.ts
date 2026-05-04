@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeDrawAndShuffle(
   context: GameContext, 
@@ -28,7 +29,7 @@ export default function executeDrawAndShuffle(
     if (shuffleCardId || shuffleCardName) {
       for (let i = 0; i < shuffleCount; i++) {
         const newCard: any = {
-          instanceId: 'shuffle-' + Date.now() + '-' + i + '-' + Math.random().toString(36).substring(7),
+          instanceId: cryptoIdGen(),
           card: {
             id: shuffleCardId || 0,
             name: shuffleCardName || 'Unknown Card',
@@ -47,7 +48,7 @@ export default function executeDrawAndShuffle(
         context.currentPlayer.deck.push(newCard);
       }
       
-      context.currentPlayer.deck.sort(() => Math.random() - 0.5);
+      context.currentPlayer.deck.sort(() => cryptoRng() - 0.5);
       context.logGameEvent(`Shuffled ${shuffleCount} ${shuffleCardName || 'card(s)'} into deck`);
     }
     

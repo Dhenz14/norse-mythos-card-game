@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeEquipWeaponFromDeckGainArmor(
   context: GameContext,
@@ -38,7 +39,7 @@ export default function executeEquipWeaponFromDeckGainArmor(
     
     const equippedWeapon: CardInstance = {
       ...weapon,
-      instanceId: `equipped-${weapon.card.id}-${Date.now()}`,
+      instanceId: `equipped-${weapon.card.id}-${cryptoIdGen()}`,
       currentAttack: weapon.card.attack,
       canAttack: true,
       isPlayed: true,

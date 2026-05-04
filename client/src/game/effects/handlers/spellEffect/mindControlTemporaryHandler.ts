@@ -11,6 +11,7 @@
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a mind_control_temporary spellEffect effect
@@ -27,7 +28,7 @@ export function executeMindControlTemporaryMindControlTemporary(
 
   if (!targetId) {
     const logEntry: GameLogEvent = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: cryptoIdGen(),
       type: 'spell_cast',
       player: currentPlayerId,
       text: `${sourceCard.card.name} failed: no target`,
@@ -74,7 +75,7 @@ export function executeMindControlTemporaryMindControlTemporary(
   const newCurrentBattlefield = [...currentBattlefield, controlledMinion];
 
   const logEntry: GameLogEvent = {
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'spell_cast',
     player: currentPlayerId,
     text: `${sourceCard.card.name} took temporary control of ${minion.card.name}`,

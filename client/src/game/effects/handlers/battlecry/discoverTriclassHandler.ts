@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import allCards from '../../../data/allCards';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a discover_triclass battlecry effect
@@ -51,7 +52,7 @@ export default function executeDiscoverTriclass(
       };
     }
     
-    const shuffled = [...eligibleCards].sort(() => Math.random() - 0.5);
+    const shuffled = [...eligibleCards].sort(() => cryptoRng() - 0.5);
     const discoveryOptions = shuffled.slice(0, discoveryCount);
     
     context.logGameEvent(`Presenting ${discoveryOptions.length} triclass discovery options to player`);

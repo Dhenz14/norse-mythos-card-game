@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeEatOpponentCard(
   context: GameContext,
@@ -39,7 +40,7 @@ export default function executeEatOpponentCard(
       return { success: true, additionalData: { eatenCard: null } };
     }
     
-    const randomIndex = Math.floor(Math.random() * targetPool.length);
+    const randomIndex = Math.floor(cryptoRng() * targetPool.length);
     const eatenCard = targetPool[randomIndex];
     
     const sourceLocation = fromHand ? context.opponentPlayer.hand : context.opponentPlayer.deck;

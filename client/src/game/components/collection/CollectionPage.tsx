@@ -20,6 +20,7 @@ import SendCardModal from './SendCardModal';
 import { useCollectionMilestoneStore } from '../../stores/collectionMilestoneStore';
 import './collection.css';
 import '../styles/holoEffect.css';
+import { cryptoRng, cryptoIdGen } from '../../utils/seededRng';
 
 type FilterRarity = 'all' | 'common' | 'rare' | 'epic' | 'mythic';
 type FilterType = 'all' | 'hero' | 'minion' | 'spell' | 'weapon';
@@ -868,7 +869,7 @@ export default function CollectionPage() {
 																if (pool.length === 0) return;
 																if (!spendEitr(craftCostVal)) return;
 																getNFTBridge().emitTokenUpdate('Eitr', eitr - craftCostVal, -craftCostVal);
-																const pick = pool[Math.floor(Math.random() * pool.length)];
+																const pick = pool[Math.floor(cryptoRng() * pool.length)];
 																const pickId = typeof pick.id === 'number' ? pick.id : parseInt(pick.id as string, 10);
 																const forgedCard: OwnedCard = {
 																	id: pickId,
@@ -890,7 +891,7 @@ export default function CollectionPage() {
 																	return [forgedCard, ...prev];
 																});
 																getNFTBridge().addCard({
-																	uid: `forge-${Date.now()}-${pickId}`,
+																	uid: `forge-${cryptoIdGen()}-${pickId}`,
 																	cardId: pickId,
 																	ownerId: hiveCards.length > 0 ? hiveCards[0].ownerId : 'local-dev',
 																	edition: 'alpha',
