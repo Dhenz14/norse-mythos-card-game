@@ -20,3 +20,4 @@
 export { resolveP2P } from './resolver';
 export type { P2PHandshake } from './resolver';
 export { onP2PMatchEnd } from './lifecycle';
+export { MatchSetupP2P } from './MatchSetupP2P';

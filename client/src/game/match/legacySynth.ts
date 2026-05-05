@@ -22,9 +22,13 @@
  */
 
 import type { Difficulty } from '../campaign/campaignTypes';
-import { resolveCampaign } from './modes/campaign';
-import { resolveP2P } from './modes/p2p';
-import { resolveSolo } from './modes/solo';
+// Direct sub-file imports (NOT barrels) so this projection stays
+// node-test-safe. The mode barrels re-export React setup components
+// (e.g. MatchSetupP2P) whose transitive deps touch localStorage at
+// module load and crash vitest's node environment.
+import { resolveCampaign } from './modes/campaign/resolver';
+import { resolveP2P } from './modes/p2p/resolver';
+import { resolveSolo } from './modes/solo/resolver';
 import type { MatchContext } from './types';
 
 export interface LegacySynthInputs {
