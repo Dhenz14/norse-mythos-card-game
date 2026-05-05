@@ -6,7 +6,7 @@ import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore, getMission } from '../campaign';
 import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
-import { useLegacyMatchContextBridge } from '../match';
+import { useLegacyMatchContextBridge, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -72,12 +72,17 @@ type RagnarokGameCoordinatorProps = {
 };
 
 const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGameEnd, initialArmy = null, opponentArmy: opponentArmyProp = null }) => {
-  // Fase 3 C6 — populate useMatchStore from legacy stores. This hook is
-  // OBSERVE-ONLY in this commit: it pushes a synthesized MatchContext
-  // into the store, but the coordinator's branches still read the legacy
-  // flags below. C7 swaps the consumers; Fase 5 retires this whole bridge
+  // Fase 3 C6 — populate useMatchStore from legacy stores. The bridge
+  // synthesizes a MatchContext from campaignStore / peerStore / gameStore
+  // and pushes it into useMatchStore. Fase 5 retires this whole bridge
   // when <MatchSetupP2P/> takes over the async P2P handshake.
   useLegacyMatchContextBridge();
+  // Fase 3 C7 — coordinator's mode flags now derive from MatchContext
+  // (preferred) with legacy fallback for the brief first-render window
+  // before the bridge effect populates the store. Once Fase 5 lands, ctx
+  // is non-null by construction (set BEFORE coordinator mount) and the
+  // fallback disappears along with the bridge.
+  const ctx = useMatchStore((s) => s.activeMatch);
 
   const { playSoundEffect } = useAudio();
   const navigate = useNavigate();
@@ -87,7 +92,11 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const completeMission = useCampaignStore(s => s.completeMission);
   const clearCurrent = useCampaignStore(s => s.clearCurrent);
   const campaignData = campaignMissionId ? getMission(campaignMissionId) : null;
-  const isCampaign = !!campaignData;
+  // Derived from MatchContext when available (Fase 3 C7), legacy fallback
+  // otherwise. Once ctx exists, opponent.kind === 'scripted' is the
+  // authoritative signal — campaignData stays around because Fase 4 still
+  // needs the mission/chapter payload for cinematic + reward dispatch.
+  const isCampaign = ctx ? ctx.opponent.kind === 'scripted' : !!campaignData;
 
   const markCinematicSeen = useCampaignStore(s => s.markCinematicSeen);
   const cinematicAlreadySeen = useCampaignStore(s =>
@@ -100,7 +109,10 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   // authoritative source of board state. Local `initializeBoard` calls would
   // race against — and on the client overwrite — that authoritative state.
   // Gate every mount-time `initializeBoard` on this flag.
-  const isP2PConnected = usePeerStore(s => s.connectionState === 'connected');
+  // Fase 3 C7: ctx-derived when available, legacy reactive fallback for
+  // first render. Both subscribe so changes propagate either way.
+  const isP2PConnectedLegacy = usePeerStore(s => s.connectionState === 'connected');
+  const isP2PConnected = ctx ? ctx.opponent.kind === 'peer' : isP2PConnectedLegacy;
   const effectiveInitialArmy: ArmySelectionType | null = initialArmy ?? warbandArmy;
   /*
     Round-level FSM (G4). The single source of truth for which phase
