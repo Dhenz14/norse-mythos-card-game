@@ -15,8 +15,56 @@ function trimGlobals(...sources) {
 	return merged;
 }
 
+// ─── Layer contract ───────────────────────────────────────────────────────────
+// game/stores/ and game/core/ are pure logic — they cannot reach into the UI
+// layer (components/). UI feedback must flow through GameEventBus so the visual
+// widget can be swapped without touching game logic (e.g. future LOL-style banners).
+//
+// shared/ is the portable protocol-core layer: it must stay free of any
+// client/-only imports so the rule predicates can be reused by P2P validators
+// and a future server-side checker.
+// ─────────────────────────────────────────────────────────────────────────────
+const layerContractRules = [
+	{
+		files: [
+			'client/src/game/stores/**/*.{ts,tsx}',
+			'client/src/game/core/**/*.{ts,tsx}',
+		],
+		rules: {
+			'no-restricted-imports': ['error', {
+				patterns: [
+					{
+						group: ['**/components/**', '@/game/components/**'],
+						message:
+							'game/stores and game/core cannot import from components/. ' +
+							'For UI feedback emit GameEventBus.emitNotification() — ' +
+							'the NotificationSubscriber routes it to the active banner.',
+					},
+				],
+			}],
+		},
+	},
+	{
+		files: ['shared/**/*.{ts,tsx}'],
+		rules: {
+			'no-restricted-imports': ['error', {
+				patterns: [
+					{
+						group: ['@/*', '@/**', '**/client/**'],
+						message:
+							'shared/ cannot import from client/ — it must stay portable for ' +
+							'P2P / server-side consumers. Move the type or constant into ' +
+							'shared/protocol-core/ and import it from there.',
+					},
+				],
+			}],
+		},
+	},
+];
+
 export default [
 	js.configs.recommended,
+	...layerContractRules,
 	{
 		ignores: [
 			'node_modules/**',

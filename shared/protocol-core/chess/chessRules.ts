@@ -1,39 +1,38 @@
 /**
  * chessRules.ts — pure rule predicates for the chess phase.
  *
- * These functions take a board snapshot (`pieces: ChessPiece[]`) and return
- * a derived value. They contain no Zustand `get()` access, no `set()`, no
- * cross-slice calls, no I/O, no Math.random / Date.now. Identical inputs
- * always yield identical outputs — safe to call from any context (the
- * Zustand slice, the P2P wire receiver, a future server-side validator).
+ * These functions take a board snapshot (`pieces: ChessProtocolPiece[]`)
+ * and return a derived value. They contain no Zustand `get()` access, no
+ * `set()`, no cross-slice calls, no I/O, no Math.random / Date.now.
+ * Identical inputs always yield identical outputs — safe to call from any
+ * context (the Zustand slice, the P2P wire receiver, a future server-side
+ * validator).
  *
  * SCOPE C.fase1 of the layer-separation plan. The slice methods in
  * `chessCombatSlice` are now thin wrappers over these functions.
  *
- * Layering note: this file imports type definitions from
- * `client/src/game/types/ChessTypes` via the `@/` alias. That is a
- * pragmatic compromise for fase1 — the chess type catalogue still lives
- * client-side and moving it to shared is part of a later phase. The
- * imports here are types only (no runtime dependency on client code).
+ * The piece shape is `ChessProtocolPiece` from `./types` — the minimal
+ * id/type/owner/position/hasMoved tuple. Client `ChessPiece` extends it
+ * structurally, so callers can pass their richer model without translation.
  */
 
 import type {
-	ChessPiece,
+	ChessProtocolPiece,
 	ChessBoardPosition,
 	ChessGameStatus,
 	ChessPlayerSide
-} from '@/game/types/ChessTypes';
+} from './types';
 import {
 	BOARD_ROWS,
 	BOARD_COLS,
 	PIECE_MOVEMENT_PATTERNS
-} from '@/game/types/ChessTypes';
+} from './types';
 
 /**
  * True if the piece occupying `position` is a king (the only piece type
  * that cannot be captured directly — checkmate is the only termination).
  */
-const isKingPiece = (piece: ChessPiece): boolean => piece.type === 'king';
+const isKingPiece = (piece: ChessProtocolPiece): boolean => piece.type === 'king';
 
 /**
  * Inspect a target cell relative to a moving piece. Returns whether the
@@ -44,8 +43,8 @@ type CellStatus = 'empty' | 'ally' | 'enemy' | 'invalid';
 const inspectCell = (
 	row: number,
 	col: number,
-	mover: ChessPiece,
-	pieces: ReadonlyArray<ChessPiece>
+	mover: ChessProtocolPiece,
+	pieces: ReadonlyArray<ChessProtocolPiece>
 ): CellStatus => {
 	if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
 		return 'invalid';
@@ -60,12 +59,12 @@ const inspectCell = (
  * `kingPosition`. Used by `isKingInCheck` and the move-validation guard
  * (a move is illegal if it would expose the mover's king).
  */
-export const getThreateningPieces = (
+export const getThreateningPieces = <P extends ChessProtocolPiece>(
 	kingPosition: ChessBoardPosition,
 	attackerSide: ChessPlayerSide,
-	pieces: ReadonlyArray<ChessPiece>
-): ChessPiece[] => {
-	const threateners: ChessPiece[] = [];
+	pieces: ReadonlyArray<P>
+): P[] => {
+	const threateners: P[] = [];
 	const attackerPieces = pieces.filter(p => p.owner === attackerSide);
 
 	for (const piece of attackerPieces) {
@@ -125,7 +124,7 @@ export const getThreateningPieces = (
  */
 export const isKingInCheck = (
 	side: ChessPlayerSide,
-	pieces: ReadonlyArray<ChessPiece>
+	pieces: ReadonlyArray<ChessProtocolPiece>
 ): boolean => {
 	const king = pieces.find(p => p.type === 'king' && p.owner === side);
 	if (!king) return false;
@@ -146,8 +145,8 @@ export interface ValidMoves {
 }
 
 export const getValidMoves = (
-	piece: ChessPiece,
-	pieces: ReadonlyArray<ChessPiece>
+	piece: ChessProtocolPiece,
+	pieces: ReadonlyArray<ChessProtocolPiece>
 ): ValidMoves => {
 	const moves: ChessBoardPosition[] = [];
 	const attacks: ChessBoardPosition[] = [];
@@ -231,7 +230,7 @@ export const getValidMoves = (
  */
 export const isCheckmate = (
 	side: ChessPlayerSide,
-	pieces: ReadonlyArray<ChessPiece>
+	pieces: ReadonlyArray<ChessProtocolPiece>
 ): boolean => {
 	if (!isKingInCheck(side, pieces)) return false;
 
@@ -248,7 +247,7 @@ export const isCheckmate = (
  * and should be promoted. Caller decides which type to promote into
  * (current canon is queen — see `chessCombatSlice.promotePawn`).
  */
-export const checkPawnPromotion = (piece: ChessPiece): boolean => {
+export const checkPawnPromotion = (piece: ChessProtocolPiece): boolean => {
 	if (piece.type !== 'pawn') return false;
 	if (piece.owner === 'player' && piece.position.row === BOARD_ROWS - 1) return true;
 	if (piece.owner === 'opponent' && piece.position.row === 0) return true;
@@ -262,7 +261,7 @@ export const checkPawnPromotion = (piece: ChessPiece): boolean => {
  * function never returns conflicting outcomes.
  */
 export const checkWinCondition = (
-	pieces: ReadonlyArray<ChessPiece>
+	pieces: ReadonlyArray<ChessProtocolPiece>
 ): ChessGameStatus => {
 	const playerKing = pieces.find(p => p.type === 'king' && p.owner === 'player');
 	const opponentKing = pieces.find(p => p.type === 'king' && p.owner === 'opponent');

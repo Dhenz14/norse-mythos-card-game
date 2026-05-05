@@ -5,8 +5,15 @@
  * Chess pieces map to hero classes for combat.
  */
 
-import { HeroClass, CardData } from '../types';
+import { HeroClass } from '../types';
 import type { ElementType as ElementTypeImport } from '../utils/elements';
+import type {
+	ChessPieceType,
+	ChessPlayerSide,
+	ChessBoardPosition,
+	ChessProtocolPiece
+} from '@shared/protocol-core/chess/types';
+import type { ChessBoardSnapshot } from '@shared/protocol-core/chess/state';
 
 /**
  * Element types and utilities - imported from utils/elements for consistency
@@ -28,9 +35,23 @@ export {
 type ElementType = ElementTypeImport;
 
 /**
- * Chess piece types (10 pieces per player: 5 pawns + 5 main pieces)
+ * Protocol-level chess geometry — re-exported from shared/protocol-core so
+ * client code can keep importing them from the canonical client entry point
+ * (`@/game/types/ChessTypes`) without reaching into shared/ directly.
  */
-export type ChessPieceType = 'king' | 'queen' | 'rook' | 'bishop' | 'knight' | 'pawn';
+export {
+	BOARD_ROWS,
+	BOARD_COLS,
+	PIECE_MOVEMENT_PATTERNS
+} from '@shared/protocol-core/chess/types';
+export type {
+	ChessPieceType,
+	ChessPlayerSide,
+	ChessBoardPosition,
+	ChessGameStatus,
+	MovementPattern,
+	ChessProtocolPiece
+} from '@shared/protocol-core/chess/types';
 
 export const PIECE_DISPLAY_NAMES: Record<ChessPieceType, string> = {
 	king: 'Protogenoi',
@@ -42,24 +63,10 @@ export const PIECE_DISPLAY_NAMES: Record<ChessPieceType, string> = {
 };
 
 /**
- * Player side (similar to chess black/white)
+ * Individual chess piece on the board — extends the protocol-core piece
+ * with the gameplay model fields the rule predicates do not need.
  */
-export type ChessPlayerSide = 'player' | 'opponent';
-
-/**
- * Board dimensions - Ragnarok uses 7x5 board (3 empty rows between armies)
- */
-export const BOARD_ROWS = 7;
-export const BOARD_COLS = 5;
-
-/**
- * Individual chess piece on the board
- */
-export interface ChessPiece {
-  id: string;
-  type: ChessPieceType;
-  owner: ChessPlayerSide;
-  position: ChessBoardPosition;
+export interface ChessPiece extends ChessProtocolPiece {
   health: number;
   maxHealth: number;
   stamina: number;
@@ -69,184 +76,38 @@ export interface ChessPiece {
   deckCardIds: number[];  // User-built 30-card deck (loaded from heroDeckStore)
   fixedCards?: number[];
   hasSpells: boolean;
-  hasMoved: boolean;
   element: ElementType;
 }
 
-/**
- * Element assignments per piece type per side
- * Player and Opponent have different elements to create asymmetric matchups
- */
-export const PIECE_ELEMENTS: Record<ChessPlayerSide, Record<ChessPieceType, ElementType>> = {
-  player: {
-    king: 'holy',
-    queen: 'fire',
-    rook: 'earth',
-    bishop: 'wind',
-    knight: 'water',
-    pawn: 'neutral'
-  },
-  opponent: {
-    king: 'shadow',
-    queen: 'water',
-    rook: 'wind',
-    bishop: 'earth',
-    knight: 'fire',
-    pawn: 'neutral'
-  }
-};
 
 /**
- * Position on the chess board
+ * Chess board state — the protocol snapshot (`pieces`, `currentTurn`,
+ * `gameStatus`, `moveCount`, `inCheck`) plus a UI overlay for the active
+ * selection and the highlighted move/attack squares. The overlay is
+ * derived render state and is not part of the hash that peers reconcile.
  */
-export interface ChessBoardPosition {
-  row: number;
-  col: number;
-}
-
-/**
- * Chess board state
- */
-export interface ChessBoardState {
-  pieces: ChessPiece[];
-  currentTurn: ChessPlayerSide;
+export interface ChessBoardState extends ChessBoardSnapshot<ChessPiece> {
   selectedPiece: ChessPiece | null;
   validMoves: ChessBoardPosition[];
   attackMoves: ChessBoardPosition[];
-  gameStatus: ChessGameStatus;
-  moveCount: number;
-  inCheck: ChessPlayerSide | null; // Which side's King is in check (null = no check)
 }
 
-/**
- * Game status
- */
-export type ChessGameStatus = 'setup' | 'playing' | 'combat' | 'player_wins' | 'opponent_wins';
+export type { ChessBoardSnapshot } from '@shared/protocol-core/chess/state';
 
 /**
- * Movement pattern for a piece type
+ * Initial board setup + per-type stats — re-exported from shared/protocol-core
+ * so both peers compute identical piece ids and starting health.
+ * See `shared/protocol-core/chess/boardSetup.ts` for the canon.
  */
-export interface MovementPattern {
-  type: 'line' | 'point' | 'l_shape' | 'surround';
-  directions?: { row: number; col: number }[];
-  maxDistance?: number;
-}
-
-/**
- * Movement patterns for each piece type (from Ragnarok repo)
- */
-export const PIECE_MOVEMENT_PATTERNS: Record<ChessPieceType, MovementPattern> = {
-  queen: {
-    type: 'line',
-    directions: [
-      { row: 1, col: 0 }, { row: -1, col: 0 },
-      { row: 0, col: 1 }, { row: 0, col: -1 },
-      { row: 1, col: 1 }, { row: -1, col: -1 },
-      { row: 1, col: -1 }, { row: -1, col: 1 }
-    ]
-  },
-  king: {
-    type: 'surround',
-    directions: [
-      { row: 1, col: 0 }, { row: -1, col: 0 },
-      { row: 0, col: 1 }, { row: 0, col: -1 },
-      { row: 1, col: 1 }, { row: -1, col: -1 },
-      { row: 1, col: -1 }, { row: -1, col: 1 }
-    ],
-    maxDistance: 1
-  },
-  rook: {
-    type: 'line',
-    directions: [
-      { row: 1, col: 0 }, { row: -1, col: 0 },
-      { row: 0, col: 1 }, { row: 0, col: -1 }
-    ]
-  },
-  bishop: {
-    type: 'line',
-    directions: [
-      { row: 1, col: 1 }, { row: -1, col: -1 },
-      { row: 1, col: -1 }, { row: -1, col: 1 }
-    ]
-  },
-  knight: {
-    type: 'l_shape',
-    directions: [
-      { row: -2, col: -1 }, { row: 2, col: -1 },
-      { row: -1, col: -2 }, { row: -1, col: 2 },
-      { row: -2, col: 1 }, { row: 2, col: 1 },
-      { row: 1, col: -2 }, { row: 1, col: 2 }
-    ]
-  },
-  pawn: {
-    type: 'point',
-    directions: [{ row: 1, col: 0 }],
-    maxDistance: 1
-  }
-};
-
-/**
- * Piece stats configuration (HP, base stats per type)
- */
-export interface ChessPieceStats {
-  baseHealth: number;
-  spellSlots: number;
-  hasSpells: boolean;
-}
-
-/**
- * Base stats for each piece type (from Ragnarok GDD)
- */
-export const PIECE_BASE_STATS: Record<ChessPieceType, ChessPieceStats> = {
-  king: { baseHealth: 100, spellSlots: 0, hasSpells: false },
-  queen: { baseHealth: 100, spellSlots: 33, hasSpells: true },
-  rook: { baseHealth: 100, spellSlots: 30, hasSpells: true },
-  bishop: { baseHealth: 100, spellSlots: 30, hasSpells: true },
-  knight: { baseHealth: 100, spellSlots: 30, hasSpells: true },
-  pawn: { baseHealth: 100, spellSlots: 0, hasSpells: false }
-};
-
-/**
- * Initial board setup (row 0 = player back row, row 6 = opponent back row)
- * 3 empty rows between armies (rows 2, 3, 4) for strategic depth
- */
-export interface InitialPiecePosition {
-  type: ChessPieceType;
-  col: number;
-  row: number;
-}
-
-/**
- * Player's starting positions (back row + pawn row)
- */
-export const PLAYER_INITIAL_POSITIONS: InitialPiecePosition[] = [
-  { type: 'knight', col: 0, row: 0 },
-  { type: 'queen', col: 1, row: 0 },
-  { type: 'king', col: 2, row: 0 },
-  { type: 'bishop', col: 3, row: 0 },
-  { type: 'rook', col: 4, row: 0 },
-  { type: 'pawn', col: 0, row: 1 },
-  { type: 'pawn', col: 1, row: 1 },
-  { type: 'pawn', col: 2, row: 1 },
-  { type: 'pawn', col: 3, row: 1 },
-  { type: 'pawn', col: 4, row: 1 }
-];
-
-/**
- * Opponent's starting positions (mirrored, row 6 back, row 5 pawns)
- */
-export const OPPONENT_INITIAL_POSITIONS: InitialPiecePosition[] = [
-  { type: 'rook', col: 0, row: 6 },
-  { type: 'queen', col: 3, row: 6 },
-  { type: 'bishop', col: 1, row: 6 },
-  { type: 'king', col: 2, row: 6 },
-  { type: 'knight', col: 4, row: 6 },
-  { type: 'pawn', col: 0, row: 5 },
-  { type: 'pawn', col: 1, row: 5 },
-  { type: 'pawn', col: 2, row: 5 },
-  { type: 'pawn', col: 3, row: 5 },
-  { type: 'pawn', col: 4, row: 5 }
-];
+export {
+	PIECE_BASE_STATS,
+	PLAYER_INITIAL_POSITIONS,
+	OPPONENT_INITIAL_POSITIONS
+} from '@shared/protocol-core/chess/boardSetup';
+export type {
+	InitialPiecePosition,
+	ChessPieceStats
+} from '@shared/protocol-core/chess/boardSetup';
 
 /**
  * Army selection - player picks variants for each piece type

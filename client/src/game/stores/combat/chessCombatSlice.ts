@@ -37,8 +37,10 @@ import {
   isKingInCheck as pureIsKingInCheck,
   isCheckmate as pureIsCheckmate,
   checkPawnPromotion as pureCheckPawnPromotion,
-  checkWinCondition as pureCheckWinCondition
+  checkWinCondition as pureCheckWinCondition,
+  applyChessAction
 } from '@shared/protocol-core/chess';
+import type { ChessReduceResult } from '@shared/protocol-core/chess';
 
 export const createChessCombatSlice: StateCreator<
   UnifiedCombatStore,
@@ -220,31 +222,28 @@ export const createChessCombatSlice: StateCreator<
     const piece = state.boardState.pieces.find(
       p => p.position.row === from.row && p.position.col === from.col
     );
-    
+
     if (!piece) return;
-    
-    const updatedPieces = state.boardState.pieces.map(p => {
-      if (p.id === piece.id) {
-        return {
-          ...p,
-          position: to,
-          hasMoved: true
-        };
-      }
-      return p;
-    });
-    
+
+    const result: ChessReduceResult<ChessPiece> = applyChessAction(
+      state.boardState,
+      { kind: 'move', pieceId: piece.id, to }
+    );
+    if (!result.ok) {
+      debug.chess(`[Chess] executeMove rejected by reducer: ${result.reason}`);
+      return;
+    }
+
     set({
       boardState: {
         ...state.boardState,
-        pieces: updatedPieces,
+        ...result.state,
         selectedPiece: null,
         validMoves: [],
-        attackMoves: [],
-        moveCount: state.boardState.moveCount + 1
+        attackMoves: []
       }
     });
-    
+
     state.incrementAllStamina();
     
     // Check for mine trigger (King Divine Command System)
@@ -275,36 +274,33 @@ export const createChessCombatSlice: StateCreator<
 
   executeInstantKill: (attacker: ChessPiece, defender: ChessPiece, targetPosition: ChessBoardPosition) => {
     const state = get();
-    
-    debug.chess(`[Chess] Executing instant kill: ${attacker.heroName} -> ${defender.heroName}`);
-    
-    state.removePiece(defender.id);
 
-    const updatedPieces = get().boardState.pieces.map(p => {
-      if (p.id === attacker.id) {
-        return {
-          ...p,
-          position: targetPosition,
-          hasMoved: true
-        };
-      }
-      return p;
+    debug.chess(`[Chess] Executing instant kill: ${attacker.heroName} -> ${defender.heroName}`);
+
+    const result: ChessReduceResult<ChessPiece> = applyChessAction(state.boardState, {
+      kind: 'capture',
+      attackerId: attacker.id,
+      victimId: defender.id,
+      to: targetPosition
     });
+    if (!result.ok) {
+      debug.chess(`[Chess] executeInstantKill rejected by reducer: ${result.reason}`);
+      return;
+    }
 
     state.recordInstantKill(targetPosition, attacker.type);
     set({
       boardState: {
-        ...get().boardState,
-        pieces: updatedPieces,
+        ...state.boardState,
+        ...result.state,
         selectedPiece: null,
         validMoves: [],
-        attackMoves: [],
-        moveCount: get().boardState.moveCount + 1
+        attackMoves: []
       }
     });
 
     state.incrementAllStamina();
-    
+
     const mineResult = state.checkAndTriggerMine(targetPosition, attacker.owner, attacker.id, attacker.type);
     if (mineResult && mineResult.triggered) {
       debug.chess(`[Chess] Mine triggered after instant kill! ${attacker.owner} loses ${mineResult.staPenalty} STA`);
@@ -314,22 +310,13 @@ export const createChessCombatSlice: StateCreator<
         state.updatePieceStamina(attacker.id, newStamina);
       }
     }
-    
+
     const movedPiece = get().boardState.pieces.find(p => p.id === attacker.id);
     if (movedPiece && state.checkPawnPromotion(movedPiece)) {
       debug.chess(`[Chess] Pawn promoted to Queen after instant kill at (${targetPosition.row}, ${targetPosition.col})`);
       state.promotePawn(movedPiece.id, 'queen');
     }
-    
-    const gameStatus = state.checkWinCondition();
-    
-    set({
-      boardState: {
-        ...get().boardState,
-        gameStatus
-      }
-    });
-    
+
     state.updateCheckStatus();
     
     if (get().boardState.gameStatus === 'playing') {
@@ -418,25 +405,34 @@ export const createChessCombatSlice: StateCreator<
 
   promotePawn: (pieceId: string, newType: ChessPieceType) => {
     const state = get();
-    const newStats = PIECE_BASE_STATS[newType];
     const piece = state.boardState.pieces.find(p => p.id === pieceId);
     if (!piece) return;
-    
+
+    const result: ChessReduceResult<ChessPiece> = applyChessAction(
+      state.boardState,
+      { kind: 'promote', pieceId, to: newType }
+    );
+    if (!result.ok) {
+      debug.chess(`[Chess] promotePawn rejected by reducer: ${result.reason}`);
+      return;
+    }
+
+    const newStats = PIECE_BASE_STATS[newType];
     const army = piece.owner === 'player' ? state.playerArmy : state.opponentArmy;
     const queenHero = army?.queen || CHESS_PIECE_HEROES.queen[0];
     const heroElement = queenHero.element as NorseElement | undefined;
-    const gameElement: ElementType = heroElement 
-      ? NORSE_TO_GAME_ELEMENT[heroElement] 
+    const gameElement: ElementType = heroElement
+      ? NORSE_TO_GAME_ELEMENT[heroElement]
       : 'neutral';
-    
+
     set({
       boardState: {
         ...state.boardState,
-        pieces: state.boardState.pieces.map(p => {
+        ...result.state,
+        pieces: result.state.pieces.map(p => {
           if (p.id === pieceId) {
             return {
               ...p,
-              type: newType,
               health: newStats.baseHealth,
               maxHealth: newStats.baseHealth,
               hasSpells: newStats.hasSpells,
@@ -590,18 +586,21 @@ export const createChessCombatSlice: StateCreator<
 
   nextTurn: () => {
     const state = get();
-    const currentBoardState = state.boardState;
-    const newTurn = currentBoardState.currentTurn === 'player' ? 'opponent' : 'player';
-    
+    const result: ChessReduceResult<ChessPiece> = applyChessAction(
+      state.boardState,
+      { kind: 'endTurn' }
+    );
+    if (!result.ok) {
+      debug.chess(`[Chess] nextTurn rejected by reducer: ${result.reason}`);
+      return;
+    }
+
     set({
-      boardState: {
-        ...currentBoardState,
-        currentTurn: newTurn
-      }
+      boardState: { ...state.boardState, ...result.state }
     });
-    
+
     // Clear expired mines at end of turn (King Divine Command System)
-    state.clearExpiredMines(currentBoardState.moveCount);
+    state.clearExpiredMines(state.boardState.moveCount);
   },
 
   checkWinCondition: (): ChessGameStatus => pureCheckWinCondition(get().boardState.pieces),
