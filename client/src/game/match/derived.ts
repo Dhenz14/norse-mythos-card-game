@@ -18,7 +18,7 @@ import type { MatchContext } from './types';
 
 export type Authority =
 	| { kind: 'local' }
-	| { kind: 'p2p-symmetric'; role: 'first-mover' | 'second-mover' };
+	| { kind: 'p2p-symmetric'; myRole: 'first-mover' | 'second-mover' };
 
 /**
  * Authority is who decides truth for this match. Derived from the
@@ -29,7 +29,7 @@ export type Authority =
  */
 export function deriveAuthority(ctx: MatchContext): Authority {
 	if (ctx.opponent.kind === 'peer') {
-		return { kind: 'p2p-symmetric', role: ctx.opponent.role };
+		return { kind: 'p2p-symmetric', myRole: ctx.opponent.myRole };
 	}
 	return { kind: 'local' };
 }

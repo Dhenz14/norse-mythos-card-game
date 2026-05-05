@@ -73,7 +73,14 @@ export type ScriptPayload =
 export interface PeerOpponent {
 	kind: 'peer';
 	peerId: string;
-	role: 'first-mover' | 'second-mover';
+	/**
+	 * MY canonical side in the symmetric P2P frame. Renamed from a bare
+	 * `role` to `myRole` because "role" alone was ambiguous (mine? the
+	 * opponent's?). Maps onto the existing `useGameStore.myCanonicalSide`
+	 * convention (`'player'` ⇔ first-mover, `'opponent'` ⇔ second-mover);
+	 * the translation lives at the wire boundary in Fase 4.
+	 */
+	myRole: 'first-mover' | 'second-mover';
 	opponentUsername: string | null;
 }
 

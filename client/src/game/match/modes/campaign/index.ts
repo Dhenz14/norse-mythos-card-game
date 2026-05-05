@@ -3,8 +3,8 @@
  * partial economic reward (xpRunes percentage, default 0.1), no ranking.
  *
  * Public surface (filled in later phases):
- *   - resolver:    resolveCampaign(missionId, difficulty)   — Fase 2
- *   - lifecycle:   onWin(ctx, finalState)                   — Fase 4
+ *   - resolver:    resolveCampaign(args)                  ✅ Fase 2
+ *   - lifecycle:   onWin(ctx, finalState)                  — Fase 4
  *                  → dispatch CampaignReward + markMissionComplete
  *   - bossRules:   moves useBossRuleEffects + boss data here — Fase 4
  *   - armyBuilder: moves campaignArmyBuilder here            — Fase 4
@@ -13,4 +13,5 @@
  * import from this module. Enforced by ESLint in Fase 6.
  */
 
-export {};
+export { resolveCampaign } from './resolver';
+export type { CampaignResolveArgs, CampaignResolveResult } from './resolver';
