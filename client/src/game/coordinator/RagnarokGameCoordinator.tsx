@@ -257,9 +257,15 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
 
   // P2P chess board bootstrap. Both peers compute identical piece ids
   // from `matchSeed + 'chess-pieces'`, so any future move reference (by
-  // piece id) resolves to the same piece on each side. Runs once after
-  // the host's `init` envelope is applied (`p2pInitApplied`) and the
-  // opponent's army announcement has arrived.
+  // piece id) resolves to the same piece on each side.
+  //
+  // Pre-Fase-5 this effect also gated on `peerStore.p2pInitApplied` and
+  // `gameStore.matchSeed` truthiness to defer until the host's `init`
+  // envelope had been applied. <MatchSetupP2P/> (Fase 5 C11) makes both
+  // guarantees BEFORE mounting this coordinator: it only renders
+  // children once matchSeed + matchId + p2pInitApplied are populated.
+  // The remaining guards are the local-mode fallthrough (`isP2PConnected`)
+  // and the symmetric army-arrival check.
   const matchSeed = useGameStore(s => s.matchSeed);
   // Local viewer's canonical chess side (decided at handshake from
   // matchSeed parity). SP defaults to 'player' (human is first-mover).
@@ -269,12 +275,10 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
   const enemyCanonicalSide: 'player' | 'opponent' = myCanonicalSide === 'player' ? 'opponent' : 'player';
   const myWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'player_wins' : 'opponent_wins';
-  const p2pInitApplied = usePeerStore(s => s.p2pInitApplied);
   const p2pBoardInitRef = useRef(false);
   useEffect(() => {
     if (p2pBoardInitRef.current) return;
     if (!isP2PConnected) return;
-    if (!p2pInitApplied) return;
     if (!matchSeed) return;
     if (!initialArmy || !opponentArmy) return;
     p2pBoardInitRef.current = true;
@@ -288,7 +292,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     const canonicalPlayerArmy = myCanonicalSide === 'player' ? initialArmy : opponentArmy;
     const canonicalOpponentArmy = myCanonicalSide === 'player' ? opponentArmy : initialArmy;
     initializeBoard(canonicalPlayerArmy, canonicalOpponentArmy, idGen);
-  }, [isP2PConnected, p2pInitApplied, matchSeed, initialArmy, opponentArmy, initializeBoard, myCanonicalSide]);
+  }, [isP2PConnected, matchSeed, initialArmy, opponentArmy, initializeBoard, myCanonicalSide]);
 
   useCampaignGameBootstrap({
     isCampaign,

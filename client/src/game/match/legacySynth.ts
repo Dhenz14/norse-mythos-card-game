@@ -8,17 +8,17 @@
  * Vitest's node environment, so the hook layer must stay out of the
  * test path.
  *
- * Branch order is intentional:
- *   1. P2P (highest priority — peer connection trumps any local mode).
+ * Branch order:
+ *   1. P2P → null. <MatchSetupP2P/> (Fase 5) owns the peer ctx; the
+ *      legacy bridge stays out of the way so it cannot race with — or
+ *      overwrite — what the wrapper just installed.
  *   2. Campaign (mission set in campaignStore).
  *   3. Solo (default fallback — practice).
  *
- * Returns null when an active flow exists but is not yet ready
- * (e.g. P2P connected but matchSeed has not arrived from seed_reveal).
- *
- * THIS FILE IS THROWAWAY — Fase 5 replaces the whole legacy bridge
- * with a proper <MatchSetupP2P/> wrapper that calls resolveP2P
- * directly. Solo / Campaign flows shift to the menu.
+ * THIS FILE IS THROWAWAY — Fase 7 deletes the bridge once solo /
+ * campaign flows shift to a menu-driven resolver path. The retained
+ * isP2PConnected gate documents the boundary between "what the bridge
+ * synthesizes" and "what MatchSetupP2P owns".
  */
 
 import type { Difficulty } from '../campaign/campaignTypes';
@@ -27,16 +27,11 @@ import type { Difficulty } from '../campaign/campaignTypes';
 // (e.g. MatchSetupP2P) whose transitive deps touch localStorage at
 // module load and crash vitest's node environment.
 import { resolveCampaign } from './modes/campaign/resolver';
-import { resolveP2P } from './modes/p2p/resolver';
 import { resolveSolo } from './modes/solo/resolver';
 import type { MatchContext } from './types';
 
 export interface LegacySynthInputs {
 	isP2PConnected: boolean;
-	matchSeed: string | null;
-	matchId: string | null;
-	myCanonicalSide: 'player' | 'opponent' | null;
-	remotePeerId: string | null;
 	campaignMission: string | null;
 	campaignDifficulty: Difficulty;
 }
@@ -45,17 +40,11 @@ export function synthesizeLegacyMatchContext(
 	input: LegacySynthInputs,
 ): MatchContext | null {
 	if (input.isP2PConnected) {
-		// P2P needs both matchSeed and matchId from gameStore — those
-		// arrive via seed_reveal. Until then, no MatchContext yet.
-		if (!input.matchSeed || !input.matchId) return null;
-		return resolveP2P({
-			matchId: input.matchId,
-			matchSeed: input.matchSeed,
-			remotePeerId: input.remotePeerId ?? '',
-			myRole:
-				input.myCanonicalSide === 'opponent' ? 'second-mover' : 'first-mover',
-			opponentUsername: null,
-		});
+		// P2P MatchContext is built by <MatchSetupP2P/> (Fase 5). Returning
+		// null here is the contract that "the legacy bridge does not touch
+		// peer matches". The bridge's caller separately guards against
+		// clearing an active peer ctx (see useLegacyMatchContextBridge).
+		return null;
 	}
 
 	if (input.campaignMission) {
@@ -70,7 +59,7 @@ export function synthesizeLegacyMatchContext(
 	// Solo (practice). Difficulty/deckSource defaults match the implicit
 	// pre-Fase-3 behavior — coordinator and warband flow today do not
 	// expose difficulty selection for solo, so 'normal' is the only
-	// real value. When Fase 5's menu lands, real user input populates
+	// real value. When Fase 7's menu lands, real user input populates
 	// these.
 	return resolveSolo({ difficulty: 'normal', deckSource: 'warband' });
 }
