@@ -219,7 +219,6 @@ export interface ChessCombatSliceActions {
   updatePieceHealth: (pieceId: string, newHealth: number) => void;
   updatePieceStamina: (pieceId: string, newStamina: number) => void;
   incrementAllStamina: () => void;
-  executeAITurn: () => void;
   nextTurn: () => void;
   checkWinCondition: () => ChessGameStatus;
   setGameStatus: (status: ChessGameStatus) => void;

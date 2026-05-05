@@ -8,7 +8,6 @@ import { StateCreator } from 'zustand';
 import {
   ChessPiece,
   ChessBoardPosition,
-  ChessBoardState,
   ChessPlayerSide,
   ChessGameStatus,
   ChessPieceType,
@@ -23,14 +22,12 @@ import {
 import { NorseElement, NORSE_TO_GAME_ELEMENT } from '../../types/NorseTypes';
 import { CHESS_PIECE_HEROES, pieceHasSpells } from '../../data/ChessPieceConfig';
 import {
-  ChessPieceState,
-  CombatLogEntry,
   initialBoardState,
   ChessCombatSlice,
   UnifiedCombatStore
 } from './types';
 import { debug } from '../../config/debugConfig';
-import { createSeededRng, createSeededIdGen, cryptoRng } from '../../utils/seededRng';
+import { createSeededRng, createSeededIdGen } from '../../utils/seededRng';
 import {
   getValidMoves as pureGetValidMoves,
   getThreateningPieces as pureGetThreateningPieces,
@@ -730,118 +727,4 @@ export const createChessCombatSlice: StateCreator<
     }
   },
 
-  executeAITurn: () => {
-    const state = get();
-    if (state.boardState.currentTurn !== 'opponent') return;
-    if (state.boardState.gameStatus !== 'playing') return;
-
-    const pieceValue: Record<ChessPieceType, number> = {
-      king: 1000,
-      queen: 90,
-      rook: 50,
-      bishop: 30,
-      knight: 30,
-      pawn: 10
-    };
-
-    const opponentPieces = state.boardState.pieces.filter(p => p.owner === 'opponent');
-    
-    let bestMove: { piece: ChessPiece; target: ChessBoardPosition; isAttack: boolean; score: number } | null = null;
-    let bestNonAttackMove: { piece: ChessPiece; target: ChessBoardPosition; isAttack: boolean; score: number } | null = null;
-
-    for (const piece of opponentPieces) {
-      const { moves, attacks } = state.getValidMoves(piece);
-      const attackerValue = pieceValue[piece.type];
-      const isInstantKillAttacker = piece.type === 'pawn' || piece.type === 'king';
-      
-      for (const attack of attacks) {
-        const targetPiece = state.getPieceAt(attack);
-        if (targetPiece) {
-          const targetValue = pieceValue[targetPiece.type];
-          const isInstantKillDefender = targetPiece.type === 'pawn';
-          const isInstantKill = isInstantKillAttacker || isInstantKillDefender;
-          
-          let score: number;
-          if (isInstantKill) {
-            const instantKillBonus = isInstantKillAttacker ? 15 : 10;
-            score = targetValue + instantKillBonus;
-          } else {
-            const riskFactor = attackerValue * 0.3;
-            score = targetValue - riskFactor;
-          }
-          
-          if (score > 0 && (!bestMove || score > bestMove.score)) {
-            bestMove = { piece, target: attack, isAttack: true, score };
-          }
-        }
-      }
-      
-      const aiRng = get()._chessRng ?? cryptoRng;
-      for (const move of moves) {
-        const forwardBonus = (piece.position.row - move.row) * 2;
-        const pawnPushBonus = piece.type === 'pawn' ? 3 : 0;
-        const score = 5 + forwardBonus + pawnPushBonus + aiRng() * 3;
-
-        if (!bestNonAttackMove || score > bestNonAttackMove.score) {
-          bestNonAttackMove = { piece, target: move, isAttack: false, score };
-        }
-      }
-    }
-
-    const finalMove = bestMove || bestNonAttackMove;
-    
-    if (!finalMove) {
-      debug.ai('[AI] No valid moves - stalemate');
-      const currentBoardState = get().boardState;
-      set({
-        boardState: { ...currentBoardState, gameStatus: 'player_wins' as ChessGameStatus }
-      });
-      return;
-    }
-
-    const moveToExecute = finalMove;
-    const pieceId = moveToExecute.piece.id;
-    state.selectPiece(moveToExecute.piece);
-
-    const attemptMove = () => {
-      const currentState = get();
-      if (currentState.boardState.gameStatus !== 'playing') return;
-      if (currentState.boardState.currentTurn !== 'opponent') return;
-
-      if (currentState.pendingAttackAnimation) {
-        debug.ai('[AI] Waiting for animation to complete, retrying in 200ms...');
-        setTimeout(attemptMove, 200);
-        return;
-      }
-
-      const piece = currentState.boardState.pieces.find(p => p.id === pieceId);
-      if (!piece) {
-        debug.ai('[AI] Piece no longer exists, skipping move');
-        return;
-      }
-
-      const { moves, attacks } = currentState.getValidMoves(piece);
-      const targetStillValid = [...moves, ...attacks].some(
-        m => m.row === moveToExecute.target.row && m.col === moveToExecute.target.col
-      );
-      if (!targetStillValid) {
-        debug.ai('[AI] Target no longer valid, recalculating...');
-        currentState.selectPiece(null);
-        currentState.executeAITurn();
-        return;
-      }
-
-      currentState.selectPiece(piece);
-      const collision = currentState.movePiece(moveToExecute.target);
-      if (!collision) {
-        debug.ai(`[AI] Moved ${moveToExecute.piece.type} to (${moveToExecute.target.row}, ${moveToExecute.target.col})`);
-      } else if (collision.instantKill) {
-        debug.ai(`[AI] Instant kill with ${collision.attacker.type} against ${collision.defender.type}`);
-      } else {
-        debug.ai(`[AI] PvP combat: ${collision.attacker.type} vs ${collision.defender.type}`);
-      }
-    };
-    
-    setTimeout(attemptMove, 500);
-  },
 });

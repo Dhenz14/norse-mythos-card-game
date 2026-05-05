@@ -12,6 +12,7 @@ import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
 import { useAudio } from '../../lib/stores/useAudio';
 import { v4 as uuidv4 } from 'uuid';
 import { useKingChessAbility } from '../hooks/useKingChessAbility';
+import { useChessAITurn } from './hooks/useChessAITurn';
 import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
 import { useGameFlowStore } from '../stores/gameFlowStore';
 import type { CombatHandoff } from '../flow/round/types';
@@ -145,7 +146,6 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     resolveCombat,
     setSharedDeck,
     resetBoard,
-    executeAITurn,
     updatePieceStamina,
     updatePieceHealth,
     incrementAllStamina,
@@ -570,28 +570,10 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     }
   }, [flowState, boardState.currentTurn, boardState.gameStatus, incrementPlayerTurn]);
 
-  useEffect(() => {
-    // Gate the AI on `matchSeed`, not `isP2PConnected`. The connection state
-    // can drop to 'reconnecting' or 'grace_period' during a transient WS
-    // hiccup; `isP2PConnected` flips to false there and the AI would fire on
-    // the local opponent piece, mutating board state that the remote peer
-    // never agreed to. The result was a `piece_not_found` divergence later
-    // when the remote sent a real envelope. `matchSeed` is set once at
-    // seed_reveal and persists for the whole match, so it tracks "this is a
-    // P2P match" rather than "the socket is up right now".
-    if (
-      flowState?.tag === 'chess'
-      && boardState.currentTurn === 'opponent'
-      && boardState.gameStatus === 'playing'
-      && !matchSeed
-    ) {
-      const aiDelay = setTimeout(() => {
-        executeAITurn();
-      }, 1000);
-      return () => clearTimeout(aiDelay);
-    }
-    return undefined;
-  }, [flowState, boardState.currentTurn, boardState.gameStatus, executeAITurn, matchSeed]);
+  // AI driver — fires only when the chess phase is active AND there's no
+  // P2P match (the hook gates internally on `matchSeed`, see useChessAITurn
+  // for the full contract).
+  useChessAITurn({ enabled: flowState?.tag === 'chess' });
 
   useEffect(() => {
     if (pendingCombat && boardState.gameStatus === 'combat' && flowState?.tag === 'chess') {

@@ -1,4 +1,4 @@
-import { showStatus } from '../components/ui/GameStatusBanner';
+import { emitNotification } from '../actions/gameActions';
 import type { ApplyGameCommandResult, GameCommand, GameCommandEffect } from '../core/commands';
 import type { CardInstance, GameState } from '../types';
 import { debug } from '../config/debugConfig';
@@ -88,7 +88,7 @@ function applyGameCommandEffect(
 			audioEventBus.emit(effect.sound);
 			return;
 		case 'show_status':
-			showStatus(effect.message, effect.level);
+			emitNotification({ message: effect.message, level: effect.level });
 			return;
 		case 'clear_selection':
 			clearSelection(effect.selection, setState);
@@ -132,7 +132,7 @@ function applyCardPlayedEffect(effect: Extract<GameCommandEffect, { readonly typ
 function applyRejectedCommand(reason: string, setState: (patch: GameCommandStorePatch) => void): void {
 	const message = VISIBLE_REJECTION_MESSAGES[reason];
 	if (message) {
-		showStatus(message, 'error');
+		emitNotification({ message, level: 'error' });
 	}
 
 	if (CLEAR_SELECTION_REJECTION_REASONS.has(reason)) {

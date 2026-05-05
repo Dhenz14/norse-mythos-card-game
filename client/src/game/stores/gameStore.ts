@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { showStatus } from '../components/ui/GameStatusBanner';
+import { emitNotification } from '../actions/gameActions';
 import { hasKeyword } from '../utils/cards/keywordUtils';
 import {
   initializeGame,
@@ -661,7 +661,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     if (needsTarget && (!targetId || !targetType)) {
       if (!heroTargetMode) {
         set({ heroTargetMode: true });
-        showStatus('Select a target for your hero power', 'info');
+        emitNotification({ message: 'Select a target for your hero power', level: 'info' });
         return;
       }
       debug.error('[HeroPower] Target required but none provided');
@@ -699,7 +699,7 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       });
     }
 
-    showStatus(`Used Hero Power: ${player.heroPower.name}`, 'success');
+    emitNotification({ message: `Used Hero Power: ${player.heroPower.name}`, level: 'success' });
 
     GameEventBus.emitAnimationRequest({
       animationType: 'hero_power_effect',

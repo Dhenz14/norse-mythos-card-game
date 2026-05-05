@@ -47,7 +47,6 @@ export interface ChessCombatAdapter {
   clearPendingCombat: () => void;
   resolveCombat: (result: { winner: ChessPiece; loser: ChessPiece; winnerNewHealth: number }) => void;
   setSharedDeck: (cardIds: number[]) => void;
-  executeAITurn: () => void;
   updatePieceStamina: (pieceId: string, stamina: number) => void;
   updatePieceHealth: (pieceId: string, health: number) => void;
   incrementAllStamina: () => void;
@@ -106,10 +105,6 @@ export function useChessCombatAdapter(): ChessCombatAdapter {
 
     setSharedDeck: (cardIds: number[]) => {
       unified.setSharedDeck(cardIds);
-    },
-
-    executeAITurn: () => {
-      unified.executeAITurn();
     },
 
     updatePieceStamina: (pieceId: string, stamina: number) => {
@@ -173,10 +168,6 @@ export function getChessCombatStoreActions() {
 
     setSharedDeck: (cardIds: number[]) => {
       unified.setSharedDeck(cardIds);
-    },
-
-    executeAITurn: () => {
-      unified.executeAITurn();
     },
 
     updatePieceStamina: (pieceId: string, stamina: number) => {
