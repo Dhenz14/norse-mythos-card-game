@@ -15,5 +15,4 @@
 
 export { resolveCampaign } from './resolver';
 export type { CampaignResolveArgs, CampaignResolveResult } from './resolver';
-export { buildCampaignOpponentArmy } from './armyBuilder';
 export { onCampaignMatchEnd } from './lifecycle';

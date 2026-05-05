@@ -20,10 +20,10 @@
  *   - Fase 4 next steps: deriveIntro, selectOnWinHandler.
  */
 
+import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
 import type { CampaignChapter, CampaignMission } from '../campaign/campaignTypes';
+import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import type { ArmySelection } from '../types/ChessTypes';
-import { buildCampaignOpponentArmy } from './modes/campaign/armyBuilder';
-import { buildSoloOpponentArmy } from './modes/solo/armyBuilder';
 import type { MatchContext } from './types';
 
 // ── Authority ─────────────────────────────────────────────────────────────
@@ -64,9 +64,13 @@ export function deriveAuthority(ctx: MatchContext): Authority {
 export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | null {
 	switch (ctx.opponent.kind) {
 		case 'ai':
-			return buildSoloOpponentArmy(ctx.opponent);
+			// Solo today: AI uses the default piece roster regardless of
+			// difficulty. Difficulty / deckSource affect AI scoring + deck
+			// composition, not piece composition. Branch here when that changes.
+			return getDefaultArmySelection();
 		case 'scripted':
-			return buildCampaignOpponentArmy(ctx.opponent);
+			if (ctx.opponent.script.kind !== 'campaign-mission') return null;
+			return buildCampaignArmy(ctx.opponent.script.mission);
 		case 'peer':
 			return null;
 	}

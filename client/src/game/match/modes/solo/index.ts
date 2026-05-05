@@ -12,5 +12,4 @@
 
 export { resolveSolo } from './resolver';
 export type { SoloResolveArgs } from './resolver';
-export { buildSoloOpponentArmy } from './armyBuilder';
 export { onSoloMatchEnd } from './lifecycle';
