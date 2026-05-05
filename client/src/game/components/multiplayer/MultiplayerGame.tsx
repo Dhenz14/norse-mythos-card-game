@@ -3,6 +3,7 @@ import { debug } from '../../config/debugConfig';
 import { usePeerStore } from '../../stores/peerStore';
 import { MultiplayerLobby } from './MultiplayerLobby';
 import RagnarokGameCoordinator from '../../coordinator/RagnarokGameCoordinator';
+import { MatchSetupP2P } from '../../match/modes/p2p';
 import ArmySelectionComponent from '../ArmySelection';
 import { ArmySelection as ArmySelectionType } from '../../types/ChessTypes';
 import { useNavigate } from 'react-router-dom';
@@ -190,33 +191,39 @@ export const MultiplayerGame: React.FC = () => {
 			);
 		}
 
-		// Multiplayer game UI: pass the opponent army announced via P2P so the
-		// coordinator renders real hero portraits instead of the default fallback.
-		// Two gates here:
-		//   1. opponentArmyFromPeer: the opponent's army announcement arrived.
-		//   2. p2pInitApplied: the host's `init` envelope has been applied
-		//      locally (host: after initGameWithSeed; client: after the case
-		//      'init' handler ran setState). Until both are true the
-		//      coordinator stays unmounted so user input cannot reach an empty
-		//      / stale gameState. The P2PProvider wrapping all of renderInner
-		//      keeps useP2PSync mounted behind the spinner so the init
-		//      envelope is still received.
+		// Multiplayer game UI. Three gates wrap the coordinator:
+		//   1. computeP2PRenderGuard — user-facing wait spinner. Two checks:
+		//      a. opponentArmyFromPeer: the opponent's army announcement arrived.
+		//         Without it, hero portraits fall back to defaults.
+		//      b. p2pInitApplied: the host's `init` envelope has been applied
+		//         locally (host: after initGameWithSeed; client: after the
+		//         `case 'init'` handler ran setState). Until then the coordinator
+		//         stays unmounted so user input cannot reach an empty / stale
+		//         gameState (TD-15).
+		//   2. <MatchSetupP2P/> — silent ctx wiring. Once seed_reveal +
+		//      p2pInitApplied are in, calls resolveP2P() and pushes the
+		//      MatchContext into useMatchStore BEFORE the coordinator mounts.
+		//      The coordinator's mode-aware code (Fase 3-4) reads ctx as
+		//      non-null from its first render.
+		// The P2PProvider wrapping all of renderInner keeps useP2PSync mounted
+		// behind the spinner so the init envelope is still received.
 		const guard = computeP2PRenderGuard({ opponentArmyFromPeer, p2pInitApplied });
-		if (guard.kind === 'wait') {
-			return (
-				<div className="flex items-center justify-center min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-					<div className="text-center space-y-3">
-						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-(--gold-400) mx-auto" />
-						<p className="text-sm text-(--ink-300)">{guard.reason}</p>
-					</div>
+		const spinner = (
+			<div className="flex items-center justify-center min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+				<div className="text-center space-y-3">
+					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-(--gold-400) mx-auto" />
+					<p className="text-sm text-(--ink-300)">{guard.kind === 'wait' ? guard.reason : 'Syncing match…'}</p>
 				</div>
-			);
-		}
+			</div>
+		);
+		if (guard.kind === 'wait') return spinner;
 		return (
 			<>
 				<ToastProvider position="top-right" richColors />
 				<P2PStatusBadge />
-				<RagnarokGameCoordinator initialArmy={playerArmy} opponentArmy={opponentArmyFromPeer} />
+				<MatchSetupP2P fallback={spinner}>
+					<RagnarokGameCoordinator initialArmy={playerArmy} opponentArmy={opponentArmyFromPeer} />
+				</MatchSetupP2P>
 			</>
 		);
 	};
