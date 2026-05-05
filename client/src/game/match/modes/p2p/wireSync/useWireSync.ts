@@ -1,28 +1,30 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
-import { usePeerStore } from '../stores/peerStore';
-import { useGameStore } from '../stores/gameStore';
-import { debug } from '../config/debugConfig';
-import { GameState } from '../types';
-import { verifyDeckOwnership } from '../../data/blockchain/deckVerification';
-import { sha256Hash } from '../../data/blockchain/hashUtils';
-import { verifyDeck as verifyDeckOnServer } from '../../data/chainAPI';
-import { getNFTBridge } from '../nft';
-import type { PackagedMatchResult } from '../../data/blockchain/types';
-import { startNewTranscript, clearTranscript, recordSessionEvent, exportSessionLog, recordMove } from '../../data/blockchain/transcriptBuilder';
-import { localPlayerId, remotePlayerId } from '../../data/blockchain/playerIdentity';
-import { getWasmHash, loadWasmEngine } from '../engine/wasmLoader';
-import { computeStateHash } from '../engine/engineBridge';
-import { isSharedNetworkEnvironment } from '../config/featureFlags';
-import { submitSlashEvidence, findExistingMatchResult } from '../../data/blockchain/slashEvidence';
-import { GAME_COMMAND_TYPES } from '../core/commands';
-import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from './p2pEnvelope';
-import { useWarbandStore, selectArmy } from '../../lib/stores/useWarbandStore';
-import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../shared/p2p-wire/chess';
-import { resetChessWireSender } from '../p2p/chessWireSender';
+import { usePeerStore } from '../../../../stores/peerStore';
+import { useGameStore } from '../../../../stores/gameStore';
+import { debug } from '../../../../config/debugConfig';
+import { GameState } from '../../../../types';
+import { verifyDeckOwnership } from '../../../../../data/blockchain/deckVerification';
+import { sha256Hash } from '../../../../../data/blockchain/hashUtils';
+import { verifyDeck as verifyDeckOnServer } from '../../../../../data/chainAPI';
+import { getNFTBridge } from '../../../../nft';
+import type { PackagedMatchResult } from '../../../../../data/blockchain/types';
+import { startNewTranscript, clearTranscript, recordSessionEvent, exportSessionLog, recordMove } from '../../../../../data/blockchain/transcriptBuilder';
+import { localPlayerId, remotePlayerId } from '../../../../../data/blockchain/playerIdentity';
+import { getWasmHash, loadWasmEngine } from '../../../../engine/wasmLoader';
+import { computeStateHash } from '../../../../engine/engineBridge';
+import { isSharedNetworkEnvironment } from '../../../../config/featureFlags';
+import { submitSlashEvidence, findExistingMatchResult } from '../../../../../data/blockchain/slashEvidence';
+import { GAME_COMMAND_TYPES } from '../../../../core/commands';
+import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from '../../../../hooks/p2pEnvelope';
+import { useWarbandStore, selectArmy } from '../../../../../lib/stores/useWarbandStore';
+import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../../../../shared/p2p-wire/chess';
+import { resetChessWireSender } from '../../../../p2p/chessWireSender';
+import type { P2PMessage } from '../../../../p2p/messages';
 
-export type { GameCommandEnvelope, WireGameCommand } from './p2pEnvelope';
-export { canonicalQuickHash } from './p2pEnvelope';
+export type { GameCommandEnvelope, WireGameCommand } from '../../../../hooks/p2pEnvelope';
+export { canonicalQuickHash } from '../../../../hooks/p2pEnvelope';
+export type { P2PMessage } from '../../../../p2p/messages';
 
 declare const __BUILD_HASH__: string;
 
@@ -69,30 +71,9 @@ let outgoingSeqCounter = 0;
 // counter must be a singleton — splitting it would break monotonic moveNumber
 // across the cards / chess / poker entry points.
 
-export type P2PMessage =
-	| { type: 'init'; gameState: GameState; isHost: boolean; matchId?: string }
-	| GameCommandEnvelope
-	| { type: 'gameState'; gameState: GameState; stateHash?: string }
-	| { type: 'opponentDisconnected' }
-	| { type: 'ping' }
-	| { type: 'pong' }
-	| { type: 'deck_verify'; hiveAccount: string; nftIds: string[] }
-	| { type: 'seed_commit'; commitment: string }
-	| { type: 'seed_reveal'; salt: string; hiveUsername?: string }
-	| { type: 'army_announcement'; army: import('../types/ChessTypes').ArmySelection }
-	| { type: 'result_propose'; result: PackagedMatchResult; hash: string; broadcasterSig: string; proposalId: string }
-	| { type: 'result_countersign'; counterpartySig: string; proposalId: string }
-	| { type: 'result_reject'; reason: string }
-	| { type: 'version_check'; buildHash: string }
-	| { type: 'wasm_hash_check'; wasmHash: string }
-	| { type: 'hash_check'; stateHash: string; turnNumber: number }
-	| { type: 'hash_mismatch'; turnNumber: number; myHash: string }
-	| { type: 'poker_action'; playerId: string; action: string; hpCommitment?: number }
-	| ChessCommandEnvelope;
-
 const RESULT_SIGN_TIMEOUT_MS = 30_000;
 
-export function useP2PSync() {
+export function useWireSync() {
 	const connection = usePeerStore(state => state.connection);
 	const connectionState = usePeerStore(state => state.connectionState);
 	const isHost = usePeerStore(state => state.isHost);
@@ -209,12 +190,12 @@ export function useP2PSync() {
 			const ourArmy = selectArmy(useWarbandStore.getState());
 			if (ourArmy) {
 				send({ type: 'army_announcement', army: ourArmy });
-				debug.log('[useP2PSync] Sent army_announcement:', { king: ourArmy.king?.name });
+				debug.log('[wireSync] Sent army_announcement:', { king: ourArmy.king?.name });
 			} else {
-				debug.warn('[useP2PSync] No local army to announce — opponent will see default fallback');
+				debug.warn('[wireSync] No local army to announce — opponent will see default fallback');
 			}
 		} catch (err) {
-			debug.warn('[useP2PSync] Failed to send army_announcement:', err);
+			debug.warn('[wireSync] Failed to send army_announcement:', err);
 		}
 
 		// Cross-verify deck NFT ownership: send our deck's NFT IDs so opponent can verify on-chain
@@ -230,11 +211,11 @@ export function useP2PSync() {
 						.filter(Boolean);
 					if (nftIds.length > 0) {
 						send({ type: 'deck_verify', hiveAccount: username, nftIds });
-						debug.combat(`[useP2PSync] Sent deck_verify: ${nftIds.length} NFTs for @${username}`);
+						debug.combat(`[wireSync] Sent deck_verify: ${nftIds.length} NFTs for @${username}`);
 					}
 				}
 			} catch (err) {
-				debug.warn('[useP2PSync] Failed to send deck verification:', err);
+				debug.warn('[wireSync] Failed to send deck verification:', err);
 			}
 		}
 
@@ -261,7 +242,7 @@ export function useP2PSync() {
 		if (!seedResolvedRef.current) {
 			const timeout = setTimeout(() => {
 				if (!seedResolvedRef.current) {
-					debug.error('[useP2PSync] Seed exchange timed out after 10s');
+					debug.error('[wireSync] Seed exchange timed out after 10s');
 					toast.error('Seed exchange timed out. Disconnecting.', { duration: 5000 });
 					usePeerStore.getState().disconnect();
 				}
@@ -282,7 +263,7 @@ export function useP2PSync() {
 		if (!connection) return;
 
 		const handleClose = () => {
-			debug.warn('[useP2PSync] Connection to opponent closed');
+			debug.warn('[wireSync] Connection to opponent closed');
 			// Clean up pending result to prevent stale closures
 			if (pendingResultRef.current) {
 				pendingResultRef.current.reject(new Error('Connection closed'));
@@ -313,7 +294,7 @@ export function useP2PSync() {
 						trxId1: matchSeed,
 						trxId2: `disconnect_turn_${gs.turnNumber}_${Date.now()}`,
 						notes: `Opponent disconnected mid-match at turn ${gs.turnNumber}`,
-					}).catch(err => debug.warn('[useP2PSync] Failed to submit fake_disconnect slash:', err));
+					}).catch(err => debug.warn('[wireSync] Failed to submit fake_disconnect slash:', err));
 				}
 			}
 		};
@@ -332,15 +313,15 @@ export function useP2PSync() {
 		// is alive without spamming the console.
 		let heartbeatLogState = { firstSeen: false, lastLoggedAt: 0 };
 		const processMessage = async (data: P2PMessage) => {
-			// Heartbeat keepalive — handle before switch (not a game message)
-			if ((data as { type: string }).type === 'heartbeat') {
+			// Heartbeat keepalive - handle before game-message dispatch.
+			if (data.type === 'heartbeat') {
 				usePeerStore.getState().handleHeartbeat();
 				const now = Date.now();
 				if (!heartbeatLogState.firstSeen) {
-					debug.log('[useP2PSync] First heartbeat received from opponent — connection alive');
+					debug.log('[wireSync] First heartbeat received from opponent — connection alive');
 					heartbeatLogState = { firstSeen: true, lastLoggedAt: now };
 				} else if (now - heartbeatLogState.lastLoggedAt > 30_000) {
-					debug.log('[useP2PSync] Heartbeats flowing (alive, last 30s)');
+					debug.log('[wireSync] Heartbeats flowing (alive, last 30s)');
 					heartbeatLogState.lastLoggedAt = now;
 				}
 				return;
@@ -382,7 +363,7 @@ export function useP2PSync() {
 					const canonicalState = isHost ? gs : flipGameState(gs);
 					const myHash = await computeStateHash(canonicalState);
 					if (myHash !== data.stateHash) {
-						debug.error(`[useP2PSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
+						debug.error(`[wireSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
 						send({ type: 'hash_mismatch', turnNumber: data.turnNumber, myHash });
 						toast.error('State verification failed', {
 							description: 'Game state diverged from opponent. Possible cheating detected.',
@@ -401,7 +382,7 @@ export function useP2PSync() {
 									trxId1: matchSeed,
 									trxId2: `hash_check_fail_turn_${data.turnNumber}_${myHash.slice(0, 16)}`,
 									notes: `Hash check failed at turn ${data.turnNumber}. Local: ${myHash.slice(0, 16)}, remote: ${data.stateHash.slice(0, 16)}`,
-								}).catch(err => debug.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+								}).catch(err => debug.warn('[wireSync] Failed to submit forged_move slash:', err));
 							}
 						}
 					}
@@ -409,7 +390,7 @@ export function useP2PSync() {
 				}
 
 				case 'hash_mismatch':
-					debug.error(`[useP2PSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
+					debug.error(`[wireSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
 					toast.error('State verification failed', {
 						description: 'Opponent detected state divergence. Game integrity compromised.',
 						duration: 8000,
@@ -426,7 +407,7 @@ export function useP2PSync() {
 								trxId1: matchSeed,
 								trxId2: `hash_mismatch_turn_${data.turnNumber}_${data.myHash.slice(0, 16)}`,
 								notes: `State hash mismatch at turn ${data.turnNumber}. Opponent hash: ${data.myHash.slice(0, 16)}`,
-							}).catch(err => debug.warn('[useP2PSync] Failed to submit forged_move slash:', err));
+							}).catch(err => debug.warn('[wireSync] Failed to submit forged_move slash:', err));
 						}
 					}
 					break;
@@ -442,13 +423,13 @@ export function useP2PSync() {
 					const theirSalt = data.salt;
 					const theirCommitment = theirCommitmentRef.current;
 					if (!theirCommitment) {
-						debug.warn('[useP2PSync] Received seed_reveal before seed_commit');
+						debug.warn('[wireSync] Received seed_reveal before seed_commit');
 						break;
 					}
 
 					const expectedCommitment = await sha256Hash(theirSalt);
 					if (expectedCommitment !== theirCommitment) {
-						debug.error('[useP2PSync] Seed commitment mismatch — possible cheating');
+						debug.error('[wireSync] Seed commitment mismatch — possible cheating');
 						toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
 						usePeerStore.getState().disconnect();
 						break;
@@ -500,7 +481,7 @@ export function useP2PSync() {
 					const truncatedMatchId = matchId.slice(0, 16);
 					matchIdRef.current = truncatedMatchId;
 					useGameStore.setState({ matchId: truncatedMatchId });
-					console.log('[useP2PSync] seed_reveal RESOLVED', {
+					console.log('[wireSync] seed_reveal RESOLVED', {
 						matchSeed: matchSeed.slice(0, 12),
 						matchId: truncatedMatchId,
 						myCanonicalSide,
@@ -546,7 +527,7 @@ export function useP2PSync() {
 							remotePeerId: usePeerStore.getState().remotePeerId,
 						});
 						const reject = (cause: string): void => {
-							debug.warn(`[useP2PSync] game_command rejected: ${cause}`, {
+							debug.warn(`[wireSync] game_command rejected: ${cause}`, {
 								seq: data.seq,
 								commandType: data.command?.type,
 							});
@@ -745,7 +726,7 @@ export function useP2PSync() {
 					//     existing animation->completeAttackAnimation->executeInstantKill
 					//     chain handles the apply locally.
 					// Non-instant captures stay blocked at the UI layer (toast).
-					console.log('[useP2PSync] RECV chess_command', {
+					console.log('[wireSync] RECV chess_command', {
 						seq: (data as { seq?: unknown }).seq,
 						commandId: typeof (data as { commandId?: unknown }).commandId === 'string'
 							? ((data as { commandId: string }).commandId).slice(0, 8)
@@ -753,7 +734,7 @@ export function useP2PSync() {
 						isHost,
 					});
 					const reject = (cause: string): void => {
-						console.warn(`[useP2PSync] chess_command REJECTED: ${cause}`, {
+						console.warn(`[wireSync] chess_command REJECTED: ${cause}`, {
 							seq: (data as { seq?: unknown }).seq,
 							commandId: (data as { commandId?: unknown }).commandId,
 						});
@@ -841,7 +822,7 @@ export function useP2PSync() {
 						// Divergence diagnostic — dump local roster so we can see
 						// what id/owner/position set the receiver has versus what
 						// the sender claimed.
-						console.warn('[useP2PSync] chess attacker_not_found roster dump', {
+						console.warn('[wireSync] chess attacker_not_found roster dump', {
 							expectedId: cmd.pieceId,
 							commandType: cmd.type,
 							from: cmd.from,
@@ -889,7 +870,7 @@ export function useP2PSync() {
 						// chess_attack — instant-kill capture only.
 						const defender = pieces.find(p => p.id === cmd.defenderId);
 						if (!defender) {
-							console.warn('[useP2PSync] chess defender_not_found roster dump', {
+							console.warn('[wireSync] chess defender_not_found roster dump', {
 								expectedId: cmd.defenderId,
 								to: cmd.to,
 								localPieceCount: pieces.length,
@@ -954,7 +935,7 @@ export function useP2PSync() {
 						remotePeerId: usePeerStore.getState().remotePeerId,
 					}));
 
-					console.log(`[useP2PSync] chess_command APPLIED: ${transcriptAction} piece=${cmd.pieceId.slice(0, 8)} (${cmd.from.row},${cmd.from.col})→(${cmd.to.row},${cmd.to.col})`);
+					console.log(`[wireSync] chess_command APPLIED: ${transcriptAction} piece=${cmd.pieceId.slice(0, 8)} (${cmd.from.row},${cmd.from.col})→(${cmd.to.row},${cmd.to.col})`);
 					break;
 				}
 
@@ -1002,7 +983,7 @@ export function useP2PSync() {
 						if (data.stateHash && flipped) {
 							const expectedHash = `${data.gameState?.turnNumber ?? 0}:${data.gameState?.gamePhase ?? ''}:${data.gameState?.players?.player?.heroHealth ?? 0}:${data.gameState?.players?.opponent?.heroHealth ?? 0}`;
 							if (data.stateHash !== expectedHash) {
-								debug.warn('[useP2PSync] GameState hash mismatch — possible tampering');
+								debug.warn('[wireSync] GameState hash mismatch — possible tampering');
 								// Don't disconnect (could be race condition), but log for diagnostics
 							}
 						}
@@ -1025,7 +1006,7 @@ export function useP2PSync() {
 					break;
 
 				case 'opponentDisconnected':
-					debug.warn('[useP2PSync] Opponent disconnected from game');
+					debug.warn('[wireSync] Opponent disconnected from game');
 					toast.error('Opponent disconnected.', { duration: 8000 });
 					break;
 
@@ -1045,7 +1026,7 @@ export function useP2PSync() {
 					// can render the real hero portraits instead of the default fallback.
 					if (data.army && typeof data.army === 'object') {
 						usePeerStore.getState().setOpponentArmy(data.army);
-						debug.log('[useP2PSync] Opponent army received:', {
+						debug.log('[wireSync] Opponent army received:', {
 							king: data.army.king?.name,
 							queen: data.army.queen?.name,
 							rook: data.army.rook?.name,
@@ -1112,10 +1093,10 @@ export function useP2PSync() {
 										trxId1: existingTrxId,
 										trxId2: data.hash,
 										notes: `Duplicate match result proposed for matchId ${data.result.matchId}`,
-									}).catch(err => debug.warn('[useP2PSync] Failed to submit double_result slash:', err));
+									}).catch(err => debug.warn('[wireSync] Failed to submit double_result slash:', err));
 								}
 							})
-							.catch(err => debug.warn('[useP2PSync] Failed to check existing match result:', err));
+							.catch(err => debug.warn('[wireSync] Failed to check existing match result:', err));
 					}
 
 					const gs = useGameStore.getState().gameState;
@@ -1163,7 +1144,7 @@ export function useP2PSync() {
 				}
 
 				default:
-					debug.warn('[useP2PSync] Unknown message type:', (data as any).type);
+					debug.warn('[wireSync] Unknown message type:', (data as any).type);
 			}
 		};
 
@@ -1189,7 +1170,7 @@ export function useP2PSync() {
 					try {
 						await processMessage(msg);
 					} catch (err) {
-						debug.error(`[useP2PSync] Error processing ${msg.type}:`, err);
+						debug.error(`[wireSync] Error processing ${msg.type}:`, err);
 					}
 				}
 			} finally {
@@ -1200,10 +1181,10 @@ export function useP2PSync() {
 		const MAX_QUEUE_SIZE = 100;
 		const handleMessage = (data: unknown) => {
 			if (!data || typeof data !== 'object') return;
+			if (!('type' in data) || typeof data.type !== 'string') return;
 			const msg = data as P2PMessage;
-			if (!msg.type) return;
 			if (messageQueueRef.current.length >= MAX_QUEUE_SIZE) {
-				debug.warn(`[useP2PSync] Queue full (${MAX_QUEUE_SIZE}), dropping newest message: ${msg.type}`);
+				debug.warn(`[wireSync] Queue full (${MAX_QUEUE_SIZE}), dropping newest message: ${msg.type}`);
 				return;
 			}
 			messageQueueRef.current.push(msg);
@@ -1212,12 +1193,12 @@ export function useP2PSync() {
 
 		const handleMessageWrapper = (data: unknown) => handleMessage(data);
 		connection.on('data', handleMessageWrapper);
-		debug.log('[useP2PSync] Data listener attached to connection (heartbeats will now be processed)');
+		debug.log('[wireSync] Data listener attached to connection (heartbeats will now be processed)');
 
 		return () => {
 			cancelled = true;
 			connection.off('data', handleMessageWrapper);
-			debug.log('[useP2PSync] Data listener detached');
+			debug.log('[wireSync] Data listener detached');
 			if (pendingSyncRef.current) {
 				clearTimeout(pendingSyncRef.current);
 				pendingSyncRef.current = null;
@@ -1249,7 +1230,7 @@ export function useP2PSync() {
 	const sendCommandEnvelope = useCallback((command: WireGameCommand): void => {
 		const matchId = matchIdRef.current ?? '';
 		if (!matchId) {
-			debug.warn('[useP2PSync] sendCommandEnvelope skipped: no matchId yet');
+			debug.warn('[wireSync] sendCommandEnvelope skipped: no matchId yet');
 			return;
 		}
 		// Cooldown to avoid the fast-double-click race: client (!isHost) doesn't
@@ -1263,7 +1244,7 @@ export function useP2PSync() {
 		const ENVELOPE_COOLDOWN_MS = 250;
 		const nowSend = Date.now();
 		if (nowSend - lastEnvelopeSentAtRef.current < ENVELOPE_COOLDOWN_MS) {
-			debug.warn(`[useP2PSync] envelope cooldown active (${nowSend - lastEnvelopeSentAtRef.current}ms since last) — dropping ${command.type}`);
+			debug.warn(`[wireSync] envelope cooldown active (${nowSend - lastEnvelopeSentAtRef.current}ms since last) — dropping ${command.type}`);
 			toast.error('Action too fast — wait for opponent to sync', { duration: 1500 });
 			return;
 		}
@@ -1366,7 +1347,7 @@ export function useP2PSync() {
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
 		} catch (err) {
-			debug.error('[useP2PSync] downloadSessionLog failed:', err);
+			debug.error('[wireSync] downloadSessionLog failed:', err);
 		}
 	}, [connectionState, isHost]);
 

@@ -1,12 +1,12 @@
 import React, { useRef, ReactNode } from 'react';
 import { dispatchGameCommand } from '../actions/gameCommandDispatcher';
 import type { GameCommand, HeroPowerTargetType } from '../core/commands';
-import { useP2PSync } from '../hooks/useP2PSync';
+import { useWireSync } from '../match/modes/p2p/wireSync/useWireSync';
 import { useGameStore } from '../stores/gameStore';
 import { P2PContext, type P2PActions } from './p2pContextValue';
 
 export const P2PProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const p2pSync = useP2PSync();
+	const p2pSync = useWireSync();
 	const gsPlayCard = useGameStore(s => s.playCard);
 	const gsAttackWithCard = useGameStore(s => s.attackWithCard);
 	const gsEndTurn = useGameStore(s => s.endTurn);
