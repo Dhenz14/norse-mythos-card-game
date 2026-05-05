@@ -6,7 +6,7 @@ import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore, getMission } from '../campaign';
 import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
-import { deriveIntro, deriveOpponentArmyForMode, useLegacyMatchContextBridge, useMatchStore } from '../match';
+import { deriveIntro, deriveOpponentArmyForMode, selectOnWinHandler, useLegacyMatchContextBridge, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -22,7 +22,6 @@ import { useWarbandStore, selectArmy, selectDeckCardIds } from '../../lib/stores
 import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
 import { createSeededIdGen, cryptoIdGen, cryptoRng } from '../utils/seededRng';
-import { useCraftingStore } from '../crafting/craftingStore';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { useCampaignGameBootstrap } from './hooks/useCampaignGameBootstrap';
 import { useBossRuleEffects } from './hooks/useBossRuleEffects';
@@ -89,7 +88,6 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
 
   const campaignMissionId = useCampaignStore(s => s.currentMission);
   const campaignDifficulty = useCampaignStore(s => s.currentDifficulty);
-  const completeMission = useCampaignStore(s => s.completeMission);
   const clearCurrent = useCampaignStore(s => s.clearCurrent);
   const campaignData = campaignMissionId ? getMission(campaignMissionId) : null;
   // Derived from MatchContext when available (Fase 3 C7), legacy fallback
@@ -565,24 +563,13 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     playSoundEffect(iWon ? 'victory' : 'defeat');
     gameOverTimerRef.current = setTimeout(() => {
       gameOverTimerRef.current = null;
-      if (isCampaign && iWon && campaignMissionId && campaignData) {
-        completeMission(campaignMissionId, campaignDifficulty, turnCount);
-        const alreadyClaimed = useCampaignStore.getState().rewardsClaimed.includes(campaignMissionId);
-        if (!alreadyClaimed) {
-          for (const reward of campaignData.mission.rewards) {
-            if (reward.type === 'eitr' && reward.amount) {
-              useCraftingStore.getState().addEitr(reward.amount);
-            }
-          }
-          // Difficulty-locked bonus rewards
-          if (campaignDifficulty === 'heroic') {
-            useCraftingStore.getState().addEitr(50);
-          } else if (campaignDifficulty === 'mythic') {
-            useCraftingStore.getState().addEitr(150);
-          }
-          useCampaignStore.getState().claimReward(campaignMissionId);
-          debug.chess(`[Campaign] Rewards distributed for ${campaignMissionId} (${campaignDifficulty})`);
-        }
+      // Fase 4 C10 — mode-specific reward dispatch lives in match/modes/X/lifecycle.ts.
+      // selectOnWinHandler picks campaign / solo / p2p based on opponent.kind;
+      // each handler is responsible for its own gating (iWon check, idempotency,
+      // store dispatch). Pre-Fase-4 inline campaign logic moved verbatim into
+      // match/modes/campaign/lifecycle.ts.
+      if (ctx) {
+        selectOnWinHandler(ctx)({ iWon, turnCount });
       }
       const initialSub = getInitialGameOverSubPhase({
         winner,

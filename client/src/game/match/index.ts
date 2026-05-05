@@ -23,6 +23,9 @@ export { useMatchStore } from './store';
 export { deriveAuthority, deriveOpponentArmyForMode, deriveIntro } from './derived';
 export type { Authority, IntroSpec } from './derived';
 
+export { selectOnWinHandler } from './onWinDispatch';
+export type { MatchEndContext } from './onWinDispatch';
+
 // ── Economy surface ───────────────────────────────────────────────────────
 // Centralized per-mode reward configuration. Designer-tunable from a
 // single file; resolvers read MATCH_ECONOMY and translate to the
