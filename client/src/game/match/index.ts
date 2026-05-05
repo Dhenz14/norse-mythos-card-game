@@ -51,3 +51,11 @@ export type { CampaignResolveArgs, CampaignResolveResult } from './modes/campaig
 
 export { resolveP2P } from './modes/p2p';
 export type { P2PHandshake } from './modes/p2p';
+
+// ── Legacy bridge (Fase 3 — throwaway, replaced in Fase 5) ────────────────
+// Synthesizes a MatchContext from existing stores so the coordinator can
+// read from useMatchStore in Fase 3 C7 without the broader route refactor.
+
+export { useLegacyMatchContextBridge } from './legacyBridge';
+export { synthesizeLegacyMatchContext } from './legacySynth';
+export type { LegacySynthInputs } from './legacySynth';

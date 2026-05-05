@@ -6,6 +6,7 @@ import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore, getMission } from '../campaign';
 import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
+import { useLegacyMatchContextBridge } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -71,6 +72,13 @@ type RagnarokGameCoordinatorProps = {
 };
 
 const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGameEnd, initialArmy = null, opponentArmy: opponentArmyProp = null }) => {
+  // Fase 3 C6 — populate useMatchStore from legacy stores. This hook is
+  // OBSERVE-ONLY in this commit: it pushes a synthesized MatchContext
+  // into the store, but the coordinator's branches still read the legacy
+  // flags below. C7 swaps the consumers; Fase 5 retires this whole bridge
+  // when <MatchSetupP2P/> takes over the async P2P handshake.
+  useLegacyMatchContextBridge();
+
   const { playSoundEffect } = useAudio();
   const navigate = useNavigate();
 
