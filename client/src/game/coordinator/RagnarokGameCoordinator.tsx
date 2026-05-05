@@ -6,7 +6,7 @@ import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore, getMission } from '../campaign';
 import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
-import { useLegacyMatchContextBridge, useMatchStore } from '../match';
+import { deriveOpponentArmyForMode, useLegacyMatchContextBridge, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -177,10 +177,21 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const { initializeCombat, endCombat } = usePokerCombatAdapter();
 
   const opponentArmy = useMemo(() => {
-    if (isCampaign) return buildCampaignArmy(campaignData!.mission);
+    // P2P wire prop wins for peer matches — opponent army comes off
+    // the wire and is not derivable from ctx alone.
     if (opponentArmyProp) return opponentArmyProp;
+    // Fase 4 C8: derive from ctx via mode modules. ai → solo builder
+    // (default army), scripted → campaign builder (mission-specific).
+    if (ctx) {
+      const fromMode = deriveOpponentArmyForMode(ctx);
+      if (fromMode) return fromMode;
+    }
+    // Legacy fallback for first-render window before bridge populates ctx.
+    // Removed in Fase 7 once <MatchSetupP2P/> guarantees ctx is non-null
+    // by the time the coordinator mounts.
+    if (isCampaign) return buildCampaignArmy(campaignData!.mission);
     return getDefaultArmySelection();
-  }, [isCampaign, campaignData, opponentArmyProp]);
+  }, [ctx, isCampaign, campaignData, opponentArmyProp]);
 
   const missionRealm = isCampaign ? campaignData?.mission?.realm : undefined;
   const visualRealm = useMemo(() => resolveVisualRealm(missionRealm), [missionRealm]);

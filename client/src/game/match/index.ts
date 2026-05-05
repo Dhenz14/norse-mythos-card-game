@@ -20,7 +20,7 @@ export type {
 
 export { useMatchStore } from './store';
 
-export { deriveAuthority } from './derived';
+export { deriveAuthority, deriveOpponentArmyForMode } from './derived';
 export type { Authority } from './derived';
 
 // ── Economy surface ───────────────────────────────────────────────────────

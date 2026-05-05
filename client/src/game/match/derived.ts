@@ -3,15 +3,26 @@
  * on by reading stores directly. Every conditional that previously
  * looked like `if (isCampaign)` lives here as a function with one body.
  *
- * These helpers are NEUTRAL — they do not import from match/modes/.
- * They compute generic shapes (Authority, IntroSpec, PhaseList) that
- * the coordinator and mode-specific lifecycle handlers consume.
+ * These helpers are NEUTRAL with respect to DATA FLOW — they take a
+ * MatchContext as input and return a generic shape (Authority, an
+ * ArmySelection, an IntroSpec, …). They do not read Zustand stores
+ * directly nor branch on global state.
+ *
+ * They DO import from match/modes/<X>/ — derived.ts is the dispatcher
+ * layer that knows about each mode and routes the request. The mode
+ * isolation rule (Fase 6 ESLint) prohibits modes/X/ from importing
+ * modes/Y/, but match/ root files (types/store/derived) are explicitly
+ * allowed to know about each mode for dispatching.
  *
  * Phase ownership:
- *   - Fase 1 (this file's seed): deriveAuthority only. Other helpers
- *     are added in Fase 4 when we wire intro/phases/onWin selection.
+ *   - Fase 1: deriveAuthority.
+ *   - Fase 4 (this file growing): deriveOpponentArmyForMode.
+ *   - Fase 4 next steps: deriveIntro, selectOnWinHandler.
  */
 
+import type { ArmySelection } from '../types/ChessTypes';
+import { buildCampaignOpponentArmy } from './modes/campaign/armyBuilder';
+import { buildSoloOpponentArmy } from './modes/solo/armyBuilder';
 import type { MatchContext } from './types';
 
 // ── Authority ─────────────────────────────────────────────────────────────
@@ -32,4 +43,30 @@ export function deriveAuthority(ctx: MatchContext): Authority {
 		return { kind: 'p2p-symmetric', myRole: ctx.opponent.myRole };
 	}
 	return { kind: 'local' };
+}
+
+// ── Opponent army ─────────────────────────────────────────────────────────
+
+/**
+ * Selects the opponent's army from the appropriate mode module.
+ * Returns null for peer opponents — those receive their army via the
+ * P2P wire (caller passes opponentArmyProp explicitly), so deriving
+ * locally would be wrong.
+ *
+ * Coordinator pattern:
+ *   const army = opponentArmyProp ?? deriveOpponentArmyForMode(ctx) ?? defaultArmy
+ *
+ * The opponentArmyProp wins for the P2P case; the derive path
+ * handles ai/scripted; the default fallback covers the first-render
+ * window where ctx is still null.
+ */
+export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | null {
+	switch (ctx.opponent.kind) {
+		case 'ai':
+			return buildSoloOpponentArmy(ctx.opponent);
+		case 'scripted':
+			return buildCampaignOpponentArmy(ctx.opponent);
+		case 'peer':
+			return null;
+	}
 }
