@@ -15,6 +15,58 @@ function trimGlobals(...sources) {
 	return merged;
 }
 
+// ─── Match-mode isolation ────────────────────────────────────────────────────
+// Each match mode (solo / campaign / p2p) lives in its own folder under
+// client/src/game/match/modes/. A file inside modes/<mode>/ may import from:
+//   - the neutral match surface (match/types, match/store, match/derived,
+//     match/onWinDispatch, match/economy)
+//   - its OWN files (relative siblings in modes/<mode>/)
+// It MUST NOT reach across to a sibling mode. Cross-mode coordination flows
+// through the neutral dispatchers (match/derived.ts, match/onWinDispatch.ts).
+//
+// Why: the historical coordinator branched on isCampaign / isP2PConnected
+// scattered through one file. Each new mode forced a new conditional and
+// silent cross-mode bugs (e.g. campaign reward dispatched from a P2P match)
+// were caught only by code review. Physical separation + this lint guard
+// keeps the boundary load-bearing as future modes (tutorial, puzzle, daily,
+// ranked) land.
+//
+// The dispatchers and barrel (match/derived.ts, match/onWinDispatch.ts,
+// match/legacySynth.ts, match/index.ts) live OUTSIDE modes/, so they are
+// already out of scope for these rules — no allow-list needed.
+// ─────────────────────────────────────────────────────────────────────────────
+function modeIsolationRule(thisMode, otherModes) {
+	const groupPatterns = otherModes.flatMap((mode) => [
+		`../${mode}/**`,
+		`@/game/match/modes/${mode}/**`,
+	]);
+	const others = otherModes.join(',');
+	return {
+		files: [`client/src/game/match/modes/${thisMode}/**/*.{ts,tsx}`],
+		rules: {
+			'no-restricted-imports': ['error', {
+				patterns: [
+					{
+						group: groupPatterns,
+						message:
+							`modes/${thisMode} cannot import from modes/{${others}}. ` +
+							'Cross-mode coordination must go through neutral surface ' +
+							'(match/derived.ts, match/onWinDispatch.ts) — these dispatchers ' +
+							'live outside modes/ and are responsible for picking the right ' +
+							'mode-specific implementation at call time.',
+					},
+				],
+			}],
+		},
+	};
+}
+
+const matchModeIsolationRules = [
+	modeIsolationRule('solo', ['campaign', 'p2p']),
+	modeIsolationRule('campaign', ['solo', 'p2p']),
+	modeIsolationRule('p2p', ['solo', 'campaign']),
+];
+
 // ─── Layer contract ───────────────────────────────────────────────────────────
 // game/stores/ and game/core/ are pure logic — they cannot reach into the UI
 // layer (components/). UI feedback must flow through GameEventBus so the visual
@@ -65,6 +117,7 @@ const layerContractRules = [
 export default [
 	js.configs.recommended,
 	...layerContractRules,
+	...matchModeIsolationRules,
 	{
 		ignores: [
 			'node_modules/**',
