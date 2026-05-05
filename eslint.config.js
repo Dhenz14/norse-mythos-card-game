@@ -67,6 +67,61 @@ const matchModeIsolationRules = [
 	modeIsolationRule('p2p', ['solo', 'campaign']),
 ];
 
+// ─── Pure-derivation purity ──────────────────────────────────────────────────
+// match/derived.ts (and any future match/derived/**) are pure value derivers
+// from MatchContext. They MUST NOT import:
+//   - any Zustand store (game/stores/**, lib/stores/**, match/store)
+//   - any *Dispatch.ts file (those import lifecycle handlers that touch
+//     Zustand persist middleware, which calls localStorage at module-init
+//     and crashes Node-env vitest, web workers, and SSR builds)
+//   - the legacy bridge (same transitive impurity)
+//
+// Why this matters at scale (NOT just for vitest):
+//   - P2P replay determinism: a deriver that reads useStore.getState()
+//     gets the value AT REPLAY TIME, not at match time → replay diverges
+//     from grabación. Lint prevents the bug by construction.
+//   - Web workers: a future AI scoring worker has no localStorage; any
+//     transitive store import bricks the worker.
+//   - SSR / edge runtime: same module-init crash as Node vitest.
+//
+// What goes where:
+//   match/derived.ts         → pure (input → value), this rule applies
+//   match/*Dispatch.ts       → impure (input → side-effect callback), excluded
+//   match/modes/{X}/lifecycle.ts → impure handlers, excluded
+// ─────────────────────────────────────────────────────────────────────────────
+const pureDerivationRules = [
+	{
+		files: [
+			'client/src/game/match/derived.ts',
+			'client/src/game/match/derived/**/*.{ts,tsx}',
+		],
+		rules: {
+			'no-restricted-imports': ['error', {
+				patterns: [
+					{
+						group: [
+							'**/stores/**',
+							'**/lib/stores/**',
+							'./store',
+							'../store',
+							'./onWinDispatch',
+							'./*Dispatch',
+							'**/legacyBridge',
+							'**/campaign/campaignStore',
+						],
+						message:
+							'Pure derivers must not import stores or *Dispatch modules. ' +
+							'Take MatchContext by parameter; side effects belong in ' +
+							'*Dispatch.ts files (see docs/LAYER_GLOSSARY.md → Mode lifecycle ' +
+							'dispatcher). This rule prevents Zustand persist module-init ' +
+							'crashes in Node/SSR/workers and protects P2P replay determinism.',
+					},
+				],
+			}],
+		},
+	},
+];
+
 // ─── Layer contract ───────────────────────────────────────────────────────────
 // game/stores/ and game/core/ are pure logic — they cannot reach into the UI
 // layer (components/). UI feedback must flow through GameEventBus so the visual
@@ -118,6 +173,7 @@ export default [
 	js.configs.recommended,
 	...layerContractRules,
 	...matchModeIsolationRules,
+	...pureDerivationRules,
 	{
 		ignores: [
 			'node_modules/**',

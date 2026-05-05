@@ -173,19 +173,68 @@ audio, animation, blockchain transcript).
 
 ---
 
-### Lifecycle dispatcher
+### Mode value derivation
 
-**Definition.** A neutral helper that, given a `MatchContext`, returns
-the right mode-specific lifecycle handler. The coordinator calls a
-single function; the dispatcher routes to the correct mode module.
+**Definition.** A pure function that takes `MatchContext` (and possibly
+other inert inputs) and returns a value that depends on the mode but
+itself has no side effects. The coordinator reads the value and
+decides what to render or what to pass downstream.
 
-**Location.** `client/src/game/match/{name}Dispatch.ts`.
+**Location.** `client/src/game/match/derived.ts` (split into
+`match/derived/{name}.ts` only when the file crosses ~300 lines).
 
 **Contract.**
-- MUST be exhaustive over `OpponentSpec.kind` — TypeScript narrowing
-  catches missing cases at compile time.
-- MAY import from all `match/modes/*/lifecycle`.
-- MUST NOT contain mode-specific logic; it routes only.
+- MUST be pure — no Zustand store reads, no `Math.random` / `Date.now`,
+  no I/O, no React hooks.
+- MUST be exhaustive over `OpponentSpec.kind` (and over discriminated
+  sub-unions like `ScriptPayload.kind` when the value depends on them).
+- MAY import types, deterministic constants, and pure helpers from
+  `match/`, `shared/`, `client/src/game/data/`, and per-mode pure
+  helpers (e.g. campaign army composition).
+- MUST NOT import any Zustand store (`stores/**`, `lib/stores/**`,
+  `match/store`), any `*Dispatch.ts` file, or `legacyBridge`. Enforced
+  by `pureDerivationRules` in `eslint.config.js`.
+
+**Why purity is non-negotiable.** A deriver that reads
+`useStore.getState()` returns whatever the store says **at call time**,
+not at match start. During P2P replay, that value will be the current
+runtime store, not the historical match state — replays diverge from
+recordings silently. The lint rule prevents this bug class by
+construction. Same property protects future workers (no
+`localStorage`) and SSR builds.
+
+**Real examples** (`client/src/game/match/derived.ts`):
+- `deriveAuthority(ctx)` → `Authority`
+- `deriveOpponentArmyForMode(ctx)` → `ArmySelection | null`
+- `deriveIntro(ctx, seenChapterIds)` → `IntroSpec`
+
+---
+
+### Mode lifecycle dispatcher
+
+**Definition.** A neutral helper that, given a `MatchContext`, returns
+a callback that performs mode-specific side effects (store mutations,
+event emissions, on-chain dispatch). The coordinator invokes the
+returned callback at a lifecycle moment (game-end, surrender, turn-start);
+the dispatcher itself does not do the work, it picks who does.
+
+**Location.** `client/src/game/match/{phase}Dispatch.ts` — the
+`*Dispatch.ts` suffix is the canary that flags an impure entry point.
+A reader scanning `git ls-files match/` should see all impure
+dispatchers at a glance.
+
+**Contract.**
+- MUST be exhaustive over `OpponentSpec.kind`.
+- MAY import from all `match/modes/*/lifecycle.ts`.
+- MAY transitively pull Zustand stores via the lifecycle handlers.
+- MUST NOT contain mode-specific logic; it routes only — the impure
+  work belongs in `match/modes/{mode}/lifecycle.ts`.
+
+**Why separate from `derived.ts`.** Lifecycle handlers import Zustand
+stores that use `persist` middleware, which calls `localStorage` at
+module-init. If `derived.ts` (loaded by every test that touches a
+deriver) pulled this transitively, every unit test would crash in Node
+env. The split is enforced architecturally — it is not a workaround.
 
 **Why separate from the coordinator.** Putting `if (isCampaign) X else
 if (isP2P) Y` in the coordinator was the original sin: every new mode
@@ -193,7 +242,7 @@ forced another branch and another store import. The dispatcher is the
 single point of mode-aware routing, called from a coordinator that
 itself is mode-agnostic.
 
-**Real example.** `client/src/game/match/onWinDispatch.ts`:
+**Real example** (`client/src/game/match/onWinDispatch.ts`):
 
 ```ts
 export function selectOnWinHandler(ctx: MatchContext) {
@@ -319,6 +368,13 @@ always a layer violation.
 | `stores/ ↛ components/` | Stores can't reach into UI; subscribers bridge |
 | `core/ ↛ components/` | Same idea for `client/game/core/` |
 | `match/modes/{X}/ ↛ match/modes/{Y}/` | Modes don't cross-call (Fase 6) |
+| `match/derived.ts ↛ {stores, *Dispatch, legacyBridge}` | Pure derivers stay replay-safe (Opp 3) |
+
+**Test environment as a purity canary.** `vitest.config.ts` runs the
+entire suite in `environment: "node"`. Any test that exercises a pure
+deriver runs without `localStorage`, `window`, or `document`. If a
+deriver test ever needs jsdom, the deriver is no longer pure — that
+is a structural failure, not a test-config oversight.
 
 Future rules to add (proposed):
 
