@@ -6,7 +6,7 @@ import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore, getMission } from '../campaign';
 import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
-import { deriveOpponentArmyForMode, useLegacyMatchContextBridge, useMatchStore } from '../match';
+import { deriveIntro, deriveOpponentArmyForMode, useLegacyMatchContextBridge, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -99,10 +99,23 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const isCampaign = ctx ? ctx.opponent.kind === 'scripted' : !!campaignData;
 
   const markCinematicSeen = useCampaignStore(s => s.markCinematicSeen);
-  const cinematicAlreadySeen = useCampaignStore(s =>
-    campaignData ? s.seenCinematics.includes(campaignData.chapter.id) : true
-  );
-  const hasCinematic = isCampaign && !!campaignData?.chapter?.cinematicIntro && !cinematicAlreadySeen;
+  const seenChapterIds = useCampaignStore(s => s.seenCinematics);
+  // Fase 4 C9 — cinematic gate derives from MatchContext via deriveIntro.
+  // Legacy fallback covers the first-render window before the bridge effect
+  // populates ctx; removed in Fase 7 once <MatchSetupP2P/> guarantees ctx
+  // is non-null at mount.
+  const intro = useMemo(() => {
+    if (ctx) return deriveIntro(ctx, seenChapterIds);
+    if (campaignData?.chapter?.cinematicIntro && !seenChapterIds.includes(campaignData.chapter.id)) {
+      return {
+        kind: 'cinematic' as const,
+        chapter: campaignData.chapter,
+        mission: campaignData.mission,
+      };
+    }
+    return { kind: 'none' as const };
+  }, [ctx, campaignData, seenChapterIds]);
+  const hasCinematic = intro.kind === 'cinematic';
   const warbandArmy = useWarbandStore(selectArmy);
   const warbandDeck = useWarbandStore(selectDeckCardIds);
   // TD-19: in P2P mode, the host's `init` message (post seed-exchange) is the

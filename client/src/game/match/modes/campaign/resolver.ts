@@ -43,6 +43,7 @@ export function resolveCampaign(args: CampaignResolveArgs): CampaignResolveResul
 				script: {
 					kind: 'campaign-mission',
 					mission: found.mission,
+					chapter: found.chapter,
 					difficulty: args.difficulty,
 				},
 			},

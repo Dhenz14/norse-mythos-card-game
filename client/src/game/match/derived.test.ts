@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_CHAPTERS } from '../campaign';
-import { deriveAuthority, deriveOpponentArmyForMode } from './derived';
+import { deriveAuthority, deriveIntro, deriveOpponentArmyForMode } from './derived';
 import type { MatchContext } from './types';
 
-const KNOWN_MISSION = ALL_CHAPTERS[0].missions[0];
+const KNOWN_CHAPTER = ALL_CHAPTERS[0];
+const KNOWN_MISSION = KNOWN_CHAPTER.missions[0];
 
 const baseIdentity = {
 	matchId: 'match-x',
@@ -20,7 +21,12 @@ const scriptedCtx: MatchContext = {
 	...baseIdentity,
 	opponent: {
 		kind: 'scripted',
-		script: { kind: 'campaign-mission', mission: KNOWN_MISSION, difficulty: 'heroic' },
+		script: {
+			kind: 'campaign-mission',
+			mission: KNOWN_MISSION,
+			chapter: KNOWN_CHAPTER,
+			difficulty: 'heroic',
+		},
 	},
 	reward: { xpRunes: { kind: 'percentage', multiplier: 0.1 }, ranking: { kind: 'none' } },
 };
@@ -67,5 +73,52 @@ describe('deriveOpponentArmyForMode', () => {
 	it('returns null for peer opponent (army comes via the wire prop, not derivable)', () => {
 		const army = deriveOpponentArmyForMode(peerCtx);
 		expect(army).toBeNull();
+	});
+});
+
+describe('deriveIntro', () => {
+	it('returns none for ai (solo) opponent regardless of seenChapterIds', () => {
+		expect(deriveIntro(aiCtx, [])).toEqual({ kind: 'none' });
+		expect(deriveIntro(aiCtx, [KNOWN_CHAPTER.id])).toEqual({ kind: 'none' });
+	});
+
+	it('returns none for peer opponent regardless of seenChapterIds', () => {
+		expect(deriveIntro(peerCtx, [])).toEqual({ kind: 'none' });
+		expect(deriveIntro(peerCtx, [KNOWN_CHAPTER.id])).toEqual({ kind: 'none' });
+	});
+
+	it('returns cinematic for scripted+campaign-mission when chapter has cinematicIntro and is not seen', () => {
+		if (!KNOWN_CHAPTER.cinematicIntro) {
+			// Sanity: this test only meaningful if KNOWN_CHAPTER actually has one.
+			// All bundled chapters today carry an intro; if that ever stops, this
+			// test should still be valid (we'd need to pick a chapter that has one).
+			throw new Error('test fixture: KNOWN_CHAPTER must have cinematicIntro');
+		}
+		const intro = deriveIntro(scriptedCtx, []);
+		expect(intro.kind).toBe('cinematic');
+		if (intro.kind === 'cinematic') {
+			expect(intro.chapter.id).toBe(KNOWN_CHAPTER.id);
+			expect(intro.mission.id).toBe(KNOWN_MISSION.id);
+		}
+	});
+
+	it('returns none when the chapter has already been seen', () => {
+		expect(deriveIntro(scriptedCtx, [KNOWN_CHAPTER.id])).toEqual({ kind: 'none' });
+	});
+
+	it('returns none when the chapter does not have a cinematicIntro', () => {
+		const ctxWithoutCinematic: MatchContext = {
+			...scriptedCtx,
+			opponent: {
+				kind: 'scripted',
+				script: {
+					kind: 'campaign-mission',
+					mission: KNOWN_MISSION,
+					chapter: { ...KNOWN_CHAPTER, cinematicIntro: undefined },
+					difficulty: 'normal',
+				},
+			},
+		};
+		expect(deriveIntro(ctxWithoutCinematic, [])).toEqual({ kind: 'none' });
 	});
 });

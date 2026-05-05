@@ -29,7 +29,7 @@
  *      flows (P2P handshake) live in a separate <MatchSetup/> wrapper.
  */
 
-import type { CampaignMission, Difficulty } from '../campaign/campaignTypes';
+import type { CampaignChapter, CampaignMission, Difficulty } from '../campaign/campaignTypes';
 
 // ── Identity ──────────────────────────────────────────────────────────────
 
@@ -64,9 +64,19 @@ export interface ScriptedOpponent {
  * What the scripted opponent runs. Today only campaign-mission; future
  * tutorial and puzzle slot in here without changing OpponentSpec or
  * any caller that already handles `kind: 'scripted'`.
+ *
+ * `chapter` is bundled into the campaign-mission variant because intro
+ * derivation (`deriveIntro`) needs both the mission AND the chapter
+ * (cinematic intros are chapter-level, not mission-level). Capturing
+ * it at resolver time avoids a double lookup at every consumer.
  */
 export type ScriptPayload =
-	| { kind: 'campaign-mission'; mission: CampaignMission; difficulty: Difficulty };
+	| {
+			kind: 'campaign-mission';
+			mission: CampaignMission;
+			chapter: CampaignChapter;
+			difficulty: Difficulty;
+	  };
 	// future: | { kind: 'tutorial'; lessonId: string }
 	// future: | { kind: 'puzzle'; puzzleId: string }
 

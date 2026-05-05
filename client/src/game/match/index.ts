@@ -20,8 +20,8 @@ export type {
 
 export { useMatchStore } from './store';
 
-export { deriveAuthority, deriveOpponentArmyForMode } from './derived';
-export type { Authority } from './derived';
+export { deriveAuthority, deriveOpponentArmyForMode, deriveIntro } from './derived';
+export type { Authority, IntroSpec } from './derived';
 
 // ── Economy surface ───────────────────────────────────────────────────────
 // Centralized per-mode reward configuration. Designer-tunable from a

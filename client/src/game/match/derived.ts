@@ -20,6 +20,7 @@
  *   - Fase 4 next steps: deriveIntro, selectOnWinHandler.
  */
 
+import type { CampaignChapter, CampaignMission } from '../campaign/campaignTypes';
 import type { ArmySelection } from '../types/ChessTypes';
 import { buildCampaignOpponentArmy } from './modes/campaign/armyBuilder';
 import { buildSoloOpponentArmy } from './modes/solo/armyBuilder';
@@ -69,4 +70,42 @@ export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | nu
 		case 'peer':
 			return null;
 	}
+}
+
+// ── Intro spec ────────────────────────────────────────────────────────────
+
+/**
+ * What pre-match presentation the coordinator should mount.
+ *
+ * Today the only non-trivial intro is the campaign chapter cinematic
+ * that plays the FIRST time the player visits a chapter. Other modes
+ * (solo, P2P) skip straight into match setup. Future: VS screen for
+ * P2P, mission-brief for tutorials, etc. — slot into this union.
+ */
+export type IntroSpec =
+	| { kind: 'cinematic'; chapter: CampaignChapter; mission: CampaignMission }
+	| { kind: 'none' };
+
+/**
+ * Decide what intro to play given the match context and the player's
+ * already-seen chapters.
+ *
+ * Cinematic gate (replaces the coordinator's `hasCinematic` derivation):
+ *   - Opponent must be a campaign-mission script.
+ *   - The mission's chapter must declare a `cinematicIntro`.
+ *   - The chapter must NOT yet be in `seenChapterIds` for this player.
+ *
+ * Anything else collapses to `{ kind: 'none' }`. The coordinator
+ * mounts the CinematicPhase iff `intro.kind === 'cinematic'`.
+ */
+export function deriveIntro(
+	ctx: MatchContext,
+	seenChapterIds: readonly string[],
+): IntroSpec {
+	if (ctx.opponent.kind !== 'scripted') return { kind: 'none' };
+	if (ctx.opponent.script.kind !== 'campaign-mission') return { kind: 'none' };
+	const { chapter, mission } = ctx.opponent.script;
+	if (!chapter.cinematicIntro) return { kind: 'none' };
+	if (seenChapterIds.includes(chapter.id)) return { kind: 'none' };
+	return { kind: 'cinematic', chapter, mission };
 }
