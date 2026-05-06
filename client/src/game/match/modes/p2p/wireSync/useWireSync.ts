@@ -5,7 +5,6 @@ import { useMatchStore } from '../../../store';
 import { deriveAuthority } from '../../../derived';
 import { useGameStore } from '../../../../stores/gameStore';
 import { debug } from '../../../../config/debugConfig';
-import { GameState } from '../../../../types';
 import { verifyDeckOwnership } from '../../../../../data/blockchain/deckVerification';
 import { sha256Hash } from '../../../../../data/blockchain/hashUtils';
 import { verifyDeck as verifyDeckOnServer } from '../../../../../data/chainAPI';
@@ -14,8 +13,8 @@ import type { PackagedMatchResult } from '../../../../../data/blockchain/types';
 import { startNewTranscript, clearTranscript, recordSessionEvent, exportSessionLog, recordMove } from '../../../../../data/blockchain/transcriptBuilder';
 import { localPlayerId, remotePlayerId } from '../../../../../data/blockchain/playerIdentity';
 import { getWasmHash, loadWasmEngine } from '../../../../engine/wasmLoader';
-import { computeStateHash, computeStateHashSync } from '../../../../engine/engineBridge';
-import { isWasmReady } from '../../../../engine/wasmInterface';
+import { computeStateHash } from '../../../../engine/engineBridge';
+import { flipGameState, computeCardsPrevStateHash } from '../../../../engine/wireHash';
 import { isSharedNetworkEnvironment } from '../../../../config/featureFlags';
 import { submitSlashEvidence, findExistingMatchResult } from '../../../../../data/blockchain/slashEvidence';
 import { GAME_COMMAND_TYPES } from '../../../../core/commands';
@@ -31,65 +30,10 @@ export type { P2PMessage } from '../../../../p2p/messages';
 
 declare const __BUILD_HASH__: string;
 
-/**
- * Flip the game state so the client sees themselves as 'player' and the host as 'opponent'.
- * The host always stores state from its own perspective (host=player, client=opponent).
- * Without this flip the client would see their own cards at the top under "opponent".
- */
-function flipGameState(state: GameState): GameState {
-	return {
-		...state,
-		players: {
-			player: state.players.opponent,
-			opponent: state.players.player,
-		},
-		currentTurn: state.currentTurn === 'player' ? 'opponent' : 'player',
-		winner: state.winner === 'player' ? 'opponent' : state.winner === 'opponent' ? 'player' : state.winner,
-		mulligan: state.mulligan ? {
-			...state.mulligan,
-			playerReady: (state.mulligan as any).opponentReady ?? false,
-			opponentReady: (state.mulligan as any).playerReady ?? false,
-		} : state.mulligan,
-	};
-}
-
 function generateSalt(): string {
 	const bytes = new Uint8Array(32);
 	crypto.getRandomValues(bytes);
 	return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Compute the WASM-canonical state hash for `prevStateHash` of an outgoing
- * game_command envelope, and for the host-side validator that re-derives
- * the same hash to compare against. Two named expected failures return `''`
- * (the receiver's existing `missing_prev_state_hash` rejection path treats
- * empty as "retry later"); a genuinely-unexpected serializer crash is
- * caught defensively so the sync click handler doesn't blow up React's
- * render tree.
- *
- *   state === null     → pre-init lifecycle. Caller hashes before any state
- *                        exists. Receiver retries when state arrives.
- *   !isWasmReady()     → race during eager WASM load. Cleared once WASM
- *                        finishes initializing (eager-loaded at handshake).
- *   thrown otherwise   → unexpected. Logged at warn so telemetry surfaces
- *                        the bug, return '' to fail-safe rather than crash.
- *
- * Perspective: the joiner (sender, !isCardsAuthority) flips its state to
- * host perspective before hashing so the host-side validator (which calls
- * with isCardsAuthority=true and skips the flip) computes the same byte
- * layout. Mirrors the canonicalization done by the periodic hash_check.
- */
-function computePrevStateHash(state: GameState | null, isCardsAuthority: boolean): string {
-	if (!state) return '';
-	if (!isWasmReady()) return '';
-	try {
-		const canonical = isCardsAuthority ? state : flipGameState(state);
-		return computeStateHashSync(canonical);
-	} catch (err) {
-		debug.warn('[wireSync] prev-state hash failed unexpectedly', err);
-		return '';
-	}
 }
 
 // `moveCounter` was lifted into transcriptBuilder.ts (singleton-scoped) so
@@ -660,14 +604,14 @@ export function useWireSync() {
 						// prevStateHash is required and must match. Earlier code short-circuited
 						// when `data.prevStateHash` was falsy — that allowed a sender to bypass
 						// the integrity check by omitting the field. With sender-side
-						// `computePrevStateHash` always producing a string (empty only on
+						// `computeCardsPrevStateHash` always producing a string (empty only on
 						// pre-init / WASM-not-ready edge cases that shouldn't happen during
 						// play), we can validate strictly: non-empty string + exact match.
 						if (typeof data.prevStateHash !== 'string' || data.prevStateHash.length === 0) {
 							reject('missing_prev_state_hash');
 							break;
 						}
-						const localPrevHash = computePrevStateHash(useGameStore.getState().gameState, true);
+						const localPrevHash = computeCardsPrevStateHash(useGameStore.getState().gameState, true);
 						if (data.prevStateHash !== localPrevHash) {
 							reject(`prev_state_hash_mismatch_local_${localPrevHash.slice(0, 16)}_got_${data.prevStateHash.slice(0, 16)}`);
 							break;
@@ -1357,7 +1301,7 @@ export function useWireSync() {
 		lastEnvelopeSentAtRef.current = nowSend;
 
 		const localState = useGameStore.getState().gameState;
-		const prevStateHash = computePrevStateHash(localState, isCardsAuthority);
+		const prevStateHash = computeCardsPrevStateHash(localState, isCardsAuthority);
 		const envelope: GameCommandEnvelope = {
 			type: 'game_command',
 			matchId,
