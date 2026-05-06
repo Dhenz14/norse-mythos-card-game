@@ -93,7 +93,6 @@ const InitSchema = z.object({
 const GameStateSchema = z.object({
 	type: z.literal('gameState'),
 	gameState: OpaqueObject,
-	stateHash: z.string().max(256).optional(),
 }).strict();
 
 const OpponentDisconnectedSchema = z.object({

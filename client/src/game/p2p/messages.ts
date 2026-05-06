@@ -14,7 +14,7 @@ import type { ArmySelection } from '../types/ChessTypes';
 export type WireMessage =
 	| { type: 'init'; gameState: GameState; isHost: boolean; matchId?: string }
 	| GameCommandEnvelope
-	| { type: 'gameState'; gameState: GameState; stateHash?: string }
+	| { type: 'gameState'; gameState: GameState }
 	| { type: 'opponentDisconnected' }
 	| { type: 'ping' }
 	| { type: 'pong' }

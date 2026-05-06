@@ -1070,16 +1070,8 @@ export function useWireSync() {
 				case 'gameState':
 					if (!isCardsAuthority) {
 						const flipped = flipGameState(data.gameState);
-
-						// Tamper detection: verify stateHash matches received state
-						if (data.stateHash && flipped) {
-							const expectedHash = `${data.gameState?.turnNumber ?? 0}:${data.gameState?.gamePhase ?? ''}:${data.gameState?.players?.player?.heroHealth ?? 0}:${data.gameState?.players?.opponent?.heroHealth ?? 0}`;
-							if (data.stateHash !== expectedHash) {
-								debug.warn('[wireSync] GameState hash mismatch — possible tampering');
-								// Don't disconnect (could be race condition), but log for diagnostics
-							}
-						}
-
+						// No envelope-level integrity verification (TD-27c-bis): see
+						// `syncGameState` for the rationale (DTLS + hash_check cover it).
 						const currentState = useGameStore.getState().gameState;
 						const changed = !currentState ||
 							currentState.turnNumber !== flipped.turnNumber ||
@@ -1320,11 +1312,13 @@ export function useWireSync() {
 		if (now - lastSyncRef.current < 100) return;
 		lastSyncRef.current = now;
 		const currentState = useGameStore.getState().gameState;
-		// Lightweight tamper-detection hash (not full signature — too expensive at 2/sec)
-		const quickHash = currentState
-			? `${currentState.turnNumber}:${currentState.gamePhase}:${currentState.players?.player?.heroHealth ?? 0}:${currentState.players?.opponent?.heroHealth ?? 0}`
-			: '';
-		send({ type: 'gameState', gameState: currentState, stateHash: quickHash });
+		// No envelope-level integrity hash here (TD-27c-bis): WebRTC's DTLS layer
+		// already guarantees transport integrity, and `hash_check` (2s beacon)
+		// catches cross-peer state divergence with a real WASM hash. The previous
+		// inline quickhash was a structural no-op (sender + receiver hashed the
+		// SAME bytes from the SAME envelope, so it could only catch in-transit
+		// mutation that DTLS already rejects).
+		send({ type: 'gameState', gameState: currentState });
 	}, [connectionState, isCardsAuthority, send]);
 
 	const debouncedSync = useCallback(() => {
