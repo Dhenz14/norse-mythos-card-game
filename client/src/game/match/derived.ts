@@ -64,7 +64,7 @@ export function deriveAuthority(ctx: MatchContext): Authority {
 export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | null {
 	switch (ctx.opponent.kind) {
 		case 'ai':
-			// Solo today: AI uses the default piece roster regardless of
+			// Single today: AI uses the default piece roster regardless of
 			// difficulty. Difficulty / deckSource affect AI scoring + deck
 			// composition, not piece composition. Branch here when that changes.
 			return getDefaultArmySelection();

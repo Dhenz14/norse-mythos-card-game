@@ -1,5 +1,5 @@
 /**
- * Solo (practice) match lifecycle handlers.
+ * Single (practice) match lifecycle handlers.
  *
  * Practice mode pays nothing on win and tracks nothing on loss.
  * The handler exists as a typed no-op so the dispatcher
@@ -9,6 +9,6 @@
 import type { MatchEndContext } from '../../onWinDispatch';
 import type { MatchContext } from '../../types';
 
-export function onSoloMatchEnd(_ctx: MatchContext, _end: MatchEndContext): void {
+export function onSingleMatchEnd(_ctx: MatchContext, _end: MatchEndContext): void {
 	// No reward. No ranking. Practice is free of stakes.
 }

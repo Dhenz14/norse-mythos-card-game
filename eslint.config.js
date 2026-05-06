@@ -16,7 +16,7 @@ function trimGlobals(...sources) {
 }
 
 // ─── Match-mode isolation ────────────────────────────────────────────────────
-// Each match mode (solo / campaign / p2p) lives in its own folder under
+// Each match mode (single / campaign / p2p) lives in its own folder under
 // client/src/game/match/modes/. A file inside modes/<mode>/ may import from:
 //   - the neutral match surface (match/types, match/store, match/derived,
 //     match/onWinDispatch, match/economy)
@@ -62,9 +62,9 @@ function modeIsolationRule(thisMode, otherModes) {
 }
 
 const matchModeIsolationRules = [
-	modeIsolationRule('solo', ['campaign', 'p2p']),
-	modeIsolationRule('campaign', ['solo', 'p2p']),
-	modeIsolationRule('p2p', ['solo', 'campaign']),
+	modeIsolationRule('single', ['campaign', 'p2p']),
+	modeIsolationRule('campaign', ['single', 'p2p']),
+	modeIsolationRule('p2p', ['single', 'campaign']),
 ];
 
 // ─── Pure-derivation purity ──────────────────────────────────────────────────

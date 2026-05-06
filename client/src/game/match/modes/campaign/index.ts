@@ -9,10 +9,11 @@
  *   - bossRules:   moves useBossRuleEffects + boss data here — Fase 4
  *   - armyBuilder: moves campaignArmyBuilder here            — Fase 4
  *
- * Cross-mode rule: code in modes/solo/ and modes/p2p/ MUST NOT
- * import from this module. Enforced by ESLint in Fase 6.
+ * Cross-mode rule: code in modes/single/ and modes/p2p/ MUST NOT
+ * import from this module. Enforced by ESLint.
  */
 
 export { resolveCampaign } from './resolver';
 export type { CampaignResolveArgs, CampaignResolveResult } from './resolver';
 export { onCampaignMatchEnd } from './lifecycle';
+export { MatchSetupCampaign } from './MatchSetupCampaign';

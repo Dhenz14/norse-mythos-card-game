@@ -2,6 +2,8 @@ export const routes = {
   home: '/',
   warband: '/warband',
   game: '/game',
+  singleGame: '/game/single',
+  campaignGame: '/game/campaign',
   campaign: '/campaign',
   multiplayer: '/multiplayer',
   tournaments: '/tournaments',

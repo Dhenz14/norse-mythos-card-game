@@ -13,8 +13,8 @@
  *                      Dispatch ELO event (stub until ranking server).
  *   - wireSender:      moves chessWireSender here   — Fase 4 or 5
  *
- * Cross-mode rule: code in modes/solo/ and modes/campaign/ MUST NOT
- * import from this module. Enforced by ESLint in Fase 6.
+ * Cross-mode rule: code in modes/single/ and modes/campaign/ MUST NOT
+ * import from this module. Enforced by ESLint.
  */
 
 export { resolveP2P } from './resolver';

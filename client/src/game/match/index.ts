@@ -46,19 +46,13 @@ export type { ModeEconomy, ModeKey } from './economy';
 // providers, setup components) remain mode-private and will be ESLint-
 // fenced from cross-mode imports in Fase 6.
 
-export { resolveSolo } from './modes/solo';
-export type { SoloResolveArgs } from './modes/solo';
+export { resolveSingle } from './modes/single';
+export type { SingleResolveArgs } from './modes/single';
+export { MatchSetupSingle } from './modes/single';
 
 export { resolveCampaign } from './modes/campaign';
 export type { CampaignResolveArgs, CampaignResolveResult } from './modes/campaign';
+export { MatchSetupCampaign } from './modes/campaign';
 
 export { resolveP2P } from './modes/p2p';
 export type { P2PHandshake } from './modes/p2p';
-
-// ── Legacy bridge (Fase 3 — throwaway, replaced in Fase 5) ────────────────
-// Synthesizes a MatchContext from existing stores so the coordinator can
-// read from useMatchStore in Fase 3 C7 without the broader route refactor.
-
-export { useLegacyMatchContextBridge } from './legacyBridge';
-export { synthesizeLegacyMatchContext } from './legacySynth';
-export type { LegacySynthInputs } from './legacySynth';

@@ -13,9 +13,9 @@
  *      legacy bridge stays out of the way so it cannot race with — or
  *      overwrite — what the wrapper just installed.
  *   2. Campaign (mission set in campaignStore).
- *   3. Solo (default fallback — practice).
+ *   3. Single (default fallback — practice).
  *
- * THIS FILE IS THROWAWAY — Fase 7 deletes the bridge once solo /
+ * THIS FILE IS THROWAWAY — Fase 7 deletes the bridge once single /
  * campaign flows shift to a menu-driven resolver path. The retained
  * isP2PConnected gate documents the boundary between "what the bridge
  * synthesizes" and "what MatchSetupP2P owns".
@@ -27,7 +27,7 @@ import type { Difficulty } from '../campaign/campaignTypes';
 // (e.g. MatchSetupP2P) whose transitive deps touch localStorage at
 // module load and crash vitest's node environment.
 import { resolveCampaign } from './modes/campaign/resolver';
-import { resolveSolo } from './modes/solo/resolver';
+import { resolveSingle } from './modes/single/resolver';
 import type { MatchContext } from './types';
 
 export interface LegacySynthInputs {
@@ -56,10 +56,10 @@ export function synthesizeLegacyMatchContext(
 		return result.ctx;
 	}
 
-	// Solo (practice). Difficulty/deckSource defaults match the implicit
+	// Single (practice). Difficulty/deckSource defaults match the implicit
 	// pre-Fase-3 behavior — coordinator and warband flow today do not
-	// expose difficulty selection for solo, so 'normal' is the only
-	// real value. When Fase 7's menu lands, real user input populates
+	// expose difficulty selection for single matches, so 'normal' is the
+	// only real value. When Fase 7's menu lands, real user input populates
 	// these.
-	return resolveSolo({ difficulty: 'normal', deckSource: 'warband' });
+	return resolveSingle({ difficulty: 'normal', deckSource: 'warband' });
 }

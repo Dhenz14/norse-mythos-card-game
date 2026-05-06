@@ -14,7 +14,7 @@
 
 import { onCampaignMatchEnd } from './modes/campaign/lifecycle';
 import { onP2PMatchEnd } from './modes/p2p/lifecycle';
-import { onSoloMatchEnd } from './modes/solo/lifecycle';
+import { onSingleMatchEnd } from './modes/single/lifecycle';
 import type { MatchContext } from './types';
 
 /** Inputs the lifecycle handler needs from the coordinator on game-end. */
@@ -36,7 +36,7 @@ export interface MatchEndContext {
  * Returns the on-win handler for this match's mode. Always returns a
  * function (no nulls / no defensive null-check at the call site).
  *
- *   ai       => onSoloMatchEnd       (no-op)
+ *   ai       => onSingleMatchEnd     (no-op)
  *   scripted => onCampaignMatchEnd   (mark mission + reward dispatch)
  *   peer     => onP2PMatchEnd        (stub until ranking server lands)
  */
@@ -45,7 +45,7 @@ export function selectOnWinHandler(
 ): (end: MatchEndContext) => void {
 	switch (ctx.opponent.kind) {
 		case 'ai':
-			return (end) => onSoloMatchEnd(ctx, end);
+			return (end) => onSingleMatchEnd(ctx, end);
 		case 'scripted':
 			return (end) => onCampaignMatchEnd(ctx, end);
 		case 'peer':

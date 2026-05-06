@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { HashRouter, Routes, Route, Link, Outlet, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { routes } from './lib/routes';
 import { Button, Panel } from './components/ui-norse';
 import { ChevronRight, Compass, LayoutGrid, Play, Settings as SettingsIcon, Swords, X } from 'lucide-react';
@@ -20,6 +20,7 @@ import {
   CardDataRuntimeBoundary,
   GameplayRuntimeBoundary,
 } from "./game/runtime/RuntimeBoundary";
+import { MatchSetupCampaign, MatchSetupSingle } from "./game/match";
 
 const HiveKeychainLogin = lazy(() => import("./game/components/HiveKeychainLogin").then(m => ({ default: m.HiveKeychainLogin })));
 const DailyQuestPanel = lazy(() => import("./game/components/quests/DailyQuestPanel"));
@@ -676,7 +677,21 @@ function App() {
                   </Route>
 
                   <Route element={<GameplayRuntimeBoundary />}>
-                    <Route path={routes.game} element={<RagnarokGameCoordinator />} />
+                    <Route path={routes.game} element={
+                      <MatchSetupSingle difficulty="normal" deckSource="warband">
+                        <RagnarokGameCoordinator />
+                      </MatchSetupSingle>
+                    } />
+                    <Route path={routes.singleGame} element={
+                      <MatchSetupSingle difficulty="normal" deckSource="warband">
+                        <RagnarokGameCoordinator />
+                      </MatchSetupSingle>
+                    } />
+                    <Route path={routes.campaignGame} element={
+                      <MatchSetupCampaign fallback={<Navigate to={routes.campaign} replace />}>
+                        <RagnarokGameCoordinator />
+                      </MatchSetupCampaign>
+                    } />
                     <Route path={routes.multiplayer} element={<MultiplayerGame />} />
                   </Route>
                 </Route>

@@ -14,7 +14,7 @@ const WarbandPage: React.FC = () => {
 	const handleComplete = useCallback(
 		(army: ArmySelectionType) => {
 			setWarband(army, EMPTY_DECK);
-			navigate(routes.game);
+			navigate(routes.singleGame);
 		},
 		[setWarband, navigate]
 	);
@@ -22,7 +22,7 @@ const WarbandPage: React.FC = () => {
 	const handleQuickStart = useCallback(
 		(army: ArmySelectionType, deckCardIds: number[]) => {
 			setWarband(army, deckCardIds);
-			navigate(routes.game);
+			navigate(routes.singleGame);
 		},
 		[setWarband, navigate]
 	);

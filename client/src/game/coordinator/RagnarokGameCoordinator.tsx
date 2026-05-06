@@ -4,9 +4,8 @@ import { AnimatePresence } from 'framer-motion';
 import { ArmySelection as ArmySelectionType } from '../types/ChessTypes';
 import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
-import { useCampaignStore, getMission } from '../campaign';
-import { buildCampaignArmy } from '../campaign/campaignArmyBuilder';
-import { deriveIntro, deriveOpponentArmyForMode, selectOnWinHandler, useLegacyMatchContextBridge, useMatchStore } from '../match';
+import { useCampaignStore } from '../campaign';
+import { deriveIntro, deriveOpponentArmyForMode, selectOnWinHandler, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -19,7 +18,6 @@ import { useGameFlowStore } from '../stores/gameFlowStore';
 import type { CombatHandoff } from '../flow/round/types';
 import { debug } from '../config/debugConfig';
 import { useWarbandStore, selectArmy, selectDeckCardIds } from '../../lib/stores/useWarbandStore';
-import { usePeerStore } from '../stores/peerStore';
 import { useGameStore } from '../stores/gameStore';
 import { createSeededIdGen, cryptoIdGen, cryptoRng } from '../utils/seededRng';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
@@ -64,55 +62,43 @@ type RagnarokGameCoordinatorProps = {
   /**
    * Opposing army announced by the remote peer in P2P mode. When provided,
    * overrides the default-army fallback so the opponent's hero portraits and
-   * decks reflect what they actually selected. Solo/campaign callers omit
+   * decks reflect what they actually selected. Single/campaign callers omit
    * this and the coordinator falls back to the campaign or default army.
    */
   opponentArmy?: ArmySelectionType | null;
 };
 
 const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGameEnd, initialArmy = null, opponentArmy: opponentArmyProp = null }) => {
-  // Fase 3 C6 — populate useMatchStore from legacy stores. The bridge
-  // synthesizes a MatchContext from campaignStore / peerStore / gameStore
-  // and pushes it into useMatchStore. Fase 5 retires this whole bridge
-  // when <MatchSetupP2P/> takes over the async P2P handshake.
-  useLegacyMatchContextBridge();
-  // Fase 3 C7 — coordinator's mode flags now derive from MatchContext
-  // (preferred) with legacy fallback for the brief first-render window
-  // before the bridge effect populates the store. Once Fase 5 lands, ctx
-  // is non-null by construction (set BEFORE coordinator mount) and the
-  // fallback disappears along with the bridge.
+  // Route-level MatchSetup wrappers populate this before mounting the
+  // coordinator. The coordinator renders phases; it no longer decides which
+  // public mode created the match.
   const ctx = useMatchStore((s) => s.activeMatch);
 
   const { playSoundEffect } = useAudio();
   const navigate = useNavigate();
 
-  const campaignMissionId = useCampaignStore(s => s.currentMission);
-  const campaignDifficulty = useCampaignStore(s => s.currentDifficulty);
+  const campaignDifficultyFromStore = useCampaignStore(s => s.currentDifficulty);
   const clearCurrent = useCampaignStore(s => s.clearCurrent);
-  const campaignData = campaignMissionId ? getMission(campaignMissionId) : null;
-  // Derived from MatchContext when available (Fase 3 C7), legacy fallback
-  // otherwise. Once ctx exists, opponent.kind === 'scripted' is the
-  // authoritative signal — campaignData stays around because Fase 4 still
-  // needs the mission/chapter payload for cinematic + reward dispatch.
-  const isCampaign = ctx ? ctx.opponent.kind === 'scripted' : !!campaignData;
+  const campaignMatch = useMemo(() => {
+    if (ctx?.opponent.kind !== 'scripted') return null;
+    if (ctx.opponent.script.kind !== 'campaign-mission') return null;
+    return ctx.opponent.script;
+  }, [ctx]);
+  const campaignData = useMemo(
+    () => campaignMatch
+      ? { mission: campaignMatch.mission, chapter: campaignMatch.chapter }
+      : null,
+    [campaignMatch],
+  );
+  const campaignDifficulty = campaignMatch?.difficulty ?? campaignDifficultyFromStore;
+  const isCampaign = campaignMatch !== null;
 
   const markCinematicSeen = useCampaignStore(s => s.markCinematicSeen);
   const seenChapterIds = useCampaignStore(s => s.seenCinematics);
-  // Fase 4 C9 — cinematic gate derives from MatchContext via deriveIntro.
-  // Legacy fallback covers the first-render window before the bridge effect
-  // populates ctx; removed in Fase 7 once <MatchSetupP2P/> guarantees ctx
-  // is non-null at mount.
   const intro = useMemo(() => {
     if (ctx) return deriveIntro(ctx, seenChapterIds);
-    if (campaignData?.chapter?.cinematicIntro && !seenChapterIds.includes(campaignData.chapter.id)) {
-      return {
-        kind: 'cinematic' as const,
-        chapter: campaignData.chapter,
-        mission: campaignData.mission,
-      };
-    }
     return { kind: 'none' as const };
-  }, [ctx, campaignData, seenChapterIds]);
+  }, [ctx, seenChapterIds]);
   const hasCinematic = intro.kind === 'cinematic';
   const warbandArmy = useWarbandStore(selectArmy);
   const warbandDeck = useWarbandStore(selectDeckCardIds);
@@ -120,10 +106,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   // authoritative source of board state. Local `initializeBoard` calls would
   // race against — and on the client overwrite — that authoritative state.
   // Gate every mount-time `initializeBoard` on this flag.
-  // Fase 3 C7: ctx-derived when available, legacy reactive fallback for
-  // first render. Both subscribe so changes propagate either way.
-  const isP2PConnectedLegacy = usePeerStore(s => s.connectionState === 'connected');
-  const isP2PConnected = ctx ? ctx.opponent.kind === 'peer' : isP2PConnectedLegacy;
+  const isP2PConnected = ctx?.opponent.kind === 'peer';
   const effectiveInitialArmy: ArmySelectionType | null = initialArmy ?? warbandArmy;
   /*
     Round-level FSM (G4). The single source of truth for which phase
@@ -197,12 +180,8 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
       const fromMode = deriveOpponentArmyForMode(ctx);
       if (fromMode) return fromMode;
     }
-    // Legacy fallback for first-render window before bridge populates ctx.
-    // Removed in Fase 7 once <MatchSetupP2P/> guarantees ctx is non-null
-    // by the time the coordinator mounts.
-    if (isCampaign) return buildCampaignArmy(campaignData!.mission);
     return getDefaultArmySelection();
-  }, [ctx, isCampaign, campaignData, opponentArmyProp]);
+  }, [ctx, opponentArmyProp]);
 
   const missionRealm = isCampaign ? campaignData?.mission?.realm : undefined;
   const visualRealm = useMemo(() => resolveVisualRealm(missionRealm), [missionRealm]);
@@ -213,7 +192,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   // `initGame()` to populate decks, hands, and hero powers. The
   // coordinator owns that responsibility for non-P2P modes (campaign,
   // warband, picker fallback). P2P matches are populated by the host via
-  // `initGameWithSeed(matchSeed)` from `useP2PSync` and adopted by the
+  // `initGameWithSeed(matchSeed)` from `useWireSync` and adopted by the
   // client through the `init` envelope, so this effect bails on P2P.
   // Idempotent via ref — re-mounts on the same coordinator instance do
   // not re-initialize.

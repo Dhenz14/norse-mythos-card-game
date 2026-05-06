@@ -1,5 +1,5 @@
 /**
- * Resolves a Solo match — AI opponent, practice rewards (no XP/runas,
+ * Resolves a Single match — AI opponent, practice rewards (no XP/runas,
  * no ranking). The local player picks difficulty + deck source before
  * this is called; the resolver itself is pure (input args → MatchContext).
  *
@@ -14,12 +14,12 @@ import { cryptoIdGen } from '../../../utils/seededRng';
 import { MATCH_ECONOMY, modeEconomyToReward } from '../../economy';
 import type { MatchContext } from '../../types';
 
-export interface SoloResolveArgs {
+export interface SingleResolveArgs {
 	difficulty: Difficulty;
 	deckSource: 'warband' | 'default';
 }
 
-export function resolveSolo(args: SoloResolveArgs): MatchContext {
+export function resolveSingle(args: SingleResolveArgs): MatchContext {
 	return {
 		matchId: cryptoIdGen(),
 		matchSeed: cryptoIdGen(),
