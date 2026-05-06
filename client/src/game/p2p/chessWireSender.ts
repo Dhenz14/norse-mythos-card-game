@@ -21,6 +21,12 @@
  *
  * `prevStateHash` is a placeholder until `computeChessStateHash` lands
  * (C-Chess.5). Receiver accepts any non-empty value today.
+ *
+ * Transcript writes (C3): this module is now a PURE send. The transcript
+ * write that previously lived inline is delegated to a bridge-registered
+ * observer (`setChessSendObserver`), so every `recordMove` call across
+ * cards/poker/chess is funneled through `useWireSync` — the single audit
+ * point for OPEN-2 (deterministic transcript ordering).
  */
 
 import { useGameStore } from '../stores/gameStore';
@@ -28,11 +34,27 @@ import { usePeerStore } from '../stores/peerStore';
 import type { ChessBoardPosition } from '../types/ChessTypes';
 import type { ChessAttackCommand, ChessCommand, ChessCommandEnvelope, ChessMoveCommand } from '../../../../shared/p2p-wire/chess';
 import { debug } from '../config/debugConfig';
-import { recordMove } from '../../data/blockchain/transcriptBuilder';
-import { localPlayerId } from '../../data/blockchain/playerIdentity';
-import { getNFTBridge } from '../nft';
 
 let outgoingChessSeq = 0;
+
+/**
+ * Bridge-registered post-send hook. Fired once per successfully-sent
+ * envelope so the bridge can write the corresponding transcript entry
+ * with its own identity policy (localPlayerId, hiveUsername, etc.).
+ *
+ * Module-singleton because the bridge mounts once per P2P session via
+ * P2PProvider; `setChessSendObserver(null)` on bridge unmount.
+ */
+export type ChessSendObserver = (
+	envelope: ChessCommandEnvelope,
+	transcriptExtra: Record<string, unknown>,
+) => void;
+
+let chessSendObserver: ChessSendObserver | null = null;
+
+export function setChessSendObserver(observer: ChessSendObserver | null): void {
+	chessSendObserver = observer;
+}
 
 const PREV_STATE_HASH_PLACEHOLDER = 'prelim-no-hash-yet';
 
@@ -57,7 +79,6 @@ export interface ChessAttackEmit {
  */
 function dispatchChessCommand(
 	command: ChessCommand,
-	transcriptAction: string,
 	transcriptExtra: Record<string, unknown>,
 ): boolean {
 	const { matchId, myCanonicalSide } = useGameStore.getState();
@@ -100,19 +121,10 @@ function dispatchChessCommand(
 	});
 	send(envelope);
 
-	// Transcript: record under the correct Hive identity. Falls back to a
-	// guest sentinel when no Hive username is bound — see playerIdentity.ts.
-	recordMove(transcriptAction, {
-		pieceId: command.pieceId,
-		from: command.from,
-		to: command.to,
-		commandId: envelope.commandId,
-		seq: envelope.seq,
-		...transcriptExtra,
-	}, localPlayerId({
-		hiveUsername: getNFTBridge().getUsername(),
-		myPeerId: usePeerStore.getState().myPeerId,
-	}));
+	// Transcript: delegated to the bridge-registered observer (C3). Pre-C3
+	// this module called `recordMove` inline; centralising in the bridge
+	// keeps a single audit point for transcript ordering policy (OPEN-2).
+	chessSendObserver?.(envelope, transcriptExtra);
 
 	debug.chess(`[chessWireSender] sent ${command.type} seq=${envelope.seq} piece=${command.pieceId.slice(0, 8)} (${command.from.row},${command.from.col})→(${command.to.row},${command.to.col})`);
 	return true;
@@ -129,7 +141,7 @@ export function sendChessMove(move: ChessMoveEmit): boolean {
 		from: move.from,
 		to: move.to,
 	};
-	return dispatchChessCommand(command, 'chess_move', {});
+	return dispatchChessCommand(command, {});
 }
 
 /**
@@ -146,7 +158,7 @@ export function sendChessAttack(attack: ChessAttackEmit): boolean {
 		to: attack.to,
 		defenderId: attack.defenderId,
 	};
-	return dispatchChessCommand(command, 'chess_attack', {
+	return dispatchChessCommand(command, {
 		defenderId: attack.defenderId,
 		isInstantKill: true,
 	});

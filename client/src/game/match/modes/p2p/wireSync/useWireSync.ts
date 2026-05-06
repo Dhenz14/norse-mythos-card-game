@@ -21,7 +21,7 @@ import { GAME_COMMAND_TYPES } from '../../../../core/commands';
 import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from '../../../../hooks/p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../../../../lib/stores/useWarbandStore';
 import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../../../../shared/p2p-wire/chess';
-import { resetChessWireSender } from '../../../../p2p/chessWireSender';
+import { resetChessWireSender, setChessSendObserver } from '../../../../p2p/chessWireSender';
 import type { P2PMessage } from '../../../../p2p/messages';
 import { parseWireMessage } from '../../../../p2p/messageSchemas';
 
@@ -163,6 +163,29 @@ export function useWireSync() {
 		resolve: (sigs: { broadcaster: string; counterparty: string }) => void;
 		reject: (err: Error) => void;
 	} | null>(null);
+
+	// Chess send observer (C3): centralise transcript writes for outgoing
+	// chess envelopes. The chess UI calls `sendChessMove`/`sendChessAttack`
+	// which build+send the envelope; this observer fires post-send and
+	// records the move under the bridge's identity policy. Mounted once
+	// per bridge lifetime so transcripts always go through one chokepoint
+	// (audit point for OPEN-2 deterministic ordering).
+	useEffect(() => {
+		setChessSendObserver((envelope, transcriptExtra) => {
+			recordMove(envelope.command.type, {
+				pieceId: envelope.command.pieceId,
+				from: envelope.command.from,
+				to: envelope.command.to,
+				commandId: envelope.commandId,
+				seq: envelope.seq,
+				...transcriptExtra,
+			}, localPlayerId({
+				hiveUsername: getNFTBridge().getUsername(),
+				myPeerId: usePeerStore.getState().myPeerId,
+			}));
+		});
+		return () => setChessSendObserver(null);
+	}, []);
 
 	// Seed exchange: generate salt and send commitment when connection opens
 	// Also send version_check and start a new transcript
