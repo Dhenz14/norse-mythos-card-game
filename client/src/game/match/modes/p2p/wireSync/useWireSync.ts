@@ -14,11 +14,12 @@ import type { PackagedMatchResult } from '../../../../../data/blockchain/types';
 import { startNewTranscript, clearTranscript, recordSessionEvent, exportSessionLog, recordMove } from '../../../../../data/blockchain/transcriptBuilder';
 import { localPlayerId, remotePlayerId } from '../../../../../data/blockchain/playerIdentity';
 import { getWasmHash, loadWasmEngine } from '../../../../engine/wasmLoader';
-import { computeStateHash } from '../../../../engine/engineBridge';
+import { computeStateHash, computeStateHashSync } from '../../../../engine/engineBridge';
+import { isWasmReady } from '../../../../engine/wasmInterface';
 import { isSharedNetworkEnvironment } from '../../../../config/featureFlags';
 import { submitSlashEvidence, findExistingMatchResult } from '../../../../../data/blockchain/slashEvidence';
 import { GAME_COMMAND_TYPES } from '../../../../core/commands';
-import { canonicalQuickHash, type GameCommandEnvelope, type WireGameCommand } from '../../../../hooks/p2pEnvelope';
+import type { GameCommandEnvelope, WireGameCommand } from '../../../../hooks/p2pEnvelope';
 import { useWarbandStore, selectArmy } from '../../../../../lib/stores/useWarbandStore';
 import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../../../../shared/p2p-wire/chess';
 import { resetChessWireSender, setChessSendObserver } from '../../../../p2p/chessWireSender';
@@ -26,7 +27,6 @@ import type { P2PMessage } from '../../../../p2p/messages';
 import { parseWireMessage } from '../../../../p2p/messageSchemas';
 
 export type { GameCommandEnvelope, WireGameCommand } from '../../../../hooks/p2pEnvelope';
-export { canonicalQuickHash } from '../../../../hooks/p2pEnvelope';
 export type { P2PMessage } from '../../../../p2p/messages';
 
 declare const __BUILD_HASH__: string;
@@ -57,6 +57,39 @@ function generateSalt(): string {
 	const bytes = new Uint8Array(32);
 	crypto.getRandomValues(bytes);
 	return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Compute the WASM-canonical state hash for `prevStateHash` of an outgoing
+ * game_command envelope, and for the host-side validator that re-derives
+ * the same hash to compare against. Two named expected failures return `''`
+ * (the receiver's existing `missing_prev_state_hash` rejection path treats
+ * empty as "retry later"); a genuinely-unexpected serializer crash is
+ * caught defensively so the sync click handler doesn't blow up React's
+ * render tree.
+ *
+ *   state === null     → pre-init lifecycle. Caller hashes before any state
+ *                        exists. Receiver retries when state arrives.
+ *   !isWasmReady()     → race during eager WASM load. Cleared once WASM
+ *                        finishes initializing (eager-loaded at handshake).
+ *   thrown otherwise   → unexpected. Logged at warn so telemetry surfaces
+ *                        the bug, return '' to fail-safe rather than crash.
+ *
+ * Perspective: the joiner (sender, !isCardsAuthority) flips its state to
+ * host perspective before hashing so the host-side validator (which calls
+ * with isCardsAuthority=true and skips the flip) computes the same byte
+ * layout. Mirrors the canonicalization done by the periodic hash_check.
+ */
+function computePrevStateHash(state: GameState | null, isCardsAuthority: boolean): string {
+	if (!state) return '';
+	if (!isWasmReady()) return '';
+	try {
+		const canonical = isCardsAuthority ? state : flipGameState(state);
+		return computeStateHashSync(canonical);
+	} catch (err) {
+		debug.warn('[wireSync] prev-state hash failed unexpectedly', err);
+		return '';
+	}
 }
 
 // `moveCounter` was lifted into transcriptBuilder.ts (singleton-scoped) so
@@ -627,16 +660,16 @@ export function useWireSync() {
 						// prevStateHash is required and must match. Earlier code short-circuited
 						// when `data.prevStateHash` was falsy — that allowed a sender to bypass
 						// the integrity check by omitting the field. With sender-side
-						// canonicalQuickHash always producing a string (empty only when state
-						// is null, which shouldn't happen during play), we can validate
-						// strictly: non-empty string + exact match.
+						// `computePrevStateHash` always producing a string (empty only on
+						// pre-init / WASM-not-ready edge cases that shouldn't happen during
+						// play), we can validate strictly: non-empty string + exact match.
 						if (typeof data.prevStateHash !== 'string' || data.prevStateHash.length === 0) {
 							reject('missing_prev_state_hash');
 							break;
 						}
-						const localPrevHash = canonicalQuickHash(useGameStore.getState().gameState, true);
+						const localPrevHash = computePrevStateHash(useGameStore.getState().gameState, true);
 						if (data.prevStateHash !== localPrevHash) {
-							reject(`prev_state_hash_mismatch_local_${localPrevHash}_got_${data.prevStateHash}`);
+							reject(`prev_state_hash_mismatch_local_${localPrevHash.slice(0, 16)}_got_${data.prevStateHash.slice(0, 16)}`);
 							break;
 						}
 
@@ -1330,7 +1363,7 @@ export function useWireSync() {
 		lastEnvelopeSentAtRef.current = nowSend;
 
 		const localState = useGameStore.getState().gameState;
-		const prevStateHash = canonicalQuickHash(localState, isCardsAuthority);
+		const prevStateHash = computePrevStateHash(localState, isCardsAuthority);
 		const envelope: GameCommandEnvelope = {
 			type: 'game_command',
 			matchId,

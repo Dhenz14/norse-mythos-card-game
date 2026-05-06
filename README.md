@@ -550,6 +550,7 @@ server/
 - [ ] Create @ragnarok-genesis Hive account (2-of-3 multisig, same signers)
 - [ ] Create @ragnarok-treasury Hive account (2-of-3 initial, expandable via WoT)
 - [ ] Tabletop rehearsal (signing flow, retry ledger, LIB verification, hash bundle)
+- [ ] Deterministic Game Worker boundary: `applyCommand(command, state)` validates legal moves, resolves chess/poker, emits `GameEvent[]`, and hashes canonical state
 - [ ] Multisig genesis → mint batches → seal → brick genesis authority
 - [ ] Post-seal validation (fresh replay, pack opening, cross-node consistency)
 - [ ] See [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) for full ceremony procedures
