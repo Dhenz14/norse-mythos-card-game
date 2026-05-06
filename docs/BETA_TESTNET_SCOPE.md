@@ -45,7 +45,7 @@ The expected testnet shape is mainnet-like:
 - Different admin/index accounts when needed.
 - Resettable state with no permanent economic value.
 
-## Current Status
+## Current Status — 2026-05-06
 
 - Central network config exists in `client/src/game/config/networkConfig.ts`.
 - Testnet protocol id is `rk_game_testnet`.
@@ -55,6 +55,9 @@ The expected testnet shape is mainnet-like:
 - The resettable testnet banner is dismissible.
 - Client broadcasters and replay filters consume `RAGNAROK_APP_ID` / protocol constants instead of hardcoded testnet strings.
 - Server/indexer protocol filters accept the configured protocol namespace through shared constants.
+- P2P wire layer validated at the trust boundary: every inbound envelope passes through `parseWireMessage` (zod) before the bridge dispatch (TD-24a, 2026-05-05). The bridge no longer accepts unverified shapes.
+- Per-command divergence detection uses the WASM canonical state hash (`computeStateHashSync`) for `game_command` envelopes, sharing the hash domain with the periodic 2s `hash_check` beacon (TD-27c-cards, 2026-05-05). The chess `prevStateHash` is still a placeholder pending the chess-domain hash decision.
+- Match modes are physically separated under `client/src/game/match/modes/{single,campaign,p2p}/` with ESLint-enforced isolation; routes split as `/game/single`, `/game/campaign`, `/game` (practice fallback).
 
 ## Next Gate
 
@@ -68,8 +71,9 @@ Perform the first Hive smoke test:
 
 ## Beta Modes
 
-- Campaign / PvE.
-- Multiplayer P2P manual host/join.
+- Single (PvE practice) — no reward.
+- Campaign (PvE) — ~10% xpRunes per mission (multiplier overridable per mission).
+- Multiplayer P2P manual host/join — 100% xpRunes + ELO ranking.
 - Quick Match P2P as experimental matchmaking, not official ranked.
 
 ## Not Permanent In Beta
