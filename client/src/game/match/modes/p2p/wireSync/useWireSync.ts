@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { toast } from 'sonner';
+import { GameEventBus } from '../../../../../core/events/GameEventBus';
 import { usePeerStore } from '../../../../stores/peerStore';
+import { useMatchStore } from '../../../store';
+import { deriveAuthority } from '../../../derived';
 import { useGameStore } from '../../../../stores/gameStore';
 import { debug } from '../../../../config/debugConfig';
 import { GameState } from '../../../../types';
@@ -77,7 +79,26 @@ const RESULT_SIGN_TIMEOUT_MS = 30_000;
 export function useWireSync() {
 	const connection = usePeerStore(state => state.connection);
 	const connectionState = usePeerStore(state => state.connectionState);
-	const isHost = usePeerStore(state => state.isHost);
+	// Two semantic views on the same WS-resolved bit:
+	//   - `isWsHost` — WS-resolved host hint. Used by the seed_reveal handshake to
+	//     derive the canonical chess side via `deriveCanonicalSide(matchSeed,
+	//     isWsHost)`. This is the legitimate use of the WS hint.
+	//   - `isCardsAuthority` — "am I authoritative for cards game commands?". Today
+	//     cards is host-auth so this aliases isWsHost. OPEN-8 will migrate cards
+	//     to symmetric (chess-style); when that lands, isCardsAuthority disappears
+	//     and `isFirstMover` (below, derived from Authority) becomes the gate.
+	//     Audit grep target during the migration.
+	const isWsHost = usePeerStore(state => state.isHost);
+	const isCardsAuthority = isWsHost;
+	// `isFirstMover` is the canonical symmetric-protocol concept (chess uses it
+	// implicitly; cards will after OPEN-8). Derived from MatchContext.activeMatch
+	// via `deriveAuthority`. Today no chess auth code reads isHost, so this
+	// stays unread — but the subscription is the migration anchor: when OPEN-8
+	// lands, swap `isCardsAuthority` → `isFirstMover` site by site.
+	const activeMatchForAuthority = useMatchStore(state => state.activeMatch);
+	const _authority = activeMatchForAuthority ? deriveAuthority(activeMatchForAuthority) : null;
+	const isFirstMover = _authority?.kind === 'p2p-symmetric' && _authority.myRole === 'first-mover';
+	void isFirstMover; // Intentional: reserved for OPEN-8 migration (see comment above).
 	const send = usePeerStore(state => state.send);
 
 	const playCard = useGameStore(state => state.playCard);
@@ -167,8 +188,9 @@ export function useWireSync() {
 			const wasmHash = getWasmHash();
 			send({ type: 'wasm_hash_check', wasmHash });
 		}).catch(err => {
-			toast.error('WASM engine failed to load — ranked play blocked', {
-				description: err instanceof Error ? err.message : 'Unknown WASM error',
+			GameEventBus.emitNotification({
+				level: 'error',
+				message: `WASM engine failed to load — ranked play blocked — ${err instanceof Error ? err.message : 'Unknown WASM error'}`,
 				duration: 15000,
 			});
 		});
@@ -235,7 +257,7 @@ export function useWireSync() {
 	// Host sends init AFTER seed exchange completes (replaces old 200ms timer)
 	// Timeout after 10s if seed exchange stalls
 	useEffect(() => {
-		if (!connection || !isHost || connectionState !== 'connected') {
+		if (!connection || !isCardsAuthority || connectionState !== 'connected') {
 			initSentRef.current = false;
 			return undefined;
 		}
@@ -244,7 +266,11 @@ export function useWireSync() {
 			const timeout = setTimeout(() => {
 				if (!seedResolvedRef.current) {
 					debug.error('[wireSync] Seed exchange timed out after 10s');
-					toast.error('Seed exchange timed out. Disconnecting.', { duration: 5000 });
+					GameEventBus.emitNotification({
+						level: 'error',
+						message: 'Seed exchange timed out. Disconnecting.',
+						duration: 5000,
+					});
 					usePeerStore.getState().disconnect();
 				}
 			}, 10_000);
@@ -257,7 +283,7 @@ export function useWireSync() {
 			send({ type: 'init', gameState: currentState, isHost: true });
 		}
 		return undefined;
-	}, [connection, isHost, connectionState, send]);
+	}, [connection, isCardsAuthority, connectionState, send]);
 
 	// Detect when connection closes and notify the player
 	useEffect(() => {
@@ -278,9 +304,10 @@ export function useWireSync() {
 			// Reset message queue to prevent permanent lock
 			isProcessingRef.current = false;
 			messageQueueRef.current = [];
-			toast.error('Opponent disconnected from the game.', {
+			GameEventBus.emitNotification({
+				level: 'error',
+				message: 'Opponent disconnected from the game. The connection was lost. You may need to start a new game.',
 				duration: 8000,
-				description: 'The connection was lost. You may need to start a new game.',
 			});
 
 			if (isSharedNetworkEnvironment()) {
@@ -332,8 +359,9 @@ export function useWireSync() {
 				case 'version_check': {
 					const myHash = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev';
 					if (data.buildHash !== myHash && data.buildHash !== 'dev' && myHash !== 'dev') {
-						toast.warning('Client version mismatch', {
-							description: `Your build: ${myHash.slice(0, 7)}, opponent: ${data.buildHash.slice(0, 7)}. Results may differ.`,
+						GameEventBus.emitNotification({
+							level: 'warning',
+							message: `Client version mismatch — your build: ${myHash.slice(0, 7)}, opponent: ${data.buildHash.slice(0, 7)}. Results may differ.`,
 							duration: 8000,
 						});
 					}
@@ -344,8 +372,9 @@ export function useWireSync() {
 					const myWasmHash = getWasmHash();
 					const theirWasmHash = data.wasmHash;
 					if (theirWasmHash !== myWasmHash && theirWasmHash !== 'dev' && myWasmHash !== 'dev') {
-						toast.error('WASM engine mismatch — disconnecting', {
-							description: `Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…. Both players must use the same game version.`,
+						GameEventBus.emitNotification({
+							level: 'error',
+							message: `WASM engine mismatch — disconnecting. Your engine: ${myWasmHash.slice(0, 12)}…, opponent: ${theirWasmHash.slice(0, 12)}…. Both players must use the same game version.`,
 							duration: 10000,
 						});
 						usePeerStore.getState().disconnect();
@@ -361,13 +390,14 @@ export function useWireSync() {
 					// the client stores `players.player = client` (post-flip in the init/
 					// gameState handlers). Without this flip the WASM hash always mismatches
 					// because the byte order of `players.player` vs `players.opponent` differs.
-					const canonicalState = isHost ? gs : flipGameState(gs);
+					const canonicalState = isCardsAuthority ? gs : flipGameState(gs);
 					const myHash = await computeStateHash(canonicalState);
 					if (myHash !== data.stateHash) {
 						debug.error(`[wireSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
 						send({ type: 'hash_mismatch', turnNumber: data.turnNumber, myHash });
-						toast.error('State verification failed', {
-							description: 'Game state diverged from opponent. Possible cheating detected.',
+						GameEventBus.emitNotification({
+							level: 'error',
+							message: 'State verification failed — game state diverged from opponent. Possible cheating detected.',
 							duration: 8000,
 						});
 
@@ -392,8 +422,9 @@ export function useWireSync() {
 
 				case 'hash_mismatch':
 					debug.error(`[wireSync] Opponent reports hash mismatch at turn ${data.turnNumber}: theirHash=${data.myHash.slice(0, 16)}`);
-					toast.error('State verification failed', {
-						description: 'Opponent detected state divergence. Game integrity compromised.',
+					GameEventBus.emitNotification({
+						level: 'error',
+						message: 'State verification failed — opponent detected state divergence. Game integrity compromised.',
 						duration: 8000,
 					});
 
@@ -431,7 +462,11 @@ export function useWireSync() {
 					const expectedCommitment = await sha256Hash(theirSalt);
 					if (expectedCommitment !== theirCommitment) {
 						debug.error('[wireSync] Seed commitment mismatch — possible cheating');
-						toast.error('Seed verification failed. Disconnecting.', { duration: 5000 });
+						GameEventBus.emitNotification({
+							level: 'error',
+							message: 'Seed verification failed. Disconnecting.',
+							duration: 5000,
+						});
 						usePeerStore.getState().disconnect();
 						break;
 					}
@@ -447,8 +482,8 @@ export function useWireSync() {
 					// Derive each peer's canonical chess side from the resolved seed.
 					// Both peers compute this BEFORE any chess state initializes so
 					// `myCanonicalSide` is available to UI components on first render.
-					// `isHost` is the WS-resolved hint (see wsTransport handshake).
-					const myCanonicalSide = deriveCanonicalSide(matchSeed, isHost);
+					// `isWsHost` is the WS-resolved hint (see wsTransport handshake).
+					const myCanonicalSide = deriveCanonicalSide(matchSeed, isWsHost);
 					useGameStore.setState({ matchSeed, myCanonicalSide });
 
 					// Symmetric seeding for the chess phase: both peers mint the
@@ -486,7 +521,7 @@ export function useWireSync() {
 						matchSeed: matchSeed.slice(0, 12),
 						matchId: truncatedMatchId,
 						myCanonicalSide,
-						isHost,
+						isWsHost,
 					});
 
 					// Identity binding: capture opponent's Hive username
@@ -494,7 +529,7 @@ export function useWireSync() {
 						opponentUsernameRef.current = data.hiveUsername;
 					}
 
-					if (isHost) {
+					if (isCardsAuthority) {
 						// Build the host's authoritative gameState deterministically
 						// from matchSeed. Replaces the prior "reshuffle decks of the
 						// module-load random state" path, which left hands and
@@ -512,14 +547,14 @@ export function useWireSync() {
 				}
 
 				case 'init':
-					if (!isHost) {
+					if (!isCardsAuthority) {
 						useGameStore.setState({ gameState: flipGameState(data.gameState) });
 						usePeerStore.getState().setP2pInitApplied(true);
 					}
 					break;
 
 				case 'game_command':
-					if (isHost) {
+					if (isCardsAuthority) {
 						// Resolve the remote peer's transcript identity once for all
 						// recordMove sites in this case. Falls back to a guest sentinel
 						// when the peer never announced a Hive username during seed_reveal.
@@ -732,7 +767,7 @@ export function useWireSync() {
 						commandId: typeof (data as { commandId?: unknown }).commandId === 'string'
 							? ((data as { commandId: string }).commandId).slice(0, 8)
 							: undefined,
-						isHost,
+						isWsHost,
 					});
 					const reject = (cause: string): void => {
 						console.warn(`[wireSync] chess_command REJECTED: ${cause}`, {
@@ -941,7 +976,7 @@ export function useWireSync() {
 				}
 
 				case 'poker_action':
-					if (isHost) {
+					if (isCardsAuthority) {
 						// Rate limit
 						const nowP = Date.now();
 						actionTimestampsRef.current = actionTimestampsRef.current.filter(t => nowP - t < 1000);
@@ -977,7 +1012,7 @@ export function useWireSync() {
 					break;
 
 				case 'gameState':
-					if (!isHost) {
+					if (!isCardsAuthority) {
 						const flipped = flipGameState(data.gameState);
 
 						// Tamper detection: verify stateHash matches received state
@@ -1008,7 +1043,11 @@ export function useWireSync() {
 
 				case 'opponentDisconnected':
 					debug.warn('[wireSync] Opponent disconnected from game');
-					toast.error('Opponent disconnected.', { duration: 8000 });
+					GameEventBus.emitNotification({
+						level: 'error',
+						message: 'Opponent disconnected.',
+						duration: 8000,
+					});
 					break;
 
 				case 'ping':
@@ -1048,8 +1087,9 @@ export function useWireSync() {
 						data.nftIds.map(id => ({ nft_id: id })),
 					).then(result => {
 						if (!result.valid) {
-							toast.error(`Opponent deck verification failed`, {
-								description: `${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Disconnecting.`,
+							GameEventBus.emitNotification({
+								level: 'error',
+								message: `Opponent deck verification failed — ${result.invalidCards.length} card(s) not owned by ${data.hiveAccount}. Disconnecting.`,
 								duration: 5000,
 							});
 							disconnectOnce();
@@ -1062,8 +1102,9 @@ export function useWireSync() {
 							verifyDeckOnServer(data.hiveAccount, cardIds)
 								.then(sv => {
 									if (!sv.verified) {
-										toast.error('Server deck verification failed', {
-											description: `${sv.missing.length} card(s) not found on-chain for ${data.hiveAccount}. Disconnecting.`,
+										GameEventBus.emitNotification({
+											level: 'error',
+											message: `Server deck verification failed — ${sv.missing.length} card(s) not found on-chain for ${data.hiveAccount}. Disconnecting.`,
 											duration: 5000,
 										});
 										disconnectOnce();
@@ -1215,10 +1256,10 @@ export function useWireSync() {
 				pendingSyncRef.current = null;
 			}
 		};
-	}, [connection, connectionState, isHost, send, playCard, attackWithCard, endTurn, performHeroPower, applyOpponentCommandToStore]);
+	}, [connection, connectionState, isCardsAuthority, isWsHost, send, playCard, attackWithCard, endTurn, performHeroPower, applyOpponentCommandToStore]);
 
 	const syncGameState = useCallback(() => {
-		if (connectionState !== 'connected' || !isHost) return;
+		if (connectionState !== 'connected' || !isCardsAuthority) return;
 		const now = Date.now();
 		if (now - lastSyncRef.current < 100) return;
 		lastSyncRef.current = now;
@@ -1228,7 +1269,7 @@ export function useWireSync() {
 			? `${currentState.turnNumber}:${currentState.gamePhase}:${currentState.players?.player?.heroHealth ?? 0}:${currentState.players?.opponent?.heroHealth ?? 0}`
 			: '';
 		send({ type: 'gameState', gameState: currentState, stateHash: quickHash });
-	}, [connectionState, isHost, send]);
+	}, [connectionState, isCardsAuthority, send]);
 
 	const debouncedSync = useCallback(() => {
 		if (pendingSyncRef.current) clearTimeout(pendingSyncRef.current);
@@ -1244,7 +1285,7 @@ export function useWireSync() {
 			debug.warn('[wireSync] sendCommandEnvelope skipped: no matchId yet');
 			return;
 		}
-		// Cooldown to avoid the fast-double-click race: client (!isHost) doesn't
+		// Cooldown to avoid the fast-double-click race: client (!isCardsAuthority) doesn't
 		// apply commands locally — its state stays at the pre-command hash until
 		// host's gameState sync arrives. A second envelope sent within the round-
 		// trip window carries the SAME prevStateHash as the first, but the host
@@ -1256,13 +1297,17 @@ export function useWireSync() {
 		const nowSend = Date.now();
 		if (nowSend - lastEnvelopeSentAtRef.current < ENVELOPE_COOLDOWN_MS) {
 			debug.warn(`[wireSync] envelope cooldown active (${nowSend - lastEnvelopeSentAtRef.current}ms since last) — dropping ${command.type}`);
-			toast.error('Action too fast — wait for opponent to sync', { duration: 1500 });
+			GameEventBus.emitNotification({
+				level: 'error',
+				message: 'Action too fast — wait for opponent to sync',
+				duration: 1500,
+			});
 			return;
 		}
 		lastEnvelopeSentAtRef.current = nowSend;
 
 		const localState = useGameStore.getState().gameState;
-		const prevStateHash = canonicalQuickHash(localState, isHost);
+		const prevStateHash = canonicalQuickHash(localState, isCardsAuthority);
 		const envelope: GameCommandEnvelope = {
 			type: 'game_command',
 			matchId,
@@ -1272,7 +1317,7 @@ export function useWireSync() {
 			command,
 		};
 		send(envelope);
-	}, [send, isHost]);
+	}, [send, isCardsAuthority]);
 
 	// Local transcript identity: read fresh from the NFT bridge + peer store on
 	// each move. Memoizing would be wrong — `getNFTBridge().getUsername()` can
@@ -1289,7 +1334,7 @@ export function useWireSync() {
 	// before applying — no perspective translation is performed at the wire level.
 	const wrappedPlayCard = useCallback((cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number) => {
 		recordMove('playCard', { cardId, targetId, targetType, insertionIndex }, buildLocalTranscriptId());
-		if (connectionState === 'connected' && !isHost) {
+		if (connectionState === 'connected' && !isCardsAuthority) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.playCard,
 				cardId,
@@ -1299,13 +1344,13 @@ export function useWireSync() {
 			});
 		} else {
 			playCard(cardId, targetId, targetType, insertionIndex);
-			if (isHost) debouncedSync();
+			if (isCardsAuthority) debouncedSync();
 		}
-	}, [connectionState, isHost, playCard, debouncedSync, sendCommandEnvelope]);
+	}, [connectionState, isCardsAuthority, playCard, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedAttack = useCallback((attackerId: string, defenderId: string) => {
 		recordMove('attack', { attackerId, defenderId }, buildLocalTranscriptId());
-		if (connectionState === 'connected' && !isHost) {
+		if (connectionState === 'connected' && !isCardsAuthority) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.attack,
 				attackerId,
@@ -1313,23 +1358,23 @@ export function useWireSync() {
 			});
 		} else {
 			attackWithCard(attackerId, defenderId);
-			if (isHost) debouncedSync();
+			if (isCardsAuthority) debouncedSync();
 		}
-	}, [connectionState, isHost, attackWithCard, debouncedSync, sendCommandEnvelope]);
+	}, [connectionState, isCardsAuthority, attackWithCard, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedEndTurn = useCallback(() => {
 		recordMove('endTurn', {}, buildLocalTranscriptId());
-		if (connectionState === 'connected' && !isHost) {
+		if (connectionState === 'connected' && !isCardsAuthority) {
 			sendCommandEnvelope({ type: GAME_COMMAND_TYPES.endTurn });
 		} else {
 			endTurn();
-			if (isHost) debouncedSync();
+			if (isCardsAuthority) debouncedSync();
 		}
-	}, [connectionState, isHost, endTurn, debouncedSync, sendCommandEnvelope]);
+	}, [connectionState, isCardsAuthority, endTurn, debouncedSync, sendCommandEnvelope]);
 
 	const wrappedUseHeroPower = useCallback((targetId?: string) => {
 		recordMove('useHeroPower', { targetId }, buildLocalTranscriptId());
-		if (connectionState === 'connected' && !isHost) {
+		if (connectionState === 'connected' && !isCardsAuthority) {
 			sendCommandEnvelope({
 				type: GAME_COMMAND_TYPES.useHeroPower,
 				targetId,
@@ -1337,9 +1382,9 @@ export function useWireSync() {
 			});
 		} else {
 			performHeroPower(targetId, 'card');
-			if (isHost) debouncedSync();
+			if (isCardsAuthority) debouncedSync();
 		}
-	}, [connectionState, isHost, performHeroPower, debouncedSync, sendCommandEnvelope]);
+	}, [connectionState, isCardsAuthority, performHeroPower, debouncedSync, sendCommandEnvelope]);
 
 	const downloadSessionLog = useCallback((): void => {
 		try {
@@ -1347,7 +1392,7 @@ export function useWireSync() {
 				matchId: matchIdRef.current,
 				buildHash: typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : 'dev',
 				connectionState,
-				isHost,
+				isHost: isCardsAuthority,
 			});
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
@@ -1360,31 +1405,31 @@ export function useWireSync() {
 		} catch (err) {
 			debug.error('[wireSync] downloadSessionLog failed:', err);
 		}
-	}, [connectionState, isHost]);
+	}, [connectionState, isCardsAuthority]);
 
 	// Host broadcasts state every 500ms as heartbeat sync to the opponent.
 	// (Spectator broadcast was removed — see Patch-WebRTC.2; replaced
 	// post-beta by a transcript-based replay viewer, TD-25.)
 	useEffect(() => {
-		if (connectionState !== 'connected' || !isHost) return;
+		if (connectionState !== 'connected' || !isCardsAuthority) return;
 		const interval = setInterval(() => {
 			syncGameState();
 		}, 500);
 		return () => clearInterval(interval);
-	}, [connectionState, isHost, syncGameState]);
+	}, [connectionState, isCardsAuthority, syncGameState]);
 
 	// Client pings host every 10s to keep the connection alive
 	useEffect(() => {
-		if (connectionState !== 'connected' || isHost) return;
+		if (connectionState !== 'connected' || isCardsAuthority) return;
 		const interval = setInterval(() => {
 			send({ type: 'ping' });
 		}, 10_000);
 		return () => clearInterval(interval);
-	}, [connectionState, isHost, send]);
+	}, [connectionState, isCardsAuthority, send]);
 
 	// Host sends state hash check every 2s for anti-cheat verification
 	useEffect(() => {
-		if (connectionState !== 'connected' || !isHost) return;
+		if (connectionState !== 'connected' || !isCardsAuthority) return;
 		let cancelled = false;
 		let timerId: ReturnType<typeof setTimeout> | null = null;
 		const scheduleCheck = () => {
@@ -1406,7 +1451,7 @@ export function useWireSync() {
 			cancelled = true;
 			if (timerId) clearTimeout(timerId);
 		};
-	}, [connectionState, isHost, send]);
+	}, [connectionState, isCardsAuthority, send]);
 
 	// Send our deck's NFT IDs to the opponent for ownership verification
 	const sendDeckVerification = useCallback((hiveAccount: string, nftIds: string[]) => {
@@ -1474,6 +1519,6 @@ export function useWireSync() {
 		proposeResult,
 		downloadSessionLog,
 		isConnected: connectionState === 'connected',
-		isHost,
+		isHost: isCardsAuthority,
 	};
 }
