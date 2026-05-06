@@ -24,6 +24,7 @@ import {
   CombatAction
 } from '../../types/PokerCombatTypes';
 import type { SeededRng, SeededIdGen } from '@shared/p2p-wire/rng';
+import type { HeroDeckLoadout } from '../../deck/heroDeckRules';
 
 export type CombatPhase = 
   | 'SETUP'
@@ -209,7 +210,7 @@ export interface ChessCombatSliceActions {
   initializeCombat: (playerPieces: ChessPieceState[], opponentPieces: ChessPieceState[]) => void;
   movePiece: (pieceIdOrPosition: string | ChessBoardPosition, newPosition?: { row: number; col: number }) => ChessCollision | null | void;
   capturePiece: (attackerId: string, targetId: string) => void;
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => void;
+  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string, playerDeckLoadout?: HeroDeckLoadout) => void;
   selectPiece: (piece: ChessPiece | null) => void;
   executeMove: (from: ChessBoardPosition, to: ChessBoardPosition) => void;
   executeInstantKill: (attacker: ChessPiece, defender: ChessPiece, targetPosition: ChessBoardPosition) => void;

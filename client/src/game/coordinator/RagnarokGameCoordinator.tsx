@@ -17,7 +17,12 @@ import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
 import { useGameFlowStore } from '../stores/gameFlowStore';
 import type { CombatHandoff } from '../flow/round/types';
 import { debug } from '../config/debugConfig';
-import { useWarbandStore, selectArmy, selectDeckCardIds } from '../../lib/stores/useWarbandStore';
+import {
+  selectArmy,
+  selectDeckCardIds,
+  selectDeckCardIdsByPiece,
+  useWarbandStore,
+} from '../../lib/stores/useWarbandStore';
 import { useGameStore } from '../stores/gameStore';
 import { createSeededIdGen, cryptoIdGen, cryptoRng } from '../utils/seededRng';
 import { resolveHeroPortrait } from '../utils/art/artMapping';
@@ -102,6 +107,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const hasCinematic = intro.kind === 'cinematic';
   const warbandArmy = useWarbandStore(selectArmy);
   const warbandDeck = useWarbandStore(selectDeckCardIds);
+  const warbandDeckLoadout = useWarbandStore(selectDeckCardIdsByPiece);
   // TD-19: in P2P mode, the host's `init` message (post seed-exchange) is the
   // authoritative source of board state. Local `initializeBoard` calls would
   // race against — and on the client overwrite — that authoritative state.
@@ -227,12 +233,12 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     if (!warbandArmy) return;
     if (isP2PConnected) return;
     bootstrappedFromWarbandRef.current = true;
-    initializeBoard(warbandArmy, opponentArmy, cryptoIdGen);
+    initializeBoard(warbandArmy, opponentArmy, cryptoIdGen, warbandDeckLoadout);
     if (warbandDeck.length > 0) {
       setSharedDeck([...warbandDeck]);
     }
     playSoundEffect('game_start');
-  }, [warbandArmy, warbandDeck, isCampaign, initialArmy, opponentArmy, initializeBoard, setSharedDeck, playSoundEffect, isP2PConnected]);
+  }, [warbandArmy, warbandDeck, warbandDeckLoadout, isCampaign, initialArmy, opponentArmy, initializeBoard, setSharedDeck, playSoundEffect, isP2PConnected]);
 
   // P2P chess board bootstrap. Both peers compute identical piece ids
   // from `matchSeed + 'chess-pieces'`, so any future move reference (by

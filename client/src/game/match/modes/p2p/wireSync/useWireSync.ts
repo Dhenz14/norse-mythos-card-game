@@ -432,7 +432,18 @@ export function useWireSync() {
 							.__ragnarokCombatStore as { getState: () => { boardState?: Parameters<typeof computeChessPrevStateHash>[0] } } | undefined;
 						const localChessSnapshot = beaconCombatStore?.getState().boardState ?? null;
 						const myChessHash = computeChessPrevStateHash(localChessSnapshot);
-						if (myChessHash.length > 0 && myChessHash !== data.chessStateHash) {
+						const localChessMoveCount = localChessSnapshot?.moveCount ?? -1;
+						// Skip when the beacon is from a different chess turn than
+						// our local state. The 2s beacon period is much slower than
+						// chess move latency, so any active-play beacon is almost
+						// always stale — comparing hashes across moveCounts is a
+						// guaranteed false positive. Idle drift (the beacon's actual
+						// purpose) keeps both peers on the same moveCount, so the
+						// compare still fires there.
+						const moveCountsMatch = data.chessMoveCount >= 0
+							&& localChessMoveCount >= 0
+							&& data.chessMoveCount === localChessMoveCount;
+						if (moveCountsMatch && myChessHash.length > 0 && myChessHash !== data.chessStateHash) {
 							debug.error(`[wireSync] Chess state hash mismatch at turn ${data.turnNumber}: local=${myChessHash.slice(0, 16)}, remote=${data.chessStateHash.slice(0, 16)}`);
 							GameEventBus.emitNotification({
 								level: 'error',
@@ -1539,8 +1550,13 @@ export function useWireSync() {
 						.__ragnarokCombatStore as { getState: () => { boardState?: Parameters<typeof computeChessPrevStateHash>[0] } } | undefined;
 					const chessSnapshot = beaconCombatStore?.getState().boardState ?? null;
 					const chessStateHash = computeChessPrevStateHash(chessSnapshot);
+					// Stamp the snapshot's moveCount alongside the hash so the receiver
+					// can skip the compare when it's on a different chess turn (in-
+					// flight envelopes faster than 2s beacon → near-permanent stale-
+					// snapshot mismatches without this gate). -1 = no chess snapshot.
+					const chessMoveCount = chessSnapshot?.moveCount ?? -1;
 					if (!cancelled) {
-						send({ type: 'hash_check', stateHash, chessStateHash, turnNumber: gs.turnNumber });
+						send({ type: 'hash_check', stateHash, chessStateHash, chessMoveCount, turnNumber: gs.turnNumber });
 					}
 				}
 				scheduleCheck();

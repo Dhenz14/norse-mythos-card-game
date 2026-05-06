@@ -28,6 +28,7 @@ import {
 } from './types';
 import { debug } from '../../config/debugConfig';
 import { createSeededRng, createSeededIdGen } from '../../utils/seededRng';
+import { isPieceType, type HeroDeckLoadout } from '../../deck/heroDeckRules';
 import {
   getValidMoves as pureGetValidMoves,
   getThreateningPieces as pureGetThreateningPieces,
@@ -109,7 +110,12 @@ export const createChessCombatSlice: StateCreator<
     });
   },
 
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
+  initializeBoard: (
+    playerArmy: ArmySelection,
+    opponentArmy: ArmySelection,
+    idGen: () => string,
+    playerDeckLoadout?: HeroDeckLoadout,
+  ) => {
     const pieces: ChessPiece[] = [];
 
     const createPiece = (
@@ -127,6 +133,9 @@ export const createChessCombatSlice: StateCreator<
       const gameElement: ElementType = heroElement
         ? NORSE_TO_GAME_ELEMENT[heroElement]
         : 'neutral';
+      const deckCardIds = owner === 'player' && isPieceType(type) && playerDeckLoadout
+        ? [...playerDeckLoadout[type]]
+        : [];
 
       return {
         id: idGen(),
@@ -139,7 +148,7 @@ export const createChessCombatSlice: StateCreator<
         heroClass: hero.heroClass,
         heroName: hero.name,
         heroId: hero.id,
-        deckCardIds: [],
+        deckCardIds,
         fixedCards: hero.fixedCardIds,
         hasSpells: pieceHasSpells(type),
         hasMoved: false,

@@ -27,7 +27,7 @@ export type WireMessage =
 	| { type: 'result_reject'; reason: string }
 	| { type: 'version_check'; buildHash: string }
 	| { type: 'wasm_hash_check'; wasmHash: string }
-	| { type: 'hash_check'; stateHash: string; chessStateHash: string; turnNumber: number }
+	| { type: 'hash_check'; stateHash: string; chessStateHash: string; chessMoveCount: number; turnNumber: number }
 	| { type: 'hash_mismatch'; turnNumber: number; myHash: string }
 	| { type: 'poker_action'; playerId: string; action: string; hpCommitment?: number }
 	| ChessCommandEnvelope;

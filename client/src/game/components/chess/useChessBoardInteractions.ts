@@ -6,7 +6,7 @@ import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { useKingChessAbility } from '../../hooks/useKingChessAbility';
 import { useGameStore } from '../../stores/gameStore';
 import { useUnifiedCombatStore } from '../../stores/unifiedCombatStore';
-import { sendChessAttack, sendChessMove } from '../../p2p/chessWireSender';
+import { captureChessPrevHashes, sendChessAttack, sendChessMove } from '../../p2p/chessWireSender';
 import type { ChessBoardPosition } from '../../types/ChessTypes';
 import { isChessAttackInstantKill } from '../../../../../shared/p2p-wire/chess';
 import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
@@ -280,21 +280,26 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
       const fromPos = movingPiece?.position;
       const defender = isAttackMove ? getPieceAt(position) : null;
 
+      // TD-27c-chess: capture prev-state hashes BEFORE movePiece mutates
+      // the local store. The receiver hashes its own state pre-apply, so
+      // the sender must mirror that timing or every envelope diverges.
+      // Only capture when matchId is set (P2P session active) — SP path
+      // skips the wire entirely.
+      const prevHashes = matchId ? captureChessPrevHashes() : null;
+
       const collision = movePiece(position);
       if (collision) {
         debug.chess(`Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
         // P2P instant-kill: emit chess_attack so the remote peer triggers
         // the same animation + executeInstantKill chain. Non-instant
-        // attacks were rejected above. Invariante: envelope = mutación
-        // ya aplicada local (movePiece returned a collision => the
-        // attack animation has been queued in the slice).
-        if (matchId && movingPiece && fromPos && defender) {
+        // attacks were rejected above.
+        if (matchId && prevHashes && movingPiece && fromPos && defender) {
           sendChessAttack({
             pieceId: movingPiece.id,
             from: fromPos,
             to: position,
             defenderId: defender.id,
-          });
+          }, prevHashes);
         }
         return;
       }
@@ -314,12 +319,12 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
       }
 
       playSoundEffect('card_play');
-      if (movingPiece && fromPos) {
+      if (matchId && prevHashes && movingPiece && fromPos) {
         sendChessMove({
           pieceId: movingPiece.id,
           from: fromPos,
           to: position,
-        });
+        }, prevHashes);
       }
       return;
     }

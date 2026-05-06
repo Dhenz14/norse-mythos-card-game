@@ -18,7 +18,10 @@ import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { HeroArtImage } from './ui/HeroArtImage';
 import { getHeroRarity, RARITY_COLORS } from '../utils/heroRarity';
 import { useHoloTracking, getHoloTier } from '../hooks/useHoloTracking';
-import { useNFTUsername } from '../nft/hooks';
+import { getNFTBridge } from '../nft';
+import { useNFTCollection, useNFTUsername } from '../nft/hooks';
+import { getHeroDeckStatus, type HeroDeckStatus } from '../deck/heroDeckRules';
+import { cardRegistry } from '../data/cardRegistry';
 import './styles/ArmySelectionNorse.css';
 import './styles/holoEffect.css';
 
@@ -60,6 +63,32 @@ const PIECE_DISPLAY_INFO: Record<ChessPieceType, { name: string; icon: string; c
 
 const MAJOR_PIECES: PieceType[] = ['queen', 'rook', 'bishop', 'knight'];
 
+type DeckDisplayStatus = {
+  readonly cardCount: number;
+  readonly isComplete: boolean;
+  readonly label: string;
+  readonly status: HeroDeckStatus;
+};
+
+function getDeckStatusLabel(status: HeroDeckStatus): string {
+  switch (status.kind) {
+    case 'ready':
+      return `${status.cardCount}/30`;
+    case 'missing':
+      return 'Missing';
+    case 'piece_mismatch':
+      return 'Wrong Piece';
+    case 'hero_mismatch':
+      return 'Wrong Hero';
+    case 'class_mismatch':
+      return 'Wrong Class';
+    case 'incomplete':
+      return `${status.cardCount}/30`;
+    case 'invalid':
+      return 'Invalid';
+  }
+}
+
 const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart, onBack, isMultiplayer = false, onMatchmakingStart }) => {
   const { playSoundEffect } = useAudio();
   const setSelectedHero = useGame(state => state.setSelectedHero);
@@ -73,6 +102,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
   const heroDecks = useHeroDeckStore(state => state.decks);
   const loadFromStorage = useHeroDeckStore(state => state.loadFromStorage);
   const hiveUsername = useNFTUsername();
+  const nftCollection = useNFTCollection();
 
   const myPeerId = usePeerStore(state => state.myPeerId);
   const host = usePeerStore(state => state.host);
@@ -198,20 +228,42 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
     army[pieceType as keyof ArmySelectionType] !== undefined
   );
 
-  const getDeckStatus = (pieceType: PieceType): { cardCount: number; isComplete: boolean } => {
-    const deck = heroDecks[pieceType];
-    if (!deck) return { cardCount: 0, isComplete: false };
-    return { cardCount: deck.cardIds.length, isComplete: deck.cardIds.length === 30 };
+  const deckValidationContext = useMemo(() => {
+    const nftBridge = getNFTBridge();
+    return {
+      getCardById: (cardId: number) => cardRegistry.find(card => Number(card.id) === cardId),
+      getOwnedCopies: (cardId: number) => nftBridge.getOwnedCopies(cardId),
+      enforceOwnership: nftBridge.isHiveMode(),
+    };
+  }, [hiveUsername, nftCollection]);
+
+  const getDeckStatus = (pieceType: PieceType, hero: ChessPieceHero): DeckDisplayStatus => {
+    const status = getHeroDeckStatus(heroDecks[pieceType], {
+      ...deckValidationContext,
+      pieceType,
+      heroId: hero.id,
+      heroClass: hero.heroClass,
+    });
+
+    return {
+      cardCount: status.cardCount,
+      isComplete: status.isReady,
+      label: getDeckStatusLabel(status),
+      status,
+    };
   };
 
   const allDecksComplete = MAJOR_PIECES.every(piece => {
     const hero = army[piece as keyof ArmySelectionType];
     if (!hero) return false;
-    const status = getDeckStatus(piece);
+    const status = getDeckStatus(piece, hero);
     return status.isComplete;
   });
   const selectedHeroCount = PIECE_ORDER.filter(pieceType => !!army[pieceType as keyof ArmySelectionType]).length;
-  const completedDeckCount = MAJOR_PIECES.filter(piece => getDeckStatus(piece).isComplete).length;
+  const completedDeckCount = MAJOR_PIECES.filter(piece => {
+    const hero = army[piece as keyof ArmySelectionType];
+    return hero ? getDeckStatus(piece, hero).isComplete : false;
+  }).length;
 
   const canProceedToBattle = isArmyComplete && allDecksComplete;
   const deploymentStatus = !isArmyComplete
@@ -511,7 +563,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             const info = PIECE_DISPLAY_INFO[pieceType];
             const hero = army[pieceType as keyof ArmySelectionType];
             const isMajorPiece = MAJOR_PIECES.includes(pieceType as PieceType);
-            const deckStatus = isMajorPiece ? getDeckStatus(pieceType as PieceType) : null;
+            const deckStatus = isMajorPiece && hero ? getDeckStatus(pieceType as PieceType, hero) : null;
 
             return (
               <div key={pieceType} className="norse-army-item">
@@ -538,7 +590,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                   </div>
                   {isMajorPiece && deckStatus && (
                     <span className={`norse-deck-count ${deckStatus.isComplete ? 'complete' : 'incomplete'}`}>
-                      {deckStatus.cardCount}/30
+                      {deckStatus.label}
                     </span>
                   )}
                 </div>
@@ -548,7 +600,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
                     onClick={() => handleOpenDeckBuilder(pieceType as PieceType)}
                     className="norse-edit-deck-btn"
                   >
-                    {deckStatus?.isComplete ? 'Refine Deck' : 'Build Deck'}
+                    {deckStatus?.isComplete ? 'Refine Deck' : deckStatus?.status.kind === 'hero_mismatch' ? 'Rebuild Deck' : 'Build Deck'}
                   </button>
                 )}
               </div>
@@ -566,12 +618,12 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
 
           {MAJOR_PIECES.map(piece => {
             const hero = army[piece as keyof ArmySelectionType];
-            const status = getDeckStatus(piece);
+            const status = hero ? getDeckStatus(piece, hero) : null;
             return (
               <div key={piece} className="norse-deck-breakdown">
                 <span className="norse-deck-breakdown-label">{piece}:</span>
-                <span className={`norse-deck-breakdown-value ${status.isComplete ? 'complete' : hero ? 'has-hero' : 'no-hero'}`}>
-                  {hero ? `${status.cardCount}/30` : 'Unassigned'}
+                <span className={`norse-deck-breakdown-value ${status?.isComplete ? 'complete' : hero ? 'has-hero' : 'no-hero'}`}>
+                  {status ? status.label : 'Unassigned'}
                 </span>
               </div>
             );

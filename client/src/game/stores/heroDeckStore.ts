@@ -7,46 +7,47 @@
  */
 
 import { create } from 'zustand';
+import type { CardData } from '../types';
 import { cardRegistry } from '../data/cardRegistry';
 import { debug } from '../config/debugConfig';
 import { getNFTBridge } from '../nft';
 import { triggerAutoSave } from './saveStateManager';
+import {
+  HERO_DECK_PIECE_TYPES,
+  HERO_DECK_SIZE,
+  isCardMythic as isHeroCardMythic,
+  getMaxCopies,
+  isCardValidForHeroClass,
+  countCardIds,
+  validateHeroDeck as validateHeroDeckRules,
+  type DeckValidationResult,
+  type HeroDeck,
+  type PieceType,
+} from '../deck/heroDeckRules';
 
-export type PieceType = 'queen' | 'rook' | 'bishop' | 'knight';
+export type { DeckValidationResult, HeroDeck, PieceType };
 
-export interface HeroDeck {
-  pieceType: PieceType;
-  heroId: string;
-  heroClass: string;
-  cardIds: number[];
-}
+type HeroDeckState = {
+  readonly decks: Record<PieceType, HeroDeck | null>;
+};
 
-interface HeroDeckState {
-  decks: Record<PieceType, HeroDeck | null>;
-}
+type LegacyValidationResult = { readonly valid: boolean; readonly errors: string[] };
 
-interface HeroDeckActions {
-  setDeck: (pieceType: string, deck: HeroDeck) => void;
-  addCard: (pieceType: string, cardId: number) => boolean;
-  removeCard: (pieceType: string, cardId: number) => void;
-  getDeck: (pieceType: string) => HeroDeck | null;
-  validateDeck: (pieceType: string) => { valid: boolean; errors: string[] };
-  isArmyComplete: () => boolean;
-  clearDeck: (pieceType: string) => void;
-  clearAll: () => void;
-  loadFromStorage: () => void;
-  saveToStorage: () => void;
-}
+type HeroDeckActions = {
+  readonly setDeck: (pieceType: PieceType, deck: HeroDeck) => void;
+  readonly addCard: (pieceType: PieceType, cardId: number) => boolean;
+  readonly removeCard: (pieceType: PieceType, cardId: number) => void;
+  readonly getDeck: (pieceType: PieceType) => HeroDeck | null;
+  readonly validateDeck: (pieceType: PieceType) => LegacyValidationResult;
+  readonly validateDeckDetailed: (pieceType: PieceType) => DeckValidationResult;
+  readonly isArmyComplete: () => boolean;
+  readonly clearDeck: (pieceType: PieceType) => void;
+  readonly clearAll: () => void;
+  readonly loadFromStorage: () => void;
+  readonly saveToStorage: () => void;
+};
 
 const STORAGE_KEY = 'ragnarok_hero_decks';
-const DECK_SIZE = 30;
-const MAX_COPIES = 2;
-
-const VALID_PIECE_TYPES: PieceType[] = ['queen', 'rook', 'bishop', 'knight'];
-
-function isPieceType(value: string): value is PieceType {
-  return VALID_PIECE_TYPES.includes(value as PieceType);
-}
 
 const createInitialState = (): HeroDeckState => ({
   decks: {
@@ -57,27 +58,18 @@ const createInitialState = (): HeroDeckState => ({
   },
 });
 
-function getCardById(cardId: number) {
+function getCardById(cardId: number): CardData | undefined {
   return cardRegistry.find(card => Number(card.id) === cardId);
-}
-
-function normalizeClass(className: string | undefined): string {
-  if (!className) return 'neutral';
-  return className.toLowerCase();
 }
 
 function isCardValidForClass(cardId: number, heroClass: string): boolean {
   const card = getCardById(cardId);
   if (!card) return false;
-  
-  const cardClass = normalizeClass(card.class || card.heroClass);
-  const normalizedHeroClass = normalizeClass(heroClass);
-  
-  return cardClass === 'neutral' || cardClass === normalizedHeroClass;
+  return isCardValidForHeroClass(card, heroClass);
 }
 
-function countCardCopies(cardIds: number[], cardId: number): number {
-  return cardIds.filter(id => id === cardId).length;
+function countCardCopies(cardIds: readonly number[], cardId: number): number {
+  return countCardIds(cardIds)[cardId] ?? 0;
 }
 
 function getOwnedCopies(cardId: number): number {
@@ -87,92 +79,43 @@ function getOwnedCopies(cardId: number): number {
 function isCardMythic(cardId: number): boolean {
   const card = getCardById(cardId);
   if (!card) return false;
-  return (card.rarity || '').toLowerCase() === 'mythic';
+  return isHeroCardMythic(card);
 }
 
 function getMaxCopiesForCard(cardId: number): number {
-  return isCardMythic(cardId) ? 1 : MAX_COPIES;
+  const card = getCardById(cardId);
+  return card ? getMaxCopies(card) : 0;
 }
 
-export function validateHeroDeck(deck: HeroDeck | null, pieceType: string): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!isPieceType(pieceType)) {
-    return { valid: false, errors: [`Invalid piece type: ${pieceType}`] };
-  }
-
-  if (!deck) {
-    return { valid: false, errors: ['No deck exists for this piece'] };
-  }
-
-  if (!deck.heroId) {
-    errors.push('No hero selected');
-  }
-
-  if (!deck.heroClass) {
-    errors.push('No hero class specified');
-  }
-
-  if (deck.cardIds.length !== DECK_SIZE) {
-    errors.push(`Deck must contain exactly ${DECK_SIZE} cards (has ${deck.cardIds.length})`);
-  }
-
-  const cardCounts: Record<number, number> = {};
-  for (const cardId of deck.cardIds) {
-    cardCounts[cardId] = (cardCounts[cardId] || 0) + 1;
-  }
-
-  for (const [cardIdStr, count] of Object.entries(cardCounts)) {
-    const cardId = Number(cardIdStr);
-    const maxAllowed = getMaxCopiesForCard(cardId);
-    if (count > maxAllowed) {
-      const card = getCardById(cardId);
-      const rarityNote = isCardMythic(cardId) ? ' (Mythic - max 1)' : '';
-      errors.push(`Card "${card?.name || cardId}"${rarityNote} has ${count} copies (max ${maxAllowed})`);
-    }
-  }
-
-  for (const cardId of deck.cardIds) {
-    if (!isCardValidForClass(cardId, deck.heroClass)) {
-      const card = getCardById(cardId);
-      const cardClass = normalizeClass(card?.class || card?.heroClass);
-      errors.push(`Card "${card?.name || cardId}" (${cardClass}) is not valid for ${deck.heroClass}`);
-    }
-  }
-
-  for (const cardId of deck.cardIds) {
-    const card = getCardById(cardId);
-    if (!card) {
-      errors.push(`Card with ID ${cardId} not found in registry`);
-    }
-  }
-
-  if (getNFTBridge().isHiveMode()) {
-    for (const [cardIdStr, count] of Object.entries(cardCounts)) {
-      const cardId = Number(cardIdStr);
-      const owned = getOwnedCopies(cardId);
-      if (count > owned) {
-        const card = getCardById(cardId);
-        errors.push(`You own ${owned} copy(ies) of "${card?.name || cardId}" but deck has ${count}`);
-      }
-    }
-  }
-
+export function validateHeroDeck(deck: HeroDeck | null, pieceType: PieceType): LegacyValidationResult {
+  const result = validateHeroDeckDetailed(deck, pieceType);
   return {
-    valid: errors.length === 0,
-    errors,
+    valid: result.valid,
+    errors: [...result.errors],
   };
+}
+
+export function validateHeroDeckDetailed(deck: HeroDeck | null, pieceType: PieceType): DeckValidationResult {
+  return validateHeroDeckRules(deck, {
+    pieceType,
+    heroId: deck?.heroId,
+    heroClass: deck?.heroClass,
+    getCardById,
+    getOwnedCopies,
+    enforceOwnership: getNFTBridge().isHiveMode(),
+  });
 }
 
 export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, get) => ({
   ...createInitialState(),
 
-  setDeck: (pieceType: string, deck: HeroDeck) => {
-    if (!isPieceType(pieceType)) {
-      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
+  setDeck: (pieceType: PieceType, deck: HeroDeck) => {
+    const validation = validateHeroDeckDetailed(deck, pieceType);
+    if (!validation.valid) {
+      debug.warn(`[HeroDeck] Refused invalid deck for ${pieceType}: ${validation.errors.join('; ')}`);
       return;
     }
-    
+
     set(state => ({
       decks: {
         ...state.decks,
@@ -185,22 +128,17 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     debug.log(`[HeroDeck] Set deck for ${pieceType}: ${deck.heroId} with ${deck.cardIds.length} cards`);
   },
 
-  addCard: (pieceType: string, cardId: number): boolean => {
-    if (!isPieceType(pieceType)) {
-      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
-      return false;
-    }
-    
+  addCard: (pieceType: PieceType, cardId: number): boolean => {
     const state = get();
     const deck = state.decks[pieceType];
-    
+
     if (!deck) {
       debug.warn(`[HeroDeck] No deck exists for ${pieceType}. Create deck first.`);
       return false;
     }
     
-    if (deck.cardIds.length >= DECK_SIZE) {
-      debug.warn(`[HeroDeck] Deck is full (${DECK_SIZE} cards)`);
+    if (deck.cardIds.length >= HERO_DECK_SIZE) {
+      debug.warn(`[HeroDeck] Deck is full (${HERO_DECK_SIZE} cards)`);
       return false;
     }
     
@@ -243,12 +181,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     return true;
   },
 
-  removeCard: (pieceType: string, cardId: number) => {
-    if (!isPieceType(pieceType)) {
-      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
-      return;
-    }
-    
+  removeCard: (pieceType: PieceType, cardId: number) => {
     const state = get();
     const deck = state.decks[pieceType];
     
@@ -282,24 +215,22 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     debug.log(`[HeroDeck] Removed card ${cardId} from ${pieceType}. Deck size: ${updatedCardIds.length}`);
   },
 
-  getDeck: (pieceType: string): HeroDeck | null => {
-    if (!isPieceType(pieceType)) {
-      return null;
-    }
+  getDeck: (pieceType: PieceType): HeroDeck | null => {
     return get().decks[pieceType];
   },
 
-  validateDeck: (pieceType: string): { valid: boolean; errors: string[] } => {
-    if (!isPieceType(pieceType)) {
-      return { valid: false, errors: [`Invalid piece type: ${pieceType}`] };
-    }
+  validateDeck: (pieceType: PieceType): LegacyValidationResult => {
     return validateHeroDeck(get().decks[pieceType], pieceType);
+  },
+
+  validateDeckDetailed: (pieceType: PieceType): DeckValidationResult => {
+    return validateHeroDeckDetailed(get().decks[pieceType], pieceType);
   },
 
   isArmyComplete: (): boolean => {
     const state = get();
-    
-    for (const pieceType of VALID_PIECE_TYPES) {
+
+    for (const pieceType of HERO_DECK_PIECE_TYPES) {
       const validation = state.validateDeck(pieceType);
       if (!validation.valid) {
         return false;
@@ -309,12 +240,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
     return true;
   },
 
-  clearDeck: (pieceType: string) => {
-    if (!isPieceType(pieceType)) {
-      debug.warn(`[HeroDeck] Invalid piece type: ${pieceType}`);
-      return;
-    }
-    
+  clearDeck: (pieceType: PieceType) => {
     set(state => ({
       decks: {
         ...state.decks,
@@ -349,7 +275,7 @@ export const useHeroDeckStore = create<HeroDeckState & HeroDeckActions>((set, ge
         knight: null,
       };
       
-      for (const pieceType of VALID_PIECE_TYPES) {
+      for (const pieceType of HERO_DECK_PIECE_TYPES) {
         const deck = parsed.decks?.[pieceType];
         if (deck && deck.heroId && deck.heroClass && Array.isArray(deck.cardIds)) {
           validatedDecks[pieceType] = {

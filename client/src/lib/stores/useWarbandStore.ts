@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import type { ArmySelection } from '../../game/types/ChessTypes';
+import {
+	HERO_DECK_PIECE_TYPES,
+	type HeroDeckLoadout,
+} from '../../game/deck/heroDeckRules';
 
 const PIECE_KEYS = ['king', 'queen', 'rook', 'bishop', 'knight'] as const;
 type PieceKey = (typeof PIECE_KEYS)[number];
@@ -11,18 +15,27 @@ export type WarbandValue =
 			readonly status: 'ready';
 			readonly army: ArmySelection;
 			readonly deckCardIds: ReadonlyArray<number>;
+			readonly deckCardIdsByPiece: HeroDeckLoadout;
 	  };
 
 export type WarbandStore = {
 	readonly warband: WarbandValue;
 	readonly setWarband: (
 		army: ArmySelection,
-		deckCardIds: ReadonlyArray<number>
+		deckCardIds: ReadonlyArray<number>,
+		deckCardIdsByPiece?: HeroDeckLoadout,
 	) => void;
 	readonly clearWarband: () => void;
 };
 
 const EMPTY_WARBAND: WarbandValue = Object.freeze({ status: 'empty' });
+
+const EMPTY_DECK_LOADOUT: HeroDeckLoadout = Object.freeze({
+	queen: Object.freeze([]),
+	rook: Object.freeze([]),
+	bishop: Object.freeze([]),
+	knight: Object.freeze([]),
+});
 
 function isFiniteInteger(value: unknown): value is number {
 	return typeof value === 'number' && Number.isInteger(value);
@@ -57,14 +70,34 @@ function assertValidDeck(deckCardIds: ReadonlyArray<number>): void {
 	}
 }
 
+function assertValidDeckLoadout(deckCardIdsByPiece: HeroDeckLoadout): void {
+	for (const pieceType of HERO_DECK_PIECE_TYPES) {
+		assertValidDeck(deckCardIdsByPiece[pieceType]);
+	}
+}
+
+function freezeDeckLoadout(deckCardIdsByPiece?: HeroDeckLoadout): HeroDeckLoadout {
+	if (!deckCardIdsByPiece) return EMPTY_DECK_LOADOUT;
+
+	return Object.freeze({
+		queen: Object.freeze([...deckCardIdsByPiece.queen]),
+		rook: Object.freeze([...deckCardIdsByPiece.rook]),
+		bishop: Object.freeze([...deckCardIdsByPiece.bishop]),
+		knight: Object.freeze([...deckCardIdsByPiece.knight]),
+	});
+}
+
 export const useWarbandStore = create<WarbandStore>()(
 	subscribeWithSelector((set) => ({
 		warband: EMPTY_WARBAND,
 
-		setWarband: (army, deckCardIds) => {
+		setWarband: (army, deckCardIds, deckCardIdsByPiece) => {
 			try {
 				assertCompleteArmy(army);
 				assertValidDeck(deckCardIds);
+				if (deckCardIdsByPiece) {
+					assertValidDeckLoadout(deckCardIdsByPiece);
+				}
 			} catch (cause) {
 				const detail = cause instanceof Error ? cause.message : String(cause);
 				throw new Error(
@@ -77,6 +110,7 @@ export const useWarbandStore = create<WarbandStore>()(
 					status: 'ready',
 					army,
 					deckCardIds: Object.freeze([...deckCardIds]),
+					deckCardIdsByPiece: freezeDeckLoadout(deckCardIdsByPiece),
 				}),
 			});
 		},
@@ -97,4 +131,8 @@ export function selectArmy(state: WarbandStore): ArmySelection | null {
 
 export function selectDeckCardIds(state: WarbandStore): ReadonlyArray<number> {
 	return state.warband.status === 'ready' ? state.warband.deckCardIds : [];
+}
+
+export function selectDeckCardIdsByPiece(state: WarbandStore): HeroDeckLoadout {
+	return state.warband.status === 'ready' ? state.warband.deckCardIdsByPiece : EMPTY_DECK_LOADOUT;
 }

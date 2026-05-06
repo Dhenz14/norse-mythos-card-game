@@ -26,6 +26,14 @@
  * matches the cards send-path. The receiver validates both before
  * applying.
  *
+ * Capture timing (TD-27c-chess fix): hashes are produced by
+ * `captureChessPrevHashes()` and passed in by the caller. The caller is
+ * responsible for invoking capture BEFORE applying the local mutation —
+ * the sender no longer reads state for hashing, which makes "hashed
+ * post-mutation" physically impossible from this module. The brand on
+ * `ChessPrevHashes` enforces that the hash bundle came from the official
+ * capture function (no inline forgery).
+ *
  * Transcript writes (C3): this module is now a PURE send. The transcript
  * write that previously lived inline is delegated to a bridge-registered
  * observer (`setChessSendObserver`), so every `recordMove` call across
@@ -53,6 +61,57 @@ let outgoingChessSeq = 0;
  */
 function readChessSnapshot(): ReturnType<typeof useUnifiedCombatStore.getState>['boardState'] | null {
 	return useUnifiedCombatStore.getState().boardState ?? null;
+}
+
+/**
+ * Brand for `ChessPrevHashes`. Module-private real Symbol (not just a
+ * type-level `declare`) so the brand survives JS emission — using
+ * `declare const ... : unique symbol` would compile fine but crash at
+ * runtime with `ReferenceError` when used as a computed key. The Symbol
+ * is intentionally NOT exported, so the only way to satisfy
+ * `ChessPrevHashes` is to call `captureChessPrevHashes()`.
+ *
+ * The brand does NOT prove the snapshot was taken pre-mutation; that's a
+ * runtime contract enforced by the receiver's dual-hash validation
+ * (TD-27c-chess). What the brand DOES prove is that the value flowed
+ * through the official capture function — a real, useful invariant.
+ */
+const ChessPrevHashesBrand: unique symbol = Symbol('chess-prev-hashes');
+
+export interface ChessPrevHashes {
+	readonly [ChessPrevHashesBrand]: true;
+	readonly chess: string;
+	readonly cards: string;
+}
+
+/**
+ * Capture the dual prev-state hashes (chess + cards) over the CURRENT
+ * local state. The caller MUST invoke this BEFORE applying any local
+ * mutation (`movePiece`, etc.); otherwise the hashes will reflect
+ * post-mutation state and the receiver's validation will diverge — that
+ * was the TD-27c-chess bug.
+ *
+ * Returns a branded value so the consumers (`sendChessMove`,
+ * `sendChessAttack`) cannot accept literally-constructed hashes.
+ *
+ * TODO(OPEN-8): `peerStore.isHost` is the WS-host axis, which diverges
+ * from `isCardsAuthority` ~50% of the time in the symmetric setup. The
+ * cards hash perspective should follow the cards-authority axis. Tracked
+ * separately because it requires resolving the cards-authority canon
+ * everywhere; not part of TD-27c-chess fix.
+ */
+export function captureChessPrevHashes(): ChessPrevHashes {
+	const isCardsAuthority = usePeerStore.getState().isHost;
+	const cards = computeCardsPrevStateHash(
+		useGameStore.getState().gameState,
+		isCardsAuthority,
+	);
+	const chess = computeChessPrevStateHash(readChessSnapshot());
+	return {
+		[ChessPrevHashesBrand]: true,
+		chess,
+		cards,
+	};
 }
 
 /**
@@ -92,9 +151,16 @@ export interface ChessAttackEmit {
  * record the corresponding transcript entry, and log diagnostics. Both
  * outgoing paths (move, attack) flow through here so seq counter +
  * matchId gating + transcript identity policy live in one place.
+ *
+ * `prev` MUST come from `captureChessPrevHashes()` invoked BEFORE the
+ * local mutation; the brand on `ChessPrevHashes` enforces the origin,
+ * the timing is the caller's contract. This module no longer reads
+ * state for hashing — that responsibility belongs to the caller, who
+ * alone knows when state is unmutated.
  */
 function dispatchChessCommand(
 	command: ChessCommand,
+	prev: ChessPrevHashes,
 	transcriptExtra: Record<string, unknown>,
 ): boolean {
 	const { matchId, myCanonicalSide } = useGameStore.getState();
@@ -115,24 +181,13 @@ function dispatchChessCommand(
 		return false;
 	}
 
-	// Cards-side hash uses the same WASM canonical domain + perspective flip
-	// as the cards send-path so a chess move that incidentally read cards
-	// state (mana, hero, prophecies via future combat protocol) lines up
-	// across peers without per-handler audit.
-	const isCardsAuthority = peerState.isHost;
-	const prevCardsStateHash = computeCardsPrevStateHash(
-		useGameStore.getState().gameState,
-		isCardsAuthority,
-	);
-	const prevChessStateHash = computeChessPrevStateHash(readChessSnapshot());
-
 	const envelope: ChessCommandEnvelope = {
 		type: 'chess_command',
 		matchId,
 		seq: outgoingChessSeq++,
 		commandId: crypto.randomUUID(),
-		prevChessStateHash,
-		prevCardsStateHash,
+		prevChessStateHash: prev.chess,
+		prevCardsStateHash: prev.cards,
 		command,
 	};
 
@@ -147,8 +202,8 @@ function dispatchChessCommand(
 		piece: command.pieceId.slice(0, 8),
 		from: command.from,
 		to: command.to,
-		prevChessHash: prevChessStateHash ? prevChessStateHash.slice(0, 12) : '(empty)',
-		prevCardsHash: prevCardsStateHash ? prevCardsStateHash.slice(0, 12) : '(empty)',
+		prevChessHash: prev.chess ? prev.chess.slice(0, 12) : '(empty)',
+		prevCardsHash: prev.cards ? prev.cards.slice(0, 12) : '(empty)',
 	});
 	send(envelope);
 
@@ -168,15 +223,18 @@ function dispatchChessCommand(
 /**
  * Send a chess_move envelope (quiet move). Returns true on send, false
  * when no P2P session is active (silent no-op for SP).
+ *
+ * `prev` MUST be captured via `captureChessPrevHashes()` BEFORE the
+ * caller applied the local mutation. See `captureChessPrevHashes` JSDoc.
  */
-export function sendChessMove(move: ChessMoveEmit): boolean {
+export function sendChessMove(move: ChessMoveEmit, prev: ChessPrevHashes): boolean {
 	const command: ChessMoveCommand = {
 		type: 'chess_move',
 		pieceId: move.pieceId,
 		from: move.from,
 		to: move.to,
 	};
-	return dispatchChessCommand(command, {});
+	return dispatchChessCommand(command, prev, {});
 }
 
 /**
@@ -184,8 +242,11 @@ export function sendChessMove(move: ChessMoveEmit): boolean {
  * MUST have verified `isChessAttackInstantKill` returns true before
  * invoking. Receiver re-verifies and rejects with
  * `non_instant_capture_not_supported_p2p` otherwise.
+ *
+ * `prev` MUST be captured via `captureChessPrevHashes()` BEFORE the
+ * caller applied the local mutation. See `captureChessPrevHashes` JSDoc.
  */
-export function sendChessAttack(attack: ChessAttackEmit): boolean {
+export function sendChessAttack(attack: ChessAttackEmit, prev: ChessPrevHashes): boolean {
 	const command: ChessAttackCommand = {
 		type: 'chess_attack',
 		pieceId: attack.pieceId,
@@ -193,7 +254,7 @@ export function sendChessAttack(attack: ChessAttackEmit): boolean {
 		to: attack.to,
 		defenderId: attack.defenderId,
 	};
-	return dispatchChessCommand(command, {
+	return dispatchChessCommand(command, prev, {
 		defenderId: attack.defenderId,
 		isInstantKill: true,
 	});

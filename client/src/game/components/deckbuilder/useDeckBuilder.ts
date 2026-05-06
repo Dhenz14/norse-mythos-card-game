@@ -11,6 +11,7 @@ import { useHeroDeckStore, validateHeroDeck, HeroDeck, PieceType } from '../../s
 import { useAudio } from '../../../lib/stores/useAudio';
 import { getNFTBridge } from '../../nft';
 import { useNFTCollection } from '../../nft/hooks';
+import { isHeroDeckForHero, normalizeHeroClass } from '../../deck/heroDeckRules';
 import {
   DECK_SIZE,
   SortOption,
@@ -99,13 +100,16 @@ export function useDeckBuilder({
   const setDeck = useHeroDeckStore(state => state.setDeck);
   const nftCollection = useNFTCollection();
 
-  const normalizedHeroClass = heroClass.toLowerCase();
+  const normalizedHeroClass = normalizeHeroClass(heroClass);
   const nftBridge = getNFTBridge();
-  
+
   // Core state
   const existingDeck = getDeck(pieceType);
+  const existingDeckCardIds = existingDeck && isHeroDeckForHero(existingDeck, pieceType, heroId, normalizedHeroClass)
+    ? [...existingDeck.cardIds]
+    : [];
   const [deckCardIds, setDeckCardIds] = useState<number[]>(
-    existingDeck?.cardIds || []
+    existingDeckCardIds
   );
   
   // Filter state
@@ -206,17 +210,18 @@ export function useDeckBuilder({
   
   // Auto-fill deck
   const handleAutoFill = useCallback(() => {
-    const newCards = generateAutoFillCards(
-      deckCardIds,
-      visibleCards,
-      DECK_SIZE,
-      (cardId) => nftBridge.getOwnedCopies(cardId),
-    );
-    if (newCards.length > 0) {
-      setDeckCardIds(prev => [...prev, ...newCards]);
-      playSoundEffect('card_draw');
-    }
-  }, [deckCardIds, visibleCards, nftBridge, nftCollection, playSoundEffect]);
+    if (deckCardIds.length >= DECK_SIZE) return;
+    setDeckCardIds(prev => {
+      const newCards = generateAutoFillCards(
+        prev,
+        visibleCards,
+        DECK_SIZE,
+        (cardId) => nftBridge.getOwnedCopies(cardId),
+      );
+      return newCards.length > 0 ? [...prev, ...newCards] : prev;
+    });
+    playSoundEffect('card_draw');
+  }, [deckCardIds.length, visibleCards, nftBridge, nftCollection, playSoundEffect]);
   
   // Clear deck
   const handleClearDeck = useCallback(() => {
@@ -238,7 +243,7 @@ export function useDeckBuilder({
     const validation = validateHeroDeck(deck, pieceType);
     if (!validation.valid) {
       setSaveError(validation.errors.join('\n'));
-      playSoundEffect('error' as any);
+      playSoundEffect('error');
       return;
     }
 

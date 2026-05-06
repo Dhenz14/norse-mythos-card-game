@@ -7,13 +7,14 @@
 
 import { useMemo } from 'react';
 import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
-import { 
-  ChessPiece, 
-  ChessBoardPosition, 
+import {
+  ChessPiece,
+  ChessBoardPosition,
   ChessBoardState,
   ChessCollision,
   ArmySelection
 } from '../types/ChessTypes';
+import type { HeroDeckLoadout } from '../deck/heroDeckRules';
 
 interface InstantKillEvent {
   position: ChessBoardPosition;
@@ -36,7 +37,12 @@ export interface ChessCombatAdapter {
   lastInstantKill: InstantKillEvent | null;
   pendingAttackAnimation: PendingAttackAnimation | null;
   
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => void;
+  initializeBoard: (
+    playerArmy: ArmySelection,
+    opponentArmy: ArmySelection,
+    idGen: () => string,
+    playerDeckLoadout?: HeroDeckLoadout,
+  ) => void;
   selectPiece: (piece: ChessPiece | null) => void;
   movePiece: (to: ChessBoardPosition) => ChessCollision | null;
   getPieceAt: (position: ChessBoardPosition) => ChessPiece | null;
@@ -82,8 +88,13 @@ export function useChessCombatAdapter(): ChessCombatAdapter {
     lastInstantKill,
     pendingAttackAnimation,
 
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
-      initializeBoardFn(playerArmy, opponentArmy, idGen);
+    initializeBoard: (
+      playerArmy: ArmySelection,
+      opponentArmy: ArmySelection,
+      idGen: () => string,
+      playerDeckLoadout?: HeroDeckLoadout,
+    ) => {
+      initializeBoardFn(playerArmy, opponentArmy, idGen, playerDeckLoadout);
       initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 
@@ -170,8 +181,13 @@ export function getChessCombatStoreActions() {
   const unified = useUnifiedCombatStore.getState();
 
   return {
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection, idGen: () => string) => {
-      unified.initializeBoard(playerArmy, opponentArmy, idGen);
+    initializeBoard: (
+      playerArmy: ArmySelection,
+      opponentArmy: ArmySelection,
+      idGen: () => string,
+      playerDeckLoadout?: HeroDeckLoadout,
+    ) => {
+      unified.initializeBoard(playerArmy, opponentArmy, idGen, playerDeckLoadout);
       unified.initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 

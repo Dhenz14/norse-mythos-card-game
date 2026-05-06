@@ -167,6 +167,15 @@ const HashCheckSchema = z.object({
 	// yet, eager-WASM load) — receiver tolerates empty by treating it as
 	// "skip chess check this beacon", same policy as the per-envelope path.
 	chessStateHash: z.string(),
+	// Chess `moveCount` of the snapshot that produced `chessStateHash`. The
+	// beacon fires every 2s; in active play the snapshot is ~always stale by
+	// the time it lands on the peer (in-flight envelopes change moveCount
+	// faster than 2s). Receiver skips the chess hash compare when its local
+	// moveCount differs — beacon's anti-cheat purpose is idle-drift detection,
+	// where both peers are stable on the same moveCount and the compare is
+	// meaningful. -1 sentinel = "no chess snapshot available" (early game,
+	// pre-WASM); receiver treats same as empty hash.
+	chessMoveCount: z.number().int().min(-1),
 	turnNumber: NonNegativeInt,
 }).strict();
 
