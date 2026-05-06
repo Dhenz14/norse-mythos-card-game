@@ -162,6 +162,11 @@ const WasmHashCheckSchema = z.object({
 const HashCheckSchema = z.object({
 	type: z.literal('hash_check'),
 	stateHash: HashString,
+	// `chessStateHash` covers the chess board domain (TD-27c-chess F3). May be
+	// the empty string under the documented well-known races (no chess phase
+	// yet, eager-WASM load) — receiver tolerates empty by treating it as
+	// "skip chess check this beacon", same policy as the per-envelope path.
+	chessStateHash: z.string(),
 	turnNumber: NonNegativeInt,
 }).strict();
 

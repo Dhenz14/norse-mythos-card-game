@@ -106,8 +106,12 @@ export function useWireSync() {
 	const theirCommitmentRef = useRef<string | null>(null);
 	const seedResolvedRef = useRef(false);
 
-	// Slash dedup: only submit one slash per turn
+	// Slash dedup: one cards-slash + one chess-slash per turn at most. Tracked
+	// independently because cards and chess hash checks are independent
+	// detections — a turn can plausibly fail one without the other (e.g.
+	// chess-only mutation that doesn't touch cards GameState).
 	const lastSlashTurnRef = useRef<number>(-1);
+	const lastChessSlashTurnRef = useRef<number>(-1);
 
 	// Command dedup: track commandIds (UUIDs from envelope) we've already applied so a
 	// duplicate envelope (network retry, buffered replay after reconnect, malicious
@@ -394,7 +398,7 @@ export function useWireSync() {
 					const canonicalState = isCardsAuthority ? gs : flipGameState(gs);
 					const myHash = await computeStateHash(canonicalState);
 					if (myHash !== data.stateHash) {
-						debug.error(`[wireSync] State hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
+						debug.error(`[wireSync] Cards state hash mismatch at turn ${data.turnNumber}: local=${myHash.slice(0, 16)}, remote=${data.stateHash.slice(0, 16)}`);
 						send({ type: 'hash_mismatch', turnNumber: data.turnNumber, myHash });
 						GameEventBus.emitNotification({
 							level: 'error',
@@ -412,9 +416,44 @@ export function useWireSync() {
 									offender: opponentName,
 									reason: 'forged_move',
 									trxId1: matchSeed,
-									trxId2: `hash_check_fail_turn_${data.turnNumber}_${myHash.slice(0, 16)}`,
-									notes: `Hash check failed at turn ${data.turnNumber}. Local: ${myHash.slice(0, 16)}, remote: ${data.stateHash.slice(0, 16)}`,
+									trxId2: `hash_check_fail_cards_turn_${data.turnNumber}_${myHash.slice(0, 16)}`,
+									notes: `Cards hash check failed at turn ${data.turnNumber}. Local: ${myHash.slice(0, 16)}, remote: ${data.stateHash.slice(0, 16)}`,
 								}).catch(err => debug.warn('[wireSync] Failed to submit forged_move slash:', err));
+							}
+						}
+					}
+
+					// Chess hash check (TD-27c-chess F3). Empty on either side means
+					// well-known race ('' from sender = no chess phase or WASM not
+					// ready; '' from local = same on receiver). Skip rather than
+					// reject — periodic beacon will retry in 2s.
+					if (data.chessStateHash.length > 0) {
+						const beaconCombatStore = (globalThis as Record<string, unknown>)
+							.__ragnarokCombatStore as { getState: () => { boardState?: Parameters<typeof computeChessPrevStateHash>[0] } } | undefined;
+						const localChessSnapshot = beaconCombatStore?.getState().boardState ?? null;
+						const myChessHash = computeChessPrevStateHash(localChessSnapshot);
+						if (myChessHash.length > 0 && myChessHash !== data.chessStateHash) {
+							debug.error(`[wireSync] Chess state hash mismatch at turn ${data.turnNumber}: local=${myChessHash.slice(0, 16)}, remote=${data.chessStateHash.slice(0, 16)}`);
+							GameEventBus.emitNotification({
+								level: 'error',
+								message: 'Chess board verification failed — chess state diverged from opponent. Possible cheating detected.',
+								duration: 8000,
+							});
+
+							if (isSharedNetworkEnvironment() && data.turnNumber !== lastChessSlashTurnRef.current) {
+								lastChessSlashTurnRef.current = data.turnNumber;
+								const matchSeed = useGameStore.getState().matchSeed;
+								const opponentName = usePeerStore.getState().remotePeerId ?? 'unknown';
+								if (matchSeed) {
+									submitSlashEvidence({
+										matchId: matchSeed,
+										offender: opponentName,
+										reason: 'forged_move',
+										trxId1: matchSeed,
+										trxId2: `hash_check_fail_chess_turn_${data.turnNumber}_${myChessHash.slice(0, 16)}`,
+										notes: `Chess hash check failed at turn ${data.turnNumber}. Local: ${myChessHash.slice(0, 16)}, remote: ${data.chessStateHash.slice(0, 16)}`,
+									}).catch(err => debug.warn('[wireSync] Failed to submit chess forged_move slash:', err));
+								}
 							}
 						}
 					}
@@ -1490,8 +1529,18 @@ export function useWireSync() {
 				const gs = useGameStore.getState().gameState;
 				if (gs && gs.gamePhase !== 'game_over') {
 					const stateHash = await computeStateHash(gs);
+					// Beacon-covered chess hash (TD-27c-chess F3). Closes the
+					// cross-peer divergence-detection gap between chess moves: per-
+					// envelope validation catches mid-move drift, but two peers can
+					// drift while idle (no chess move, no game_command). Sync hash
+					// over the local boardState; '' under WASM-not-ready / no-chess-
+					// phase races so the receiver can skip rather than reject.
+					const beaconCombatStore = (globalThis as Record<string, unknown>)
+						.__ragnarokCombatStore as { getState: () => { boardState?: Parameters<typeof computeChessPrevStateHash>[0] } } | undefined;
+					const chessSnapshot = beaconCombatStore?.getState().boardState ?? null;
+					const chessStateHash = computeChessPrevStateHash(chessSnapshot);
 					if (!cancelled) {
-						send({ type: 'hash_check', stateHash, turnNumber: gs.turnNumber });
+						send({ type: 'hash_check', stateHash, chessStateHash, turnNumber: gs.turnNumber });
 					}
 				}
 				scheduleCheck();
