@@ -677,11 +677,7 @@ function App() {
                   </Route>
 
                   <Route element={<GameplayRuntimeBoundary />}>
-                    <Route path={routes.game} element={
-                      <MatchSetupSingle difficulty="normal" deckSource="warband">
-                        <RagnarokGameCoordinator />
-                      </MatchSetupSingle>
-                    } />
+                    <Route path={routes.game} element={<Navigate to={routes.singleGame} replace />} />
                     <Route path={routes.singleGame} element={
                       <MatchSetupSingle difficulty="normal" deckSource="warband">
                         <RagnarokGameCoordinator />

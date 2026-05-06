@@ -39,6 +39,12 @@ export {
 } from './economy';
 export type { ModeEconomy, ModeKey } from './economy';
 
+export {
+	createMatchIdentityFactory,
+	cryptoMatchIdentityFactory,
+} from './identityFactory';
+export type { MatchIdentityFactory, MatchIdGenerator } from './identityFactory';
+
 // ── Mode resolvers ────────────────────────────────────────────────────────
 // Public callers (menu / route handlers / matchmaking flow) construct a
 // MatchContext via these resolvers, then push the result into useMatchStore

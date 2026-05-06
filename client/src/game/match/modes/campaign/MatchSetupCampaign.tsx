@@ -9,6 +9,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 
 import { useCampaignStore } from '../../../campaign';
+import { cryptoMatchIdentityFactory, type MatchIdentityFactory } from '../../identityFactory';
 import { useMatchStore } from '../../store';
 import type { CampaignResolveArgs } from './resolver';
 import { resolveCampaign } from './resolver';
@@ -16,12 +17,14 @@ import { resolveCampaign } from './resolver';
 interface MatchSetupCampaignProps {
 	readonly children: ReactNode;
 	readonly fallback?: ReactNode;
+	readonly identityFactory?: MatchIdentityFactory;
 }
 
-function getStagedCampaignArgs(): CampaignResolveArgs | null {
+function getStagedCampaignArgs(identityFactory: MatchIdentityFactory): CampaignResolveArgs | null {
 	const campaign = useCampaignStore.getState();
 	if (!campaign.currentMission) return null;
 	return {
+		identity: identityFactory.create(),
 		missionId: campaign.currentMission,
 		difficulty: campaign.currentDifficulty,
 	};
@@ -30,8 +33,9 @@ function getStagedCampaignArgs(): CampaignResolveArgs | null {
 export function MatchSetupCampaign({
 	children,
 	fallback = null,
+	identityFactory = cryptoMatchIdentityFactory,
 }: MatchSetupCampaignProps) {
-	const [stagedArgs] = useState(getStagedCampaignArgs);
+	const [stagedArgs] = useState(() => getStagedCampaignArgs(identityFactory));
 	const [ready, setReady] = useState(false);
 
 	useEffect(() => {

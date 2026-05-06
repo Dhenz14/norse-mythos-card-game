@@ -26,6 +26,7 @@ import type { Difficulty } from '../campaign/campaignTypes';
 // node-test-safe. The mode barrels re-export React setup components
 // (e.g. MatchSetupP2P) whose transitive deps touch localStorage at
 // module load and crash vitest's node environment.
+import { cryptoMatchIdentityFactory, type MatchIdentityFactory } from './identityFactory';
 import { resolveCampaign } from './modes/campaign/resolver';
 import { resolveSingle } from './modes/single/resolver';
 import type { MatchContext } from './types';
@@ -38,6 +39,7 @@ export interface LegacySynthInputs {
 
 export function synthesizeLegacyMatchContext(
 	input: LegacySynthInputs,
+	identityFactory: MatchIdentityFactory = cryptoMatchIdentityFactory,
 ): MatchContext | null {
 	if (input.isP2PConnected) {
 		// P2P MatchContext is built by <MatchSetupP2P/> (Fase 5). Returning
@@ -49,6 +51,7 @@ export function synthesizeLegacyMatchContext(
 
 	if (input.campaignMission) {
 		const result = resolveCampaign({
+			identity: identityFactory.create(),
 			missionId: input.campaignMission,
 			difficulty: input.campaignDifficulty,
 		});
@@ -61,5 +64,9 @@ export function synthesizeLegacyMatchContext(
 	// expose difficulty selection for single matches, so 'normal' is the
 	// only real value. When Fase 7's menu lands, real user input populates
 	// these.
-	return resolveSingle({ difficulty: 'normal', deckSource: 'warband' });
+	return resolveSingle({
+		identity: identityFactory.create(),
+		difficulty: 'normal',
+		deckSource: 'warband',
+	});
 }

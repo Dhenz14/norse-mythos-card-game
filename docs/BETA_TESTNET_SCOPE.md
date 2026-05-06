@@ -58,7 +58,7 @@ The expected testnet shape is mainnet-like:
 - P2P wire layer validated at the trust boundary: every inbound envelope passes through `parseWireMessage` (zod) before the bridge dispatch (TD-24a, 2026-05-05). The bridge no longer accepts unverified shapes.
 - Per-command divergence detection uses WASM canonical state hashes for both wire paths: cards `game_command` envelopes carry `prevStateHash` over `computeStateHashSync` (TD-27c-cards, 2026-05-05), and chess `chess_command` envelopes carry a dual hash `prevChessStateHash` + `prevCardsStateHash` over canonical chess snapshot + cards GameState (TD-27c-chess, 2026-05-06). Domain-specific reject codes (`prev_chess_state_hash_mismatch` / `prev_cards_state_hash_mismatch`) localize forensics to the diverging slice.
 - Periodic 2s `hash_check` beacon broadcasts both cards and chess hashes (TD-27c-chess F3, 2026-05-06); cross-peer divergence is detected per-envelope at move time and per-beacon while idle. Slash evidence trxIds carry `cards_` / `chess_` infix for slice attribution.
-- Match modes are physically separated under `client/src/game/match/modes/{single,campaign,p2p}/` with ESLint-enforced isolation; routes split as `/game/single`, `/game/campaign`, `/game` (practice fallback).
+- Match modes are physically separated under `client/src/game/match/modes/{single,campaign,p2p}/` with ESLint-enforced isolation; gameplay routes split as `/game/single` and `/game/campaign`, while legacy `/game` redirects to `/game/single`.
 
 ## Next Gate
 

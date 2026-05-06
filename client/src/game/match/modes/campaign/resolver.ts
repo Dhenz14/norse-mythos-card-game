@@ -12,15 +12,18 @@
  * CampaignMission with `rewardMultiplier?: number` and pick per-mission
  * OR `MATCH_ECONOMY.campaign.xpRunesShare` here. The override does NOT
  * change MATCH_ECONOMY itself — it lives at the resolver layer.
+ *
+ * matchId / matchSeed are supplied by the setup boundary through
+ * MatchIdentityFactory so this resolver remains input -> output.
  */
 
 import { getMission } from '../../../campaign';
 import type { Difficulty } from '../../../campaign/campaignTypes';
-import { cryptoIdGen } from '../../../utils/seededRng';
 import { MATCH_ECONOMY, modeEconomyToReward } from '../../economy';
-import type { MatchContext } from '../../types';
+import type { MatchContext, MatchIdentity } from '../../types';
 
 export interface CampaignResolveArgs {
+	identity: MatchIdentity;
 	missionId: string;
 	difficulty: Difficulty;
 }
@@ -36,8 +39,7 @@ export function resolveCampaign(args: CampaignResolveArgs): CampaignResolveResul
 	return {
 		ok: true,
 		ctx: {
-			matchId: cryptoIdGen(),
-			matchSeed: cryptoIdGen(),
+			...args.identity,
 			opponent: {
 				kind: 'scripted',
 				script: {

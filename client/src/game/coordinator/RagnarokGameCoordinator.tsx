@@ -706,7 +706,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
   const chessRealmClass = getChessRealmClass({ isCampaign, missionRealm, visualRealm });
   const finaleClass = getFinaleClass({ isCampaign, campaignData });
 
-  // Guard: arriving at /game with no warband and not in campaign → redirect to picker
+  // Guard: arriving at a gameplay route with no warband and not in campaign -> redirect to picker
   if (!effectiveInitialArmy && !isCampaign && !playerArmy) {
     return <Navigate to={routes.warband} replace />;
   }
