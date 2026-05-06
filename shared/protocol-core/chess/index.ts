@@ -42,3 +42,5 @@ export type { ChessBoardSnapshot } from './state';
 
 export { applyChessAction } from './reducer';
 export type { ChessAction, ChessRejection, ChessReduceResult } from './reducer';
+
+export { canonicalChessSnapshot } from './canonicalize';
