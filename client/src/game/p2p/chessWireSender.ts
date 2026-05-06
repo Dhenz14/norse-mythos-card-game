@@ -19,8 +19,12 @@
  *   UI) verifies `isChessAttackInstantKill` before invoking; non-instant
  *   captures stay blocked at the UI layer.
  *
- * `prevStateHash` is a placeholder until `computeChessStateHash` lands
- * (C-Chess.5). Receiver accepts any non-empty value today.
+ * State hash (TD-27c-chess): each envelope carries `prevChessStateHash`
+ * (over the protocol chess snapshot) AND `prevCardsStateHash` (over the
+ * WASM-canonical cards GameState). Both are computed via the shared
+ * helpers in `engine/{chessHash,wireHash}.ts` so the failure-mode policy
+ * matches the cards send-path. The receiver validates both before
+ * applying.
  *
  * Transcript writes (C3): this module is now a PURE send. The transcript
  * write that previously lived inline is delegated to a bridge-registered
@@ -31,11 +35,25 @@
 
 import { useGameStore } from '../stores/gameStore';
 import { usePeerStore } from '../stores/peerStore';
+import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
 import type { ChessBoardPosition } from '../types/ChessTypes';
 import type { ChessAttackCommand, ChessCommand, ChessCommandEnvelope, ChessMoveCommand } from '../../../../shared/p2p-wire/chess';
+import { computeChessStateHash } from '../engine/chessHash';
+import { computeCardsPrevStateHash } from '../engine/wireHash';
 import { debug } from '../config/debugConfig';
 
 let outgoingChessSeq = 0;
+
+/**
+ * Snapshot the local chess board for hashing. The combat store's
+ * `boardState` is `ChessBoardState extends ChessBoardSnapshot<ChessPiece>`,
+ * so the rich pieces satisfy the structural protocol-piece contract; the
+ * canonicalizer reads only protocol fields by virtue of its generic
+ * constraint, ignoring rich client overlays.
+ */
+function readChessSnapshot(): ReturnType<typeof useUnifiedCombatStore.getState>['boardState'] | null {
+	return useUnifiedCombatStore.getState().boardState ?? null;
+}
 
 /**
  * Bridge-registered post-send hook. Fired once per successfully-sent
@@ -55,8 +73,6 @@ let chessSendObserver: ChessSendObserver | null = null;
 export function setChessSendObserver(observer: ChessSendObserver | null): void {
 	chessSendObserver = observer;
 }
-
-const PREV_STATE_HASH_PLACEHOLDER = 'prelim-no-hash-yet';
 
 export interface ChessMoveEmit {
 	readonly pieceId: string;
@@ -91,19 +107,32 @@ function dispatchChessCommand(
 		return false;
 	}
 
-	const send = usePeerStore.getState().send;
-	const connectionState = usePeerStore.getState().connectionState;
+	const peerState = usePeerStore.getState();
+	const send = peerState.send;
+	const connectionState = peerState.connectionState;
 	if (connectionState !== 'connected') {
 		console.warn('[chessWireSender] SKIP: not connected', { connectionState });
 		return false;
 	}
+
+	// Cards-side hash uses the same WASM canonical domain + perspective flip
+	// as the cards send-path so a chess move that incidentally read cards
+	// state (mana, hero, prophecies via future combat protocol) lines up
+	// across peers without per-handler audit.
+	const isCardsAuthority = peerState.isHost;
+	const prevCardsStateHash = computeCardsPrevStateHash(
+		useGameStore.getState().gameState,
+		isCardsAuthority,
+	);
+	const prevChessStateHash = computeChessStateHash(readChessSnapshot());
 
 	const envelope: ChessCommandEnvelope = {
 		type: 'chess_command',
 		matchId,
 		seq: outgoingChessSeq++,
 		commandId: crypto.randomUUID(),
-		prevStateHash: PREV_STATE_HASH_PLACEHOLDER,
+		prevChessStateHash,
+		prevCardsStateHash,
 		command,
 	};
 
@@ -118,6 +147,8 @@ function dispatchChessCommand(
 		piece: command.pieceId.slice(0, 8),
 		from: command.from,
 		to: command.to,
+		prevChessHash: prevChessStateHash ? prevChessStateHash.slice(0, 12) : '(empty)',
+		prevCardsHash: prevCardsStateHash ? prevCardsStateHash.slice(0, 12) : '(empty)',
 	});
 	send(envelope);
 

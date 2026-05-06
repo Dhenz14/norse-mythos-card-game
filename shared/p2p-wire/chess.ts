@@ -24,12 +24,25 @@
  * the typecheck if a case is forgotten, which is the entire point of
  * keeping `ChessCommandSchema` discriminated rather than flag-bagged.
  *
- * State hash policy: `prevStateHash` is the COMBINED hash of
- * `boardState` + `gameState`, computed by `computeChessStateHash`
- * (deferred — see C-Chess.5). Defense in depth at chess<->poker
- * transitions: a client-side desync in either slice blocks the next
- * chess move. Today the receiver accepts any non-empty string for the
- * placeholder.
+ * State hash policy (TD-27c-chess, dual hash):
+ *
+ *   - `prevChessStateHash` — SHA-256 over the canonical
+ *     `ChessBoardSnapshot` (see `shared/protocol-core/chess/canonicalize.ts`).
+ *   - `prevCardsStateHash` — SHA-256 over the WASM-canonical cards
+ *     `GameState`. Always present, even when the chess action does not
+ *     touch cards-side state, so coverage is enforced at the wire instead
+ *     of audited per-handler.
+ *
+ * Both hashes are required and validated by the receiver before applying
+ * the action. A mismatch on either domain rejects the envelope with the
+ * domain-specific code (`prev_chess_state_hash_mismatch` /
+ * `prev_cards_state_hash_mismatch`) so triage post-incident does not
+ * require re-hashing both sides by hand.
+ *
+ * Either hash may be `''` during well-known races (state pre-init,
+ * eager-WASM load); the receiver treats empty as "retry later" rather
+ * than rejecting hard. See `client/src/game/engine/{wireHash,chessHash}.ts`
+ * for the policy.
  *
  * Board dimensions are re-declared here at the trust boundary
  * (BOARD_ROWS=7, BOARD_COLS=5 in client/types/ChessTypes.ts). If the
@@ -141,7 +154,13 @@ export const ChessCommandEnvelopeSchema = z
 		matchId: z.string().min(1).max(MATCH_ID_MAX),
 		seq: z.number().int().nonnegative(),
 		commandId: z.string().uuid(),
-		prevStateHash: z.string().min(1),
+		// Both hashes are non-empty by default. Empty-string on the wire is a
+		// well-known race signal (state pre-init, eager-WASM load) — the
+		// receiver branches on length, treating empty as "retry later". The
+		// schema accepts `''` so those well-formed retry envelopes pass parse;
+		// the receiver enforces non-empty before comparing against local state.
+		prevChessStateHash: z.string(),
+		prevCardsStateHash: z.string(),
 		command: ChessCommandSchema,
 	})
 	.strict()

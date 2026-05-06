@@ -15,6 +15,7 @@ import { localPlayerId, remotePlayerId } from '../../../../../data/blockchain/pl
 import { getWasmHash, loadWasmEngine } from '../../../../engine/wasmLoader';
 import { computeStateHash } from '../../../../engine/engineBridge';
 import { flipGameState, computeCardsPrevStateHash } from '../../../../engine/wireHash';
+import { computeChessStateHash } from '../../../../engine/chessHash';
 import { isSharedNetworkEnvironment } from '../../../../config/featureFlags';
 import { submitSlashEvidence, findExistingMatchResult } from '../../../../../data/blockchain/slashEvidence';
 import { GAME_COMMAND_TYPES } from '../../../../core/commands';
@@ -814,6 +815,44 @@ export function useWireSync() {
 						break;
 					}
 					actionTimestampsRef.current.push(nowChess);
+
+					// Dual prev-state-hash validation (TD-27c-chess). Empty hashes
+					// from the peer mean a well-known race (state pre-init, eager
+					// WASM load) — drop without rejecting so the sender can retry on
+					// the next attempt; same policy as missing_prev_state_hash on
+					// the cards path. Mismatch with non-empty claim is a hard reject
+					// with the domain-specific code so post-incident triage points
+					// at the right slice.
+					{
+						const senderChessHash = envelope.prevChessStateHash;
+						const senderCardsHash = envelope.prevCardsStateHash;
+						if (senderChessHash.length === 0 || senderCardsHash.length === 0) {
+							reject('missing_prev_state_hash');
+							break;
+						}
+						const localChessSnapshot = ((globalThis as Record<string, unknown>)
+							.__ragnarokCombatStore as { getState: () => { boardState?: unknown } } | undefined)
+							?.getState().boardState as Parameters<typeof computeChessStateHash>[0];
+						const localChessHash = computeChessStateHash(localChessSnapshot);
+						const localCardsHash = computeCardsPrevStateHash(
+							useGameStore.getState().gameState,
+							isCardsAuthority,
+						);
+						if (localChessHash.length === 0 || localCardsHash.length === 0) {
+							// Receiver-side race; ask sender to retry by bouncing the
+							// envelope. Same fail-safe as the cards path.
+							reject('local_prev_state_hash_unavailable');
+							break;
+						}
+						if (senderChessHash !== localChessHash) {
+							reject(`prev_chess_state_hash_mismatch_local_${localChessHash.slice(0, 16)}_got_${senderChessHash.slice(0, 16)}`);
+							break;
+						}
+						if (senderCardsHash !== localCardsHash) {
+							reject(`prev_cards_state_hash_mismatch_local_${localCardsHash.slice(0, 16)}_got_${senderCardsHash.slice(0, 16)}`);
+							break;
+						}
+					}
 
 					// Combat store access pattern (D4 of the typescript-senior review —
 					// known debt; preserved here to avoid circular imports). Inline
