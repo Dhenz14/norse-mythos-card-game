@@ -225,7 +225,7 @@ export type ChessAttackPieceKind = 'pawn' | 'knight' | 'bishop' | 'rook' | 'quee
 
 /**
  * Single source of truth for the instant-kill rule. Both the sender
- * (`useChessBoardInteractions`) and the receiver (`useP2PSync`
+ * (`useChessBoardInteractions`) and the receiver (`useWireSync`
  * chess_attack branch) consult this before accepting a capture: if the
  * predicate returns false, the capture cannot cross the wire under the
  * C-Chess.8 contract. Keeping the rule in one place guarantees the two

@@ -8,7 +8,7 @@
  * For disputes, a player can provide a MerkleProof showing a specific move
  * was (or wasn't) part of the agreed transcript.
  *
- * Module-level singleton so both useP2PSync (records moves) and
+ * Module-level singleton so both useWireSync (records moves) and
  * BlockchainSubscriber (reads the root) can access the same transcript.
  */
 
@@ -48,7 +48,7 @@ const sessionEventBuffer: SessionEvent[] = [];
 let activeTranscript: TranscriptBuilder | null = null;
 
 // Module-local monotonic counter feeding `GameMove.moveNumber`. Lives on the
-// singleton (not on TranscriptBuilder) so multiple call sites — useP2PSync
+// singleton (not on TranscriptBuilder) so multiple call sites — useWireSync
 // (cards/poker), chessWireSender (chess send path), and chess receive handlers
 // — share one numbering sequence per match. Reset by startNewTranscript /
 // clearTranscript so a reconnected session starts at 0.

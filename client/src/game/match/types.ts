@@ -39,7 +39,7 @@ import type { CampaignChapter, CampaignMission, Difficulty } from '../campaign/c
  * shared deck, wire envelopes, transcript). Replaces the three places
  * that today invent their own matchId:
  *   - sharedDeckStore: `match_${Date.now()}`
- *   - useP2PSync: derived from sorted peer IDs
+ *   - useWireSync: derived from sorted peer IDs
  *   - peerStore: matchmaking-room id
  */
 export interface MatchIdentity {

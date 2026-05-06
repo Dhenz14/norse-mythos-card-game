@@ -189,7 +189,7 @@ export interface ChessCombatSliceState {
   // moves). Used for mission completion telemetry and per-turn boss rules.
   playerTurnCount: number;
   // Seeded sources for the chess phase. Populated by `initChessWithSeed` on
-  // both peers after `matchSeed` is resolved (see useP2PSync). Null in
+  // both peers after `matchSeed` is resolved (see useWireSync). Null in
   // single-player paths — consumers fall back to `cryptoRng` / `cryptoIdGen`
   // (CSPRNG-grade, non-deterministic, fine for SP).
   _chessRng: SeededRng | null;

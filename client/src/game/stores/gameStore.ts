@@ -91,9 +91,9 @@ interface GameStore {
   myCanonicalSide: 'player' | 'opponent' | null;
   /**
    * P2P session matchId — derived as sha256(matchSeed + myPeerId + remotePeerId)
-   * truncated to 16 chars. Set by `useP2PSync` after seed_reveal so any other
+   * truncated to 16 chars. Set by `useWireSync` after seed_reveal so any other
    * subsystem (e.g. chess wire sender) can read it without depending on
-   * useP2PSync internals. Null in non-P2P modes.
+   * useWireSync internals. Null in non-P2P modes.
    */
   matchId: string | null;
   lastStateHash: string | null;

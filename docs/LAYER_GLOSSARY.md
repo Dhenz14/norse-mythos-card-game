@@ -406,7 +406,7 @@ isolation rule for the new mode in `eslint.config.js`.
 **I need to send a new kind of message peer-to-peer.**
 → Define the envelope type in `shared/p2p-wire/`. Create or extend a
 `{topic}WireSender.ts` in `client/src/game/p2p/`. Update the receiver
-in `useP2PSync` and the relay whitelist on the server.
+in `useWireSync` and the relay whitelist on the server.
 
 **I need to add deterministic game logic (a new combat rule, a new
 piece movement).**

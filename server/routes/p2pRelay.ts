@@ -10,7 +10,7 @@
  *
  * Wire protocol:
  *   Client → server : opaque text frame (JSON-encoded application message,
- *                     same shape that `useP2PSync` sends today).
+ *                     same shape that `useWireSync` sends today).
  *   Server → client : same opaque frame fanned out to the *other* peer in
  *                     the room. Reserved control envelopes use type `__sys`
  *                     with an `event` field (`open`/`close`/`error`) so the
@@ -38,9 +38,9 @@ const MAX_PAYLOAD_BYTES = 64 * 1024; // 64 KB per frame — sane upper bound for
  * Whitelist of message `type` values the relay will fan out. Everything else
  * is dropped (with a warn log) before reaching the peer — defense in depth
  * for both directions: a tampered client can't push exotic message types,
- * and the recipient's `useP2PSync` switch never receives surprises.
+ * and the recipient's `useWireSync` switch never receives surprises.
  *
- * Keep in sync with `P2PMessage` in `client/src/game/hooks/useP2PSync.ts`,
+ * Keep in sync with `P2PMessage` in `client/src/game/match/modes/p2p/wireSync/useWireSync.ts`,
  * `GameCommandEnvelope.type` in `client/src/game/hooks/p2pEnvelope.ts`, and
  * `ChessCommandEnvelope.type` in `shared/p2p-wire/chess.ts`.
  */
@@ -116,7 +116,7 @@ function sendSys(ws: WebSocket, payload: Record<string, unknown>): void {
 function notifyRoomFull(room: readonly RoomMember[]): void {
 	if (room.length !== ROOM_MAX_PEERS) return;
 	const [first, second] = room;
-	// First arrival is the host (canonical pick — useP2PSync seed-exchange
+	// First arrival is the host (canonical pick — useWireSync seed-exchange
 	// breaks ties by lexicographical peerId comparison anyway).
 	sendSys(first.ws, { event: 'open', isHost: true,  remotePeerId: second.peerId });
 	sendSys(second.ws, { event: 'open', isHost: false, remotePeerId: first.peerId });
@@ -193,7 +193,7 @@ export function attachP2PRelay(server: HttpServer): void {
 					? raw.toString('utf8')
 					: Buffer.concat(Array.isArray(raw) ? raw : [Buffer.from(raw as ArrayBuffer)]).toString('utf8');
 
-			// Validate envelope BEFORE fan-out. The recipient's `useP2PSync` does
+			// Validate envelope BEFORE fan-out. The recipient's `useWireSync` does
 			// deep payload validation per type, so we only enforce the structural
 			// contract here: well-formed JSON, known type, non-reserved, sane size.
 			// Drops are logged but silent to the sender — surfacing them risks an
@@ -229,7 +229,7 @@ export function attachP2PRelay(server: HttpServer): void {
 	});
 
 	// WS-level keepalive — terminate sockets that don't pong back within one
-	// interval. App-level heartbeat (in useP2PSync) still runs on top; this
+	// interval. App-level heartbeat (in useWireSync) still runs on top; this
 	// catches dead connections that didn't trigger a clean close (e.g., NIC
 	// dropped, kernel hasn't sent FIN yet).
 	const keepaliveTimer = setInterval(() => {

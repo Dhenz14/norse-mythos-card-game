@@ -2,15 +2,15 @@
  * chessWireSender — outgoing side of the chess_command envelope flow.
  *
  * Sits between the chess UI (where the local move is initiated) and the
- * peerStore transport. Stays out of `useP2PSync` so the chess UI doesn't
+ * peerStore transport. Stays out of `useWireSync` so the chess UI doesn't
  * have to drag in the entire P2P-cards stack to send one envelope.
  *
- * Reads `matchId` from gameStore (mirrored there by useP2PSync after
+ * Reads `matchId` from gameStore (mirrored there by useWireSync after
  * seed_reveal). No-ops when matchId is null — caller can call this
  * unconditionally from the move flow; SP / pre-handshake paths are
  * silently filtered.
  *
- * Outgoing seq counter is module-local. `useP2PSync` resets it on
+ * Outgoing seq counter is module-local. `useWireSync` resets it on
  * disconnect via `resetChessWireSender()` so reconnects start fresh.
  *
  * Surface (post C-Chess.8):
@@ -153,7 +153,7 @@ export function sendChessAttack(attack: ChessAttackEmit): boolean {
 }
 
 /**
- * Reset module-local seq counter. Called by useP2PSync on disconnect so a
+ * Reset module-local seq counter. Called by useWireSync on disconnect so a
  * reconnected session starts at seq 0 (matching the receive-side reset of
  * `lastIncomingChessSeqRef`).
  */

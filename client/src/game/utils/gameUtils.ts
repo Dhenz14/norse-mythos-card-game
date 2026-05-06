@@ -189,7 +189,7 @@ function emptyPlayer(id: 'player' | 'opponent', name: string, heroClass: HeroCla
  * Empty deterministic GameState used at module-load and by `resetGameState`.
  * Both players have empty decks and hands; all randomness lives in
  * `initializeGameSeeded`, called explicitly by the coordinator (local-play)
- * or by `useP2PSync` after seed exchange (P2P). Module-load no longer
+ * or by `useWireSync` after seed exchange (P2P). Module-load no longer
  * shuffles or draws — the previous `Math.random` side-effects are gone.
  */
 export function initializeGame(): GameState {

@@ -1,6 +1,6 @@
 /**
  * wsTransport.ts — server-mediated transport that mimics the subset of
- * `peerjs` DataConnection consumed by `useP2PSync` and `peerStore`.
+ * `peerjs` DataConnection consumed by `useWireSync` and `peerStore`.
  *
  * Why: the WebRTC + STUN/TURN/PeerJS-broker stack proved unreliable across
  * environments (Chrome internal DNS broken under WSL2, NAT hairpinning
@@ -9,7 +9,7 @@
  * routing all messages through the game's own Express server (`/ws/p2p`).
  *
  * Compatibility surface — must keep these stable for the WebRTC upgrade
- * path to swap transports later without touching `useP2PSync`:
+ * path to swap transports later without touching `useWireSync`:
  *   .on(event, listener), .off(event, listener)  for 'data'|'open'|'close'|'error'
  *   .send(data)
  *   .close()
@@ -118,7 +118,7 @@ export class LocalWebSocketTransport {
 			return;
 		}
 
-		// Application payload — forward verbatim. `useP2PSync` expects to see
+		// Application payload — forward verbatim. `useWireSync` expects to see
 		// the same object shape it would have received via DataConnection.
 		this.emit('data', parsed);
 	}

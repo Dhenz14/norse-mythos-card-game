@@ -473,7 +473,7 @@ export function useWireSync() {
 					// validates matchId there — the client never compares.)
 					// Mirrored onto gameStore so other subsystems (chess wire
 					// sender, transcript builder) can read it without coupling
-					// to useP2PSync internals.
+					// to useWireSync internals.
 					const [matchIdFirst, matchIdSecond] = myPeerId < remotePeerId
 						? [myPeerId, remotePeerId]
 						: [remotePeerId, myPeerId];

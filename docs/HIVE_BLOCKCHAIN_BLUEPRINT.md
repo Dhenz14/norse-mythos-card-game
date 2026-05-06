@@ -970,7 +970,7 @@ Both players verify each other's deck at P2P handshake. If either player's deck 
 
 ### 9.3 P2P Message Protocol Extension
 
-Add to existing `useP2PSync.ts` message types:
+Add to existing `useWireSync.ts` message types:
 
 ```typescript
 type P2PMessage =
@@ -1075,14 +1075,14 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [ ] Extract game rule engine to pure TypeScript module (no React deps) — deferred to post-launch; not required for genesis
 - [x] Implement multi-challenge PoW module (`proofOfWork.ts`: `computePoW`, `verifyPoW` with Web Workers)
 - [x] Implement `match_start` anchor broadcast (dual-sig, with PoW)
-- [x] Implement commit-reveal seed exchange (`useP2PSync.ts`: SHA256 commitments, joint seed derivation, seeded PRNG deck shuffle via `seededRng.ts`)
+- [x] Implement commit-reveal seed exchange (`useWireSync.ts`: SHA256 commitments, joint seed derivation, seeded PRNG deck shuffle via `seededRng.ts`)
 - [x] Implement dual-signature `match_result` (`BlockchainSubscriber.ts`: host signs → proposes via P2P → opponent verifies + counter-signs → ranked matches require dual-sig or are NOT broadcast; `apply.ts` rejects ranked results without both sigs)
 - [x] Implement NFT XP derivation from valid `match_result` ops (replay derives winner-owned NFT XP from match data + ownership state; browser `xpRewards[]` is local UX packaging, not the canonical trust boundary)
 - [x] Implement `level_up` on-chain convenience record (auto-broadcast when card crosses level threshold; `replayRules.ts` validates ownership + XP warrants claimed level)
 - [x] Implement card evolution scaling (`cardLevelScaling.ts`: NFT XP level → evolution tier (Mortal/Ascended/Divine) → stat/effect/keyword scaling at deck creation; `enrichDeckWithNFTLevels` wires collection into gameplay)
 - [x] Implement move recording with hash-chained transcript (`signedMove.ts`: `GameMove` + `MoveRecord` types; `transcriptBuilder.ts`: accumulates moves during gameplay, builds SHA-256 Merkle tree at game end)
 - [x] Implement Merkle tree transcript builder (`transcriptBuilder.ts`: binary Merkle tree with inclusion proofs; `TranscriptBuilder.verifyProof()` for dispute verification)
-- [x] Implement move transcript protocol in P2P layer (`useP2PSync.ts`: `recordMove()` on every action; both host and client accumulate; `startNewTranscript()`/`clearTranscript()` lifecycle; Merkle root embedded in `PackagedMatchResult.transcriptRoot`)
+- [x] Implement move transcript protocol in P2P layer (`useWireSync.ts`: `recordMove()` on every action; both host and client accumulate; `startNewTranscript()`/`clearTranscript()` lifecycle; Merkle root embedded in `PackagedMatchResult.transcriptRoot`)
 - [x] Add build-hash verification at P2P handshake (`vite.config.ts` injects `__BUILD_HASH__` from git rev-parse; `version_check` message exchanged on connection; mismatch warns but doesn't block for dev mode)
 - [x] Validate transcript root in replay engine (`replayRules.ts`: ranked `match_result` ops rejected if `transcriptRoot` is missing)
 - [x] Add PoW and `slash_evidence` processing to replay engine rules
@@ -1102,7 +1102,7 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Implement on-chain matchmaking queue (`queue_join` / `queue_leave` ops) — `matchmakingOnChain.ts`: PoW broadcast, ELO window matching, 5s poller
 - [x] Ban system (on-chain evidence, client-enforced) — `slashEvidence.ts` + `replayRules.ts` blocks slashed accounts at dispatch
 - [x] `result_nonce` anti-replay — monotonic per-account nonce in `matchResultPackager` + validated by `applyMatchResult`
-- [x] Deck ownership verification at P2P handshake — `deckVerification.ts` + `deck_verify` message in `useP2PSync.ts`
+- [x] Deck ownership verification at P2P handshake — `deckVerification.ts` + `deck_verify` message in `useWireSync.ts`
 - [x] Ranked ladder UI (`RankedLadderPage.tsx`: leaderboard tab computes ELO rankings from IndexedDB match history; match history tab with win/loss/duration/damage stats; `/ladder` route with homepage nav)
 - [x] Dispute resolution (`disputeResolution.ts`: `buildDisputeEvidence()` extracts move + Merkle proof from transcript; `submitMoveDispute()` broadcasts `slash_evidence` with `forged_move` reason; `verifyMoveInTranscript()` for client-side proof validation)
 
@@ -1115,7 +1115,7 @@ Players trade cards freely using Hive Keychain-signed `transfer` ops. The game c
 - [x] Client fetch wrapper for all chain API endpoints (`client/src/data/chainAPI.ts`)
 - [x] Matchmaking wired to pass Hive username for ELO lookup (`useMatchmaking.ts`)
 - [x] Opponent ELO lookup from chain indexer at match end (`BlockchainSubscriber.ts`)
-- [x] Server-side deck verification cross-check (`useP2PSync.ts`)
+- [x] Server-side deck verification cross-check (`useWireSync.ts`)
 - [x] Auto-register both players with indexer after match (`BlockchainSubscriber.ts`)
 
 ### Current vs Planned — Accuracy Notes

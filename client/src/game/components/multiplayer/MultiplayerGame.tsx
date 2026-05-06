@@ -152,7 +152,7 @@ export const MultiplayerGame: React.FC = () => {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// P2PProvider wraps every render of this component so `useP2PSync` is mounted
+	// P2PProvider wraps every render of this component so `useWireSync` is mounted
 	// from the moment MultiplayerGame appears, regardless of whether we're in
 	// army selection, the lobby, the VS screen, or in-game. This is critical:
 	// without it, the data listener on the peer connection never attaches,
@@ -205,7 +205,7 @@ export const MultiplayerGame: React.FC = () => {
 		//      MatchContext into useMatchStore BEFORE the coordinator mounts.
 		//      The coordinator's mode-aware code (Fase 3-4) reads ctx as
 		//      non-null from its first render.
-		// The P2PProvider wrapping all of renderInner keeps useP2PSync mounted
+		// The P2PProvider wrapping all of renderInner keeps useWireSync mounted
 		// behind the spinner so the init envelope is still received.
 		const guard = computeP2PRenderGuard({ opponentArmyFromPeer, p2pInitApplied });
 		const spinner = (
