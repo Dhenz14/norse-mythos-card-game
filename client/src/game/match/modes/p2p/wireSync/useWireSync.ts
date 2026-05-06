@@ -21,6 +21,7 @@ import { useWarbandStore, selectArmy } from '../../../../../lib/stores/useWarban
 import { deriveCanonicalSide, isChessAttackInstantKill, tryParseChessCommandEnvelope, type ChessAttackPieceKind, type ChessCommandEnvelope } from '../../../../../../../shared/p2p-wire/chess';
 import { resetChessWireSender } from '../../../../p2p/chessWireSender';
 import type { P2PMessage } from '../../../../p2p/messages';
+import { parseWireMessage } from '../../../../p2p/messageSchemas';
 
 export type { GameCommandEnvelope, WireGameCommand } from '../../../../hooks/p2pEnvelope';
 export { canonicalQuickHash } from '../../../../hooks/p2pEnvelope';
@@ -1180,9 +1181,19 @@ export function useWireSync() {
 
 		const MAX_QUEUE_SIZE = 100;
 		const handleMessage = (data: unknown) => {
-			if (!data || typeof data !== 'object') return;
-			if (!('type' in data) || typeof data.type !== 'string') return;
-			const msg = data as P2PMessage;
+			// Trust boundary (TD-24a): every payload is validated against the
+			// `WireMessage` zod union before it enters the queue. Any envelope
+			// with the right discriminator but malformed scalars (missing
+			// commandId, non-string prevStateHash, ...) is dropped here, so
+			// downstream handlers can safely consume narrowed types without
+			// per-field defensive checks for shape (semantic checks like
+			// "this commandId hasn't been seen before" still belong inline).
+			const msg = parseWireMessage(data);
+			if (!msg) {
+				const advertisedType = (data as { type?: unknown } | null)?.type;
+				debug.warn('[wireSync] Dropped malformed wire message', { advertisedType });
+				return;
+			}
 			if (messageQueueRef.current.length >= MAX_QUEUE_SIZE) {
 				debug.warn(`[wireSync] Queue full (${MAX_QUEUE_SIZE}), dropping newest message: ${msg.type}`);
 				return;
