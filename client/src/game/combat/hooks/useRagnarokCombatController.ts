@@ -42,6 +42,7 @@ import { COMBAT_DEBUG } from '../debugConfig';
 import { hasKeyword } from '../../utils/cards/keywordUtils';
 import { debug } from '../../config/debugConfig';
 import type { HeroBattlePopupData, BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
+import type { WireMessage } from '../../p2p/messages';
 import { getPokerDramaCallbacks } from './usePokerDrama';
 
 /**
@@ -861,7 +862,7 @@ export function useRagnarokCombatController(
 
     // In P2P multiplayer (non-host), send poker action via P2P instead of executing locally
     const peer = (globalThis as Record<string, unknown>).__ragnarokPeerStore as
-      { getState: () => { isHost: boolean; connectionState: string; send: (data: unknown) => void } } | undefined;
+      { getState: () => { isHost: boolean; connectionState: string; send: (data: WireMessage) => void } } | undefined;
     const peerState = peer?.getState();
     if (peerState && peerState.connectionState === 'connected' && !peerState.isHost) {
       peerState.send({ type: 'poker_action', playerId: freshState.player.playerId, action: action as string, hpCommitment: hp });

@@ -47,13 +47,30 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
 	const cardRef = useRef<HTMLDivElement>(null);
 	const [isHovering, setIsHovering] = useState(false);
 
-	const hasCardProperty = isCardInstanceWithCardData(card);
+	useEffect(() => {
+		fixCardRenderingIssues();
+		if (cardRef?.current) {
+			cardRef.current.setAttribute('data-card-component', 'CardWithDrag');
+			cardRef.current.setAttribute('data-active-renderer', ACTIVE_CARD_RENDERER);
+		}
+	}, []);
+
+	const handleClick = useCallback(() => {
+		if (!card || !isPlayable) return;
+		playSound('card_hover');
+		if (onPlay && isCardInstanceWithCardData(card)) {
+			onPlay(card);
+		} else if (onClick) {
+			onClick();
+		}
+	}, [onPlay, onClick, isPlayable, card]);
 
 	if (!card) {
 		debug.error('CardWithDrag received null card data');
 		return null;
 	}
 
+	const hasCardProperty = isCardInstanceWithCardData(card);
 	const getStableCardId = (): string => {
 		if ('instanceId' in card && card.instanceId) {
 			return card.instanceId;
@@ -69,26 +86,7 @@ export const CardWithDrag: React.FC<CardWithDragProps> = React.memo(({
 		return `card-${name || 'unknown'}-${manaCost || 0}`;
 	};
 	const cardId = getStableCardId();
-
-	useEffect(() => {
-		fixCardRenderingIssues();
-		if (cardRef?.current) {
-			cardRef.current.setAttribute('data-card-component', 'CardWithDrag');
-			cardRef.current.setAttribute('data-active-renderer', ACTIVE_CARD_RENDERER);
-		}
-	}, []);
-
 	const processedCard = getCardDataSafely(card);
-
-	const handleClick = useCallback(() => {
-		if (!isPlayable) return;
-		playSound('card_hover');
-		if (onPlay && isCardInstanceWithCardData(card)) {
-			onPlay(card);
-		} else if (onClick) {
-			onClick();
-		}
-	}, [onPlay, onClick, isPlayable, card]);
 
 	return (
 		<div

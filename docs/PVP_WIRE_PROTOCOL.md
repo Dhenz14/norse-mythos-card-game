@@ -102,7 +102,7 @@ hop. For a turn-based card game this latency is negligible.
   This is intentional — surfacing failure shape would be a probe channel.
 
 **Keepalive**: WS-level ping/pong every 15s (`p2pRelay.ts:235-243`). An
-app-level `heartbeat` envelope (sent by `useP2PSync`) runs on top.
+app-level `heartbeat` envelope (sent by `useWireSync`) runs on top.
 
 ---
 
@@ -130,6 +130,14 @@ in phases 0-2 before any gameplay action is sent.
    one that drives downstream code (`peerStore.ts` consumes
    `__sys.open.isHost`).
 
+   **Known debt** (not an OPEN — direction decided): `isHost` is a
+   transport-level detail that should not leak past `peerStore`. Mode-level
+   decisions (authority) read `deriveAuthority(matchCtx)` from
+   `client/src/game/match/derived.ts`, which encapsulates the
+   `isHost`-to-`myRole` translation once. Any new code reading
+   `peerStore.isHost` outside `deriveAuthority` is a Mode-invariant
+   violation.
+
 ### Phase 1 — Connection
 
 Both peers open WebSockets to `/ws/p2p?room=<matchId>&peer=<peerId>`. The
@@ -138,45 +146,45 @@ relay sends `__sys.open` once both arrive. Each peer transitions
 
 ### Phase 2 — Seed Exchange (commit-reveal)
 
-Triggered by `useP2PSync.ts:166-251` (effect dependent on
+Triggered by `useWireSync.ts:166-251` (effect dependent on
 `connection / connectionState / send`).
 
 1. Each peer generates a 32-byte salt and sends
    `{ type: 'seed_commit', commitment: SHA256(salt) }`
-   (`useP2PSync.ts:194-199`).
+   (`useWireSync.ts:194-199`).
 2. Each peer also sends `version_check` (build hash) and `wasm_hash_check`
    (game-engine WASM hash) for transparency. WASM mismatch disconnects
-   immediately (`useP2PSync.ts:361-372`); build mismatch only warns.
+   immediately (`useWireSync.ts:361-372`); build mismatch only warns.
 3. Each peer sends `army_announcement` with their selected army so both
    sides can render hero portraits and the host can build a deterministic
-   initial gameState (`useP2PSync.ts:208-218`).
+   initial gameState (`useWireSync.ts:208-218`).
 4. On receiving the opponent's `seed_commit`, each peer sends
-   `seed_reveal: { salt, hiveUsername }` (`useP2PSync.ts:434-438`).
+   `seed_reveal: { salt, hiveUsername }` (`useWireSync.ts:434-438`).
 5. On receiving `seed_reveal`, the receiver:
    - Verifies `SHA256(theirSalt) === theirCommitment`. Mismatch →
-     disconnect (`useP2PSync.ts:449-455`).
+     disconnect (`useWireSync.ts:449-455`).
    - Derives `matchSeed = SHA256(sortedSalts.join(''))` where sorting is
-     by lexicographical peer-id order (`useP2PSync.ts:457-463`).
+     by lexicographical peer-id order (`useWireSync.ts:457-463`).
    - Derives `matchId = SHA256(matchSeed + sortedPeerIds.join('')).slice(0,16)`
-     (`useP2PSync.ts:483-502`). Sorting matters: cards is host-auth so the
+     (`useWireSync.ts:483-502`). Sorting matters: cards is host-auth so the
      client never compared, but chess Plan B is symmetric and both peers
      must arrive at the same value. Bug fixed in commit `dd9112c`.
    - Derives `myCanonicalSide = parity(matchSeed[0]) XOR isHost` →
      `'player' | 'opponent'` (`shared/p2p-wire/chess.ts:124-132`,
-     `useP2PSync.ts:469`). This is the canonical (global) side, NOT
+     `useWireSync.ts:469`). This is the canonical (global) side, NOT
      viewer-relative. Both peers agree on which side is which.
    - Stores `opponentUsernameRef.current = data.hiveUsername`
-     (`useP2PSync.ts:511-513`).
+     (`useWireSync.ts:511-513`).
    - Both peers initialize the chess engine RNG from `matchSeed` so any
      chess-side randomness (mine placements, mine ids) converges
-     (`useP2PSync.ts:478-480`).
+     (`useWireSync.ts:478-480`).
    - The HOST builds the authoritative initial `gameState` via
      `initGameWithSeed(matchSeed)` and sends it as `init`
-     (`useP2PSync.ts:515-528`).
+     (`useWireSync.ts:515-528`).
 6. The non-host applies the `init` after flipping the gameState perspective
-   (`useP2PSync.ts:532-536` + `flipGameState`).
+   (`useWireSync.ts:532-536` + `flipGameState`).
 
-Seed exchange has a 10s timeout (`useP2PSync.ts:262-269`). On timeout, the
+Seed exchange has a 10s timeout (`useWireSync.ts:262-269`). On timeout, the
 peer disconnects.
 
 ### Phase 3 — Move Loop
@@ -184,7 +192,7 @@ peer disconnects.
 Each phase of the game (cards / chess / poker) emits its own envelope type;
 see §5 for the authority model.
 
-The transcript is started (`startNewTranscript()` at `useP2PSync.ts:241`) at
+The transcript is started (`startNewTranscript()` at `useWireSync.ts:241`) at
 the moment the connection becomes ready. Every move recorded — by the local
 player at send time, or by the remote peer at receive time — appends to it
 (see §7).
@@ -201,7 +209,7 @@ the result (`BlockchainSubscriber.ts:272-294`):
    - HOST sends `result_propose: { result, hash, broadcasterSig, proposalId }`
      to the client.
    - HOST waits up to 30s for `result_countersign`.
-4. CLIENT receives `result_propose` (`useP2PSync.ts:1011-1057`):
+4. CLIENT receives `result_propose` (`useWireSync.ts:1011-1057`):
    - Validates that the result names them as winner-or-loser by Hive
      username (NOT by peerId — identity is anchored to Hive account).
    - Validates that the proposal's winner agrees with the local
@@ -215,17 +223,17 @@ the result (`BlockchainSubscriber.ts:272-294`):
 ### Phase 5 — Cleanup
 
 - `clearTranscript()` runs in the seed-exchange effect's cleanup
-  (`useP2PSync.ts:248-250`).
+  (`useWireSync.ts:248-250`).
 - The relay garbage-collects the room when both peers disconnect.
-- The server's `activeMatches` map evicts the match after 120s
-  (`matchmakingRoutes.ts:187-189`) or 300s (`matchmakingRoutes.ts:84-86`,
-  whichever fires first — minor inconsistency, see §10).
+- The server's `activeMatches` map evicts the match after 300s
+  (`ACTIVE_MATCH_TTL_MS` in `matchmakingRoutes.ts`, applied uniformly at
+  both the periodic sweep and the post-pair `setTimeout`).
 
 ---
 
 ## §4 Wire Envelopes (`P2PMessage` union)
 
-The complete union is defined in `client/src/game/hooks/useP2PSync.ts:78-91`.
+The complete union is defined in `client/src/game/hooks/useWireSync.ts:78-91`.
 The relay whitelist (`server/routes/p2pRelay.ts:47-69`) MUST stay in sync.
 
 | `type` | Direction | Sender authority | Purpose |
@@ -259,13 +267,45 @@ Envelope schemas live next to their handlers:
 
 ---
 
-## §5 Authority Model per Phase
+## §5 Authority Model
 
-Different phases of the game use different authority models. This is the
-single most important piece of context to hold in your head when working
-on the wire — the wrong assumption here causes silent state divergence.
+**Canon**: authority is derived from `MatchContext`, not from the wire and
+not from the phase. The canonical type lives in
+`client/src/game/match/derived.ts`:
 
-### Cards Phase — Host-Authoritative
+```ts
+export type Authority =
+	| { kind: 'local' }                                                  // ai/scripted matches
+	| { kind: 'p2p-symmetric'; myRole: 'first-mover' | 'second-mover' }; // peer matches
+```
+
+The deliberate omission of `p2p-host-authoritative` /
+`p2p-client-deferring` variants expresses architectural intent: **P2P
+matches are symmetric by design**. Both peers compute and apply each phase
+identically; the wire carries intent, not delegation.
+
+This is the **target** shape. The current code base has two transitional
+exceptions, both tracked as open work:
+
+- **Cards phase** runs host-authoritative today (see subsection below).
+  Migration to symmetric tracked in **OPEN-8**.
+- **Poker phase** runs host-authoritative today (see subsection below).
+  Migration tracked in **OPEN-4**.
+
+While these transitions persist, the bridge layer (today
+`client/src/game/hooks/useWireSync.ts`, scheduled to move under
+`client/src/game/match/modes/p2p/wireSync/` — see
+`BETA_TESTNET_ROADMAP.md`) carries the host/client distinction internally
+by reading `authority.myRole === 'first-mover'`. The wire envelope schemas
+themselves are agnostic to authority; each receiver resolves authority
+locally via `deriveAuthority`.
+
+The single most important piece of context to hold when working on the
+wire is: **a wrong authority assumption causes silent state divergence**.
+Read `deriveAuthority` once at the entry point, propagate the result —
+never re-derive ad-hoc with `isHost`.
+
+### Cards Phase — Host-Authoritative (transitional, OPEN-8)
 
 Pattern: client sends `game_command`, host validates and applies, host
 broadcasts authoritative `gameState` periodically.
@@ -273,23 +313,23 @@ broadcasts authoritative `gameState` periodically.
 Implementation:
 - Client wraps every action (`playCard`, `attack`, `endTurn`,
   `useHeroPower`) with `sendCommandEnvelope`
-  (`useP2PSync.ts:1170-1218`). The client does NOT apply locally when
+  (`useWireSync.ts:1170-1218`). The client does NOT apply locally when
   acting as `!isHost && connectionState === 'connected'`
-  (`useP2PSync.ts:1226-1238`); it waits for the host's gameState sync.
+  (`useWireSync.ts:1226-1238`); it waits for the host's gameState sync.
 - Host receives `game_command`, runs the validation pipeline
-  (`useP2PSync.ts:540-723`), applies via `applyOpponentCommand` to the
+  (`useWireSync.ts:540-723`), applies via `applyOpponentCommand` to the
   unified store, and emits a debounced `gameState` sync.
 - The wire envelope carries `prevStateHash` (a quickhash of the host's
   pre-apply state). Host rejects if it doesn't match — this catches
   the fast-double-click race where the client sends two commands that
   reference the same pre-state but the host has already advanced.
-- Cooldown of 250ms between client envelopes (`useP2PSync.ts:1180-1185`)
+- Cooldown of 250ms between client envelopes (`useWireSync.ts:1180-1185`)
   caps how fast the client can send.
 
 The host's transcript is the authoritative one; the client's is a local
 copy for QA export.
 
-### Chess Phase — Symmetric (Plan B)
+### Chess Phase — Symmetric (canonical)
 
 Pattern: both peers validate AND apply each chess_command independently.
 No host-only routing.
@@ -337,7 +377,7 @@ time and surfacing as `attacker_position_mismatch` later. Blocked at
 `chess_mine_placement` envelope ships (separate workstream — §10
 OPEN-9).
 
-**Receiver pipeline** (`useP2PSync.ts` case `chess_command`): common
+**Receiver pipeline** (`useWireSync.ts` case `chess_command`): common
 validations (schema, matchId, monotonic seq, commandId dedup, rate
 limit, attacker lookup, position match, ownership boundary, currentTurn)
 run once; then a branch on `command.type` dispatches to the move or
@@ -350,7 +390,7 @@ roster dump diagnostic).
 - Schema + predicate: `shared/p2p-wire/chess.ts`.
 - Sender: `client/src/game/p2p/chessWireSender.ts` (`sendChessMove`,
   `sendChessAttack`, shared `dispatchChessCommand` helper).
-- Receiver: `client/src/game/hooks/useP2PSync.ts` case `chess_command`.
+- Receiver: `client/src/game/hooks/useWireSync.ts` case `chess_command`.
 - Click handler gate: `client/src/game/components/chess/useChessBoardInteractions.ts`.
 - Mine block: `client/src/game/hooks/useKingChessAbility.ts`
   `enterPlacementMode`.
@@ -375,12 +415,12 @@ The host still produces the authoritative transcript at match end
 (§7), but the chess move list is identical on both peers if determinism
 holds.
 
-### Poker Phase — Host-Authoritative
+### Poker Phase — Host-Authoritative (transitional, OPEN-4)
 
 Pattern: similar to cards. Client sends `poker_action`; host validates
 the player turn and calls `pokerState.performAction`.
 
-Implementation: `useP2PSync.ts:879-910`. The client does NOT apply
+Implementation: `useWireSync.ts:879-910`. The client does NOT apply
 locally; the host's resulting state is reflected via the next
 `gameState` sync.
 
@@ -392,8 +432,8 @@ PeerIds are ephemeral UUIDs — not cryptographic identity. The only durable,
 arbitrable identity is the Hive username (signed-in via Keychain).
 
 **Binding moment**: Phase 2 `seed_reveal` includes `hiveUsername` if the
-peer is logged in (`useP2PSync.ts:437`). The receiver stores it in
-`opponentUsernameRef` (`useP2PSync.ts:511-513`).
+peer is logged in (`useWireSync.ts:437`). The receiver stores it in
+`opponentUsernameRef` (`useWireSync.ts:511-513`).
 
 **Identity in wire envelopes**: NONE of the in-match envelopes carry the
 sender's username. Authority is implicit:
@@ -401,7 +441,7 @@ sender's username. Authority is implicit:
   host knows it's "the other peer" by transport (the relay only routes
   to the other room member).
 - Chess: ownership is enforced by `piece.owner === remote_canonical_side`
-  in the receive handler (`useP2PSync.ts:851-854`).
+  in the receive handler (`useWireSync.ts:851-854`).
 
 **Identity in the transcript**: every `GameMove.playerId` is resolved
 through `client/src/data/blockchain/playerIdentity.ts`:
@@ -413,7 +453,7 @@ through `client/src/data/blockchain/playerIdentity.ts`:
 **Identity in the match-result**: `result.winner.username` and
 `result.loser.username` are Hive usernames. The dual-sig validates these
 against the local user's `getNFTBridge().getUsername()`
-(`useP2PSync.ts:1039-1054`).
+(`useWireSync.ts:1039-1054`).
 
 **Hardening invariants** (all from `P2P_SECURITY_HARDENING.md`, still in
 effect):
@@ -439,16 +479,16 @@ tree at match end. The root is embedded in the on-chain `match_result`.
 
 **Lifecycle**:
 - `startNewTranscript()` is called once per session, in the seed-exchange
-  effect (`useP2PSync.ts:241`).
+  effect (`useWireSync.ts:241`).
 - `recordMove(action, payload, playerId)` appends a record. Call sites:
-  - Cards send: `useP2PSync.ts` wrapped actions (`wrappedPlayCard`,
+  - Cards send: `useWireSync.ts` wrapped actions (`wrappedPlayCard`,
     `wrappedAttack`, `wrappedEndTurn`, `wrappedUseHeroPower`).
   - Cards receive (host only): the four cases under `case 'game_command'`.
   - Poker receive (host only): under `case 'poker_action'`.
   - Chess send: `chessWireSender.ts`, after `send(envelope)` succeeds.
   - Chess receive: under `case 'chess_command'`, after `executeMove`.
 - `clearTranscript()` runs in the seed-exchange effect's cleanup and on
-  every reconnect (`useP2PSync.ts:171`).
+  every reconnect (`useWireSync.ts:171`).
 - `buildMerkleTree()` is invoked at match end by `BlockchainSubscriber`.
 
 **`GameMove` shape** (`client/src/data/blockchain/signedMove.ts`):
@@ -474,7 +514,7 @@ goes on-chain**. The client builds its own local transcript (for QA export
 via `exportSessionLog`), but `BlockchainSubscriber.attemptDualSig` is
 host-only (`BlockchainSubscriber.ts:319`). The client signs the host's
 result hash without comparing transcript roots
-(`useP2PSync.ts:1046`). See §10 OPEN-1.
+(`useWireSync.ts:1046`). See §10 OPEN-1.
 
 **Arbitration surface** (off-wire, post-match):
 - Server-side arbitrator (NOT yet implemented as a service — see
@@ -482,7 +522,7 @@ result hash without comparing transcript roots
   root) and `match_result.tc` (transcript IPFS CID).
 - A player can submit a dispute via `submitSlashEvidence` (already wired
   for `forged_move`, `fake_disconnect`, `double_result` — see
-  `useP2PSync.ts:309-317, 397-405, 1024-1031`).
+  `useWireSync.ts:309-317, 397-405, 1024-1031`).
 - The arbitrator fetches the IPFS bundle, verifies the merkle root,
   walks the move list, and resolves the dispute.
 
@@ -544,7 +584,7 @@ should NOT depend on without first re-grilling and updating this spec.
 
 ### OPEN-1 — Client signs host's merkle root without verification
 
-**Where**: `useP2PSync.ts:1046` — the client signs `data.hash` (which
+**Where**: `useWireSync.ts:1046` — the client signs `data.hash` (which
 includes the host's `transcriptRoot`) without comparing against its own
 local transcript root.
 
@@ -557,6 +597,11 @@ dispute that surfaces the missing moves).
 **Decision needed**: should the client validate the host's transcript root
 against its local one before countersigning? If so, what to do when they
 diverge (auto-reject? ask the user? request resync?).
+
+**Dependency**: OPEN-1 cannot be safely closed while OPEN-2 is open.
+Verifying transcript roots between peers requires deterministic ordering;
+without it, honest peers would falsely reject each other due to socket
+scheduling races. The two must be designed together.
 
 ### OPEN-2 — Transcript order is not deterministic between peers
 
@@ -604,7 +649,7 @@ each individually blocked or guarded.
 
 ### OPEN-4 — Poker phase is host-only — should it migrate to symmetric?
 
-**Where**: `useP2PSync.ts:879-910` — only the host validates and applies
+**Where**: `useWireSync.ts:879-910` — only the host validates and applies
 poker actions. The client never executes locally; it waits for the host's
 `gameState` sync.
 
@@ -617,7 +662,7 @@ tolerable), or migrate to symmetric (consistency with chess Plan B)?
 
 ### OPEN-5 — Disconnect / reconnect mid-match
 
-**Where**: `useP2PSync.ts:284-325` — the `close` handler shows a
+**Where**: `useWireSync.ts:284-325` — the `close` handler shows a
 disconnect toast and submits `fake_disconnect` slash evidence, but does
 NOT attempt reconnection or state recovery. The transcript is cleared
 on next mount.
@@ -637,15 +682,6 @@ matchmaking endpoint that originated the match knows).
 
 **Decision needed**: should `matchType` ride the `init` envelope as
 authoritative? Or is it OK to derive client-side from local context?
-
-### OPEN-7 — Inconsistent match-eviction TTL on the server
-
-**Where**: `matchmakingRoutes.ts:84-86` evicts after 300s;
-`matchmakingRoutes.ts:187-189` evicts after 120s. Both fire; whichever
-is shorter wins.
-
-**Decision needed**: pick one. Probably 300s (matches the WS keepalive
-budget). Trivial fix.
 
 ### OPEN-8 — Audit gameState wire and migrate to recovery-on-mismatch
 

@@ -4,9 +4,9 @@
  * Replaces the previous PeerJS + WebRTC + STUN/TURN stack with a single
  * WebSocket connection to the game's own server (`/ws/p2p`). Same external
  * API (`host`, `join`, `send`, `disconnect`, `handleHeartbeat`) so
- * `useP2PSync` keeps working unchanged. The `connection` exposed in the
+ * `useWireSync` keeps working unchanged. The `connection` exposed in the
  * store is structurally compatible with the subset of `P2PConnection` that
- * `useP2PSync` consumes (events `data|open|close|error`, methods `send`/
+ * `useWireSync` consumes (events `data|open|close|error`, methods `send`/
  * `close`, props `peer`/`open`).
  *
  * Why WS instead of WebRTC: under WSL2 + Chrome the internal DNS resolver
@@ -30,6 +30,7 @@ import { create } from 'zustand';
 import { debug } from '../config/debugConfig';
 import { LocalWebSocketTransport, deriveRelayUrl } from './wsTransport';
 import type { ArmySelection } from '../types/ChessTypes';
+import type { P2PMessage, WireMessage } from '../p2p/messages';
 
 // ── Timing Constants ──
 
@@ -56,7 +57,7 @@ let reconnectAttempt = 0;
 let graceTimerId: ReturnType<typeof setTimeout> | null = null;
 let heartbeatIntervalId: ReturnType<typeof setInterval> | null = null;
 let lastHeartbeatReceived = 0;
-const messageBuffer: unknown[] = [];
+const messageBuffer: WireMessage[] = [];
 
 // Active transport (kept outside the store to avoid serializing zustand on
 // each WS event — the store only holds the structural cast for consumers).
@@ -67,7 +68,7 @@ let lastRoomId: string | null = null;
 // ── Types ──
 
 /**
- * Structural subset of the active wire connection that `useP2PSync` and
+ * Structural subset of the active wire connection that `useWireSync` and
  * `peerStore` consume. The legacy PeerJS `P2PConnection` import was
  * removed (Patch-WebRTC.3) — the WS transport (`LocalWebSocketTransport`
  * in `wsTransport.ts`) implements this surface natively, so the field
@@ -75,7 +76,7 @@ let lastRoomId: string | null = null;
  * no longer depend on.
  */
 export interface P2PConnection {
-	send(data: unknown): void;
+	send(data: P2PMessage): void;
 	on(event: 'data', listener: (data: unknown) => void): void;
 	on(event: 'close', listener: () => void): void;
 	off(event: 'data', listener: (data: unknown) => void): void;
@@ -138,7 +139,7 @@ export interface PeerStore {
 	/** Quick Match join: opens the room emitted by matchmaking (matchId). */
 	connectToRoom: (roomId: string) => Promise<void>;
 	disconnect: () => void;
-	send: (data: unknown) => void;
+	send: (data: WireMessage) => void;
 	handleHeartbeat: () => void;
 }
 
@@ -162,6 +163,7 @@ function flushBuffer(transport: LocalWebSocketTransport): void {
 	let flushed = 0;
 	while (messageBuffer.length > 0) {
 		const msg = messageBuffer.shift();
+		if (msg === undefined) break;
 		try {
 			transport.send(msg);
 			flushed++;
@@ -476,7 +478,7 @@ export const usePeerStore = create<PeerStore>((set, get) => ({
 		});
 	},
 
-	send: (data: unknown) => {
+	send: (data: WireMessage) => {
 		const { connection, connectionState } = get();
 
 		if (connection && connectionState === 'connected') {

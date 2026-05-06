@@ -638,7 +638,7 @@ export default function CampaignPage() {
 	const handleStartMission = (difficulty: Difficulty) => {
 		if (!selectedMission) return;
 		startMission(selectedMission.id, difficulty);
-		navigate(routes.game);
+		navigate(routes.campaignGame);
 	};
 
 	const chapterProgressLabel = currentDisplayChapter
