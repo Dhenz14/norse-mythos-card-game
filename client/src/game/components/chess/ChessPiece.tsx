@@ -68,23 +68,17 @@ const ELEMENT_GLOW: Record<ElementType, { color: string; shadow: string; brightS
   neutral: { color: '#808080', shadow: 'none', brightShadow: 'none' }
 };
 
+export type ChessPieceVisualState =
+  | { readonly tag: 'idle' }
+  | { readonly tag: 'selected' }
+  | { readonly tag: 'attackable' }
+  | { readonly tag: 'locked' };
+
 interface ChessPieceProps {
   piece: ChessPieceType;
-  isSelected: boolean;
+  visualState: ChessPieceVisualState;
   isPlayerTurn: boolean;
-  onClick: () => void;
   matchupGlow?: MatchupGlow;
-  /**
-   * True iff this enemy piece is in the currently-selected piece's
-   * `attackMoves` (computed by `chessCombatSlice.getValidMoves`).
-   * The slice already enforces every game rule (own-piece blocking,
-   * king-in-check filter, pawn diagonal-only, line break on first
-   * enemy, etc.) — this prop is a pure consumer of that source of
-   * truth, never recomputed here. Renders a red ring overlay so the
-   * player sees "click here to capture" the same way lichess /
-   * chess.com do it.
-   */
-  isAttackable?: boolean;
 }
 
 const PIECE_TYPE_NAMES: Record<PieceType, string> = {
@@ -106,13 +100,52 @@ const ELEMENT_NAMES: Record<ElementType, string> = {
   neutral: 'Neutral'
 };
 
+const OWNER_CLASSES = {
+  player: 'bg-linear-to-b from-blue-900 to-blue-950',
+  opponent: 'bg-linear-to-b from-red-900 to-red-950',
+} satisfies Record<'player' | 'opponent', string>;
+
+const VISUAL_STATE_CLASSES = {
+  idle: '',
+  selected: 'ring-4 ring-yellow-400 z-20',
+  attackable: 'ring-4 ring-red-500 ring-opacity-80 chess-piece-attackable z-20',
+  locked: '',
+} satisfies Record<ChessPieceVisualState['tag'], string>;
+
+const MATCHUP_GLOW_CLASSES = {
+  advantage: 'matchup-pulse-advantage',
+  disadvantage: 'matchup-pulse-disadvantage',
+  mutual: 'matchup-pulse-mutual',
+  none: '',
+} satisfies Record<NonNullable<MatchupGlow> | 'none', string>;
+
+const cx = (...classes: readonly (string | false | null | undefined)[]): string =>
+  classes.filter((className): className is string => Boolean(className)).join(' ');
+
+const getMatchupGlowClassName = (matchupGlow: MatchupGlow | undefined): string =>
+  MATCHUP_GLOW_CLASSES[matchupGlow ?? 'none'];
+
+const getChessPieceClassName = (input: {
+  readonly isPlayer: boolean;
+  readonly canSelect: boolean;
+  readonly hasElement: boolean;
+  readonly element: ElementType;
+  readonly visualState: ChessPieceVisualState;
+  readonly matchupGlow?: MatchupGlow;
+}): string => cx(
+  'chess-piece w-full h-full flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all relative',
+  input.isPlayer ? OWNER_CLASSES.player : OWNER_CLASSES.opponent,
+  VISUAL_STATE_CLASSES[input.visualState.tag],
+  input.canSelect && input.visualState.tag !== 'locked' && 'hover:brightness-110',
+  input.hasElement && `element-piece element-piece-${input.element}`,
+  getMatchupGlowClassName(input.matchupGlow),
+);
+
 const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   piece,
-  isSelected,
+  visualState,
   isPlayerTurn,
-  onClick,
   matchupGlow,
-  isAttackable = false
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -127,9 +160,13 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
   const isKing = piece.type === 'king';
   const isGod = !isPawn;
   const healthPercent = (isPawn || isKing) ? 100 : (piece.health / piece.maxHealth) * 100;
-  const elementGlow = piece.element ? ELEMENT_GLOW[piece.element] : ELEMENT_GLOW.neutral;
-  const hasElement = piece.element && piece.element !== 'neutral';
-  const elementImage = piece.element ? ELEMENT_IMAGES[piece.element] : null;
+  const pieceElement = piece.element ?? 'neutral';
+  const elementGlow = ELEMENT_GLOW[pieceElement];
+  const hasElement = pieceElement !== 'neutral';
+  const elementImage = ELEMENT_IMAGES[pieceElement];
+  const animateScale = visualState.tag === 'selected'
+    ? (isKing ? 1.08 : 1.03)
+    : (isKing ? 1.05 : 1);
 
   const handleMouseEnter = () => {
     hoverTimeoutRef.current = setTimeout(() => {
@@ -155,26 +192,27 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
 
   return (
     <motion.div
+      data-piece-id={piece.id}
       data-piece-type={piece.type}
-      className={`
-        chess-piece w-full h-full flex flex-col items-center justify-center
-        rounded-xl cursor-pointer transition-all relative
-        ${isPlayer ? 'bg-linear-to-b from-blue-900 to-blue-950' : 'bg-linear-to-b from-red-900 to-red-950'}
-        ${isSelected ? 'ring-4 ring-yellow-400 z-20' : ''}
-        ${isAttackable ? 'ring-4 ring-red-500 ring-opacity-80 chess-piece-attackable z-20' : ''}
-        ${canSelect ? 'hover:brightness-110' : ''}
-        ${hasElement ? `element-piece element-piece-${piece.element}` : ''}
-        ${matchupGlow === 'advantage' ? 'matchup-pulse-advantage' : ''}
-        ${matchupGlow === 'disadvantage' ? 'matchup-pulse-disadvantage' : ''}
-        ${matchupGlow === 'mutual' ? 'matchup-pulse-mutual' : ''}
-      `}
-      onClick={onClick}
+      data-owner={piece.owner}
+      data-position={`${piece.position.row},${piece.position.col}`}
+      data-visual-state={visualState.tag}
+      data-can-select={canSelect ? 'true' : 'false'}
+      className={getChessPieceClassName({
+        isPlayer,
+        canSelect,
+        hasElement,
+        element: pieceElement,
+        visualState,
+        matchupGlow,
+      })}
+      aria-label={`${piece.heroName} ${PIECE_TYPE_NAMES[piece.type]} at ${piece.position.row},${piece.position.col}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      whileHover={canSelect ? { scale: 1.08 } : {}}
-      whileTap={canSelect ? { scale: 0.95 } : {}}
-      initial={{ scale: 0 }}
-      animate={{ scale: isKing ? 1.05 : 1 }}
+      whileHover={canSelect ? { scale: 1.08 } : undefined}
+      whileTap={canSelect ? { scale: 0.95 } : undefined}
+      initial={false}
+      animate={{ scale: animateScale }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       style={hasElement ? { boxShadow: elementGlow.shadow } : undefined}
     >
@@ -200,11 +238,11 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
               className="rounded-lg p-3 text-white text-left shadow-xl"
               style={{
                 background: 'linear-gradient(135deg, rgba(30, 30, 50, 0.98), rgba(20, 20, 35, 0.98))',
-                border: hasElement ? `2px solid ${ELEMENT_COLORS[piece.element!]}` : '2px solid rgba(100, 100, 150, 0.5)',
+                border: hasElement ? `2px solid ${ELEMENT_COLORS[pieceElement]}` : '2px solid rgba(100, 100, 150, 0.5)',
                 backdropFilter: 'blur(8px)'
               }}
             >
-              <div className="font-bold text-sm mb-1" style={{ color: hasElement ? ELEMENT_COLORS[piece.element!] : '#fff' }}>
+              <div className="font-bold text-sm mb-1" style={{ color: hasElement ? ELEMENT_COLORS[pieceElement] : '#fff' }}>
                 {piece.heroName}
               </div>
               <div className="text-xs text-gray-300 mb-2">
@@ -214,12 +252,12 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
                 <div
                   className="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium"
                   style={{
-                    background: `color-mix(in srgb, ${ELEMENT_COLORS[piece.element!]} 12%, transparent)`,
-                    border: `1px solid color-mix(in srgb, ${ELEMENT_COLORS[piece.element!]} 30%, transparent)`
+                    background: `color-mix(in srgb, ${ELEMENT_COLORS[pieceElement]} 12%, transparent)`,
+                    border: `1px solid color-mix(in srgb, ${ELEMENT_COLORS[pieceElement]} 30%, transparent)`
                   }}
                 >
-                  <span>{ELEMENT_ICONS[piece.element!]}</span>
-                  <span style={{ color: ELEMENT_COLORS[piece.element!] }}>{ELEMENT_NAMES[piece.element!]} Element</span>
+                  <span>{ELEMENT_ICONS[pieceElement]}</span>
+                  <span style={{ color: ELEMENT_COLORS[pieceElement] }}>{ELEMENT_NAMES[pieceElement]} Element</span>
                 </div>
               )}
               {(!isPawn && !isKing) && (
@@ -237,7 +275,7 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
                 height: 0,
                 borderLeft: '8px solid transparent',
                 borderRight: '8px solid transparent',
-                borderTop: hasElement ? `8px solid ${ELEMENT_COLORS[piece.element!]}` : '8px solid var(--obsidian-500)'
+                borderTop: hasElement ? `8px solid ${ELEMENT_COLORS[pieceElement]}` : '8px solid var(--obsidian-500)'
               }}
             />
           </motion.div>
@@ -246,15 +284,15 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
       {hasElement && elementImage && (
         <>
           <div
-            className={`element-image-bg element-image-${piece.element}`}
+            className={`element-image-bg element-image-${pieceElement}`}
             style={{ backgroundImage: `url(${elementImage})` }}
           />
-          <div className={`element-overlay element-overlay-${piece.element}`} />
+          <div className={`element-overlay element-overlay-${pieceElement}`} />
         </>
       )}
 
       {hasElement && (
-        <div className={`element-effect-layer element-effect-${piece.element}`} />
+        <div className={`element-effect-layer element-effect-${pieceElement}`} />
       )}
 
       {(!isPawn && !isKing) && (
@@ -300,23 +338,23 @@ const ChessPieceComponent: React.FC<ChessPieceProps> = ({
 
       {hasElement && (
         <div
-          className={`element-badge-large element-badge-${piece.element}`}
+          className={`element-badge-large element-badge-${pieceElement}`}
           style={{
-            backgroundColor: ELEMENT_COLORS[piece.element],
-            boxShadow: `0 0 10px ${ELEMENT_COLORS[piece.element]}, 0 0 20px ${ELEMENT_COLORS[piece.element]}`
+            backgroundColor: ELEMENT_COLORS[pieceElement],
+            boxShadow: `0 0 10px ${ELEMENT_COLORS[pieceElement]}, 0 0 20px ${ELEMENT_COLORS[pieceElement]}`
           }}
-          title={`${piece.element.charAt(0).toUpperCase() + piece.element.slice(1)} Element`}
+          title={`${pieceElement.charAt(0).toUpperCase() + pieceElement.slice(1)} Element`}
         >
-          <span className="element-icon-large">{ELEMENT_ICONS[piece.element]}</span>
+          <span className="element-icon-large">{ELEMENT_ICONS[pieceElement]}</span>
         </div>
       )}
 
       {hasElement && (
-        <div className={`element-border-glow element-border-${piece.element}`} />
+        <div className={`element-border-glow element-border-${pieceElement}`} />
       )}
 
     </motion.div>
   );
 };
 
-export default ChessPieceComponent;
+export default React.memo(ChessPieceComponent);

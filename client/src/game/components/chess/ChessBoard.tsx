@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChessBoardPosition, BOARD_ROWS, BOARD_COLS } from '../../types/ChessTypes';
 import { useGameStore } from '../../stores/gameStore';
-import ChessPieceComponent from './ChessPiece';
+import ChessPieceComponent, { type ChessPieceVisualState } from './ChessPiece';
 import MovePlate from './MovePlate';
 import ChessAttackAnimation from './ChessAttackAnimation';
 import './ChessBoardEnhanced.css';
@@ -23,6 +23,25 @@ interface ChessBoardProps {
   onCombatTriggered?: (attackerId: string, defenderId: string) => void;
   disabled?: boolean;
 }
+
+const PIECE_VISUAL_STATES = {
+  idle: { tag: 'idle' },
+  selected: { tag: 'selected' },
+  attackable: { tag: 'attackable' },
+  locked: { tag: 'locked' },
+} satisfies Record<ChessPieceVisualState['tag'], ChessPieceVisualState>;
+
+const getPieceVisualState = (input: {
+  readonly pieceId: string;
+  readonly selectedPieceId: string | null;
+  readonly isAttackTarget: boolean;
+  readonly isLocked: boolean;
+}): ChessPieceVisualState => {
+  if (input.isLocked) return PIECE_VISUAL_STATES.locked;
+  if (input.selectedPieceId === input.pieceId) return PIECE_VISUAL_STATES.selected;
+  if (input.isAttackTarget) return PIECE_VISUAL_STATES.attackable;
+  return PIECE_VISUAL_STATES.idle;
+};
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = false }) => {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -54,7 +73,17 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     const updateBoardRect = () => {
       if (boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
-        setBoardRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
+        setBoardRect(previousRect => {
+          if (
+            previousRect.x === rect.left &&
+            previousRect.y === rect.top &&
+            previousRect.width === rect.width &&
+            previousRect.height === rect.height
+          ) {
+            return previousRect;
+          }
+          return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+        });
       }
     };
     updateBoardRect();
@@ -83,6 +112,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     const canPlaceHere = canPlaceAtHoveredPosition;
     const isPlacementBurst = isPlacementBurstPosition(row, col);
     const isMineTriggerExplosion = isMineTriggerExplosionPosition(row, col);
+    const isPieceLocked = gameStatus !== 'playing' || pendingAttackAnimation !== null;
     
     return (
       <div
@@ -258,11 +288,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
             >
               <ChessPieceComponent
                 piece={piece}
-                isSelected={selectedPiece?.id === piece.id}
+                visualState={getPieceVisualState({
+                  pieceId: piece.id,
+                  selectedPieceId: selectedPiece?.id ?? null,
+                  isAttackTarget: isAttack,
+                  isLocked: isPieceLocked,
+                })}
                 isPlayerTurn={isMyTurn}
-                onClick={() => handleCellClick(row, col)}
                 matchupGlow={matchupGlowMap[piece.id] || null}
-                isAttackable={isAttack}
               />
             </motion.div>
           )}
@@ -400,13 +433,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
       
       {/* Attack Animation Overlay */}
       <ChessAttackAnimation
-        animation={pendingAttackAnimation ? {
-          attacker: pendingAttackAnimation.attacker,
-          defender: pendingAttackAnimation.defender,
-          attackerPosition: pendingAttackAnimation.attackerPosition,
-          defenderPosition: pendingAttackAnimation.defenderPosition,
-          isInstantKill: pendingAttackAnimation.isInstantKill
-        } : null}
+        animation={pendingAttackAnimation}
         onAnimationComplete={handleAttackAnimationComplete}
         cellSize={boardRect.width / BOARD_COLS}
         boardOffset={{ x: boardRect.x, y: boardRect.y }}

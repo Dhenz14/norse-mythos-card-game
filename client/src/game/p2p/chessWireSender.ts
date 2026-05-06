@@ -124,7 +124,11 @@ function dispatchChessCommand(
 	// Transcript: delegated to the bridge-registered observer (C3). Pre-C3
 	// this module called `recordMove` inline; centralising in the bridge
 	// keeps a single audit point for transcript ordering policy (OPEN-2).
-	chessSendObserver?.(envelope, transcriptExtra);
+	try {
+		chessSendObserver?.(envelope, transcriptExtra);
+	} catch (error) {
+		debug.warn('[chessWireSender] transcript observer failed after send', error);
+	}
 
 	debug.chess(`[chessWireSender] sent ${command.type} seq=${envelope.seq} piece=${command.pieceId.slice(0, 8)} (${command.from.row},${command.from.col})→(${command.to.row},${command.to.col})`);
 	return true;

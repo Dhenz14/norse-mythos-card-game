@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useAudio } from '../../../lib/stores/useAudio';
 import { debug } from '../../config/debugConfig';
@@ -39,6 +39,14 @@ type MineTriggerEffect = {
   readonly timestamp: number;
 };
 
+type TimeoutId = ReturnType<typeof setTimeout>;
+
+const clearTimer = (timerRef: { current: TimeoutId | null }): void => {
+  if (!timerRef.current) return;
+  clearTimeout(timerRef.current);
+  timerRef.current = null;
+};
+
 export function useChessBoardInteractions(input: UseChessBoardInteractionsInput) {
   const { disabled, onCombatTriggered } = input;
   const { playSoundEffect } = useAudio();
@@ -49,6 +57,9 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
   const [mineTriggerEffect, setMineTriggerEffect] = useState<MineTriggerEffect | null>(null);
   const [screenShake, setScreenShake] = useState(false);
   const [fallingKingId, setFallingKingId] = useState<string | null>(null);
+  const instantKillFlashTimeoutRef = useRef<TimeoutId | null>(null);
+  const minePlacementTimeoutRef = useRef<TimeoutId | null>(null);
+  const noMovesMessageTimeoutRef = useRef<TimeoutId | null>(null);
 
   const {
     boardState,
@@ -78,6 +89,14 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
   } = useKingChessAbility(myCanonicalSide);
 
   const { pieces, currentTurn, selectedPiece, validMoves, attackMoves, gameStatus } = boardState;
+
+  useEffect(() => {
+    return () => {
+      clearTimer(instantKillFlashTimeoutRef);
+      clearTimer(minePlacementTimeoutRef);
+      clearTimer(noMovesMessageTimeoutRef);
+    };
+  }, []);
 
   useEffect(() => {
     if (!lastMineTriggered) return;
@@ -113,7 +132,11 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
         position: animation.defenderPosition,
         attackerType: animation.attacker.type,
       });
-      setTimeout(() => setInstantKillFlash(null), 600);
+      clearTimer(instantKillFlashTimeoutRef);
+      instantKillFlashTimeoutRef.current = setTimeout(() => {
+        setInstantKillFlash(null);
+        instantKillFlashTimeoutRef.current = null;
+      }, 600);
     }
 
     completeAttackAnimation();
@@ -130,8 +153,12 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
       position: lastInstantKill.position,
       attackerType: lastInstantKill.attackerType,
     });
-    const timer = setTimeout(() => setInstantKillFlash(null), 600);
-    return () => clearTimeout(timer);
+    clearTimer(instantKillFlashTimeoutRef);
+    instantKillFlashTimeoutRef.current = setTimeout(() => {
+      setInstantKillFlash(null);
+      instantKillFlashTimeoutRef.current = null;
+    }, 600);
+    return () => clearTimer(instantKillFlashTimeoutRef);
   }, [lastInstantKill]);
 
   const matchupGlowMap = useMemo(() => {
@@ -179,7 +206,11 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
         tiles: preview,
         timestamp: Date.now(),
       });
-      setTimeout(() => setMinePlacementEffect(null), 1200);
+      clearTimer(minePlacementTimeoutRef);
+      minePlacementTimeoutRef.current = setTimeout(() => {
+        setMinePlacementEffect(null);
+        minePlacementTimeoutRef.current = null;
+      }, 1200);
       return;
     }
 
@@ -304,7 +335,11 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
 
     if (hasNoLegalMoves({ moves, attacks })) {
       setNoMovesMessage(getBlockedPieceMessage(piece));
-      setTimeout(() => setNoMovesMessage(null), 2000);
+      clearTimer(noMovesMessageTimeoutRef);
+      noMovesMessageTimeoutRef.current = setTimeout(() => {
+        setNoMovesMessage(null);
+        noMovesMessageTimeoutRef.current = null;
+      }, 2000);
     }
 
     selectPiece(piece);
@@ -324,7 +359,6 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     currentTurn,
     selectedPiece,
     myCanonicalSide,
-    pendingAttackAnimation,
     getValidMoves,
   ]);
 
