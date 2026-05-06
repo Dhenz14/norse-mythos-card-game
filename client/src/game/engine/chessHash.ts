@@ -24,7 +24,7 @@ import { canonicalChessSnapshot } from '@shared/protocol-core/chess';
 import type { ChessBoardSnapshot, ChessProtocolPiece } from '@shared/protocol-core/chess';
 import { debug } from '../config/debugConfig';
 
-export function computeChessStateHash<P extends ChessProtocolPiece>(
+export function computeChessPrevStateHash<P extends ChessProtocolPiece>(
 	snapshot: ChessBoardSnapshot<P> | null,
 ): string {
 	if (!snapshot) return '';

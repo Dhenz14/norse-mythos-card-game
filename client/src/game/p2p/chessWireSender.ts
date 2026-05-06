@@ -38,7 +38,7 @@ import { usePeerStore } from '../stores/peerStore';
 import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
 import type { ChessBoardPosition } from '../types/ChessTypes';
 import type { ChessAttackCommand, ChessCommand, ChessCommandEnvelope, ChessMoveCommand } from '../../../../shared/p2p-wire/chess';
-import { computeChessStateHash } from '../engine/chessHash';
+import { computeChessPrevStateHash } from '../engine/chessHash';
 import { computeCardsPrevStateHash } from '../engine/wireHash';
 import { debug } from '../config/debugConfig';
 
@@ -124,7 +124,7 @@ function dispatchChessCommand(
 		useGameStore.getState().gameState,
 		isCardsAuthority,
 	);
-	const prevChessStateHash = computeChessStateHash(readChessSnapshot());
+	const prevChessStateHash = computeChessPrevStateHash(readChessSnapshot());
 
 	const envelope: ChessCommandEnvelope = {
 		type: 'chess_command',

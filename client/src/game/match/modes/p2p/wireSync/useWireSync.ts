@@ -15,7 +15,7 @@ import { localPlayerId, remotePlayerId } from '../../../../../data/blockchain/pl
 import { getWasmHash, loadWasmEngine } from '../../../../engine/wasmLoader';
 import { computeStateHash } from '../../../../engine/engineBridge';
 import { flipGameState, computeCardsPrevStateHash } from '../../../../engine/wireHash';
-import { computeChessStateHash } from '../../../../engine/chessHash';
+import { computeChessPrevStateHash } from '../../../../engine/chessHash';
 import { isSharedNetworkEnvironment } from '../../../../config/featureFlags';
 import { submitSlashEvidence, findExistingMatchResult } from '../../../../../data/blockchain/slashEvidence';
 import { GAME_COMMAND_TYPES } from '../../../../core/commands';
@@ -613,6 +613,17 @@ export function useWireSync() {
 							break;
 						}
 						const localPrevHash = computeCardsPrevStateHash(useGameStore.getState().gameState, true);
+						if (localPrevHash.length === 0) {
+							// Receiver-side WASM eager-load race or null gameState. The
+							// sender's hash is well-formed; the local recompute returns
+							// '' per the documented failure-mode policy. Bouncing the
+							// envelope so the sender can retry once WASM finishes
+							// initializing avoids spurious mismatches at handshake-time.
+							// Mirrors `local_prev_state_hash_unavailable` on the chess
+							// branch.
+							reject('local_prev_state_hash_unavailable');
+							break;
+						}
 						if (data.prevStateHash !== localPrevHash) {
 							reject(`prev_state_hash_mismatch_local_${localPrevHash.slice(0, 16)}_got_${data.prevStateHash.slice(0, 16)}`);
 							break;
@@ -830,10 +841,17 @@ export function useWireSync() {
 							reject('missing_prev_state_hash');
 							break;
 						}
-						const localChessSnapshot = ((globalThis as Record<string, unknown>)
-							.__ragnarokCombatStore as { getState: () => { boardState?: unknown } } | undefined)
-							?.getState().boardState as Parameters<typeof computeChessStateHash>[0];
-						const localChessHash = computeChessStateHash(localChessSnapshot);
+						// Snapshot read for hashing — uses the same globalThis.__ragnarokCombatStore
+						// access pattern as the sibling chess branch below ("preserved here to
+						// avoid circular imports"). Shape declared structurally rich (matches
+						// `Parameters<typeof computeChessPrevStateHash>[0]` without an opaque
+						// trailing cast) so a future drift in `boardState` shape breaks the
+						// typecheck instead of slipping past unverified.
+						type LocalChessSnapshot = Parameters<typeof computeChessPrevStateHash>[0];
+						const hashCombatStore = (globalThis as Record<string, unknown>)
+							.__ragnarokCombatStore as { getState: () => { boardState?: LocalChessSnapshot } } | undefined;
+						const localChessSnapshot = hashCombatStore?.getState().boardState ?? null;
+						const localChessHash = computeChessPrevStateHash(localChessSnapshot);
 						const localCardsHash = computeCardsPrevStateHash(
 							useGameStore.getState().gameState,
 							isCardsAuthority,
