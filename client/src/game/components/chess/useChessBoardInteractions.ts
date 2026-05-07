@@ -264,8 +264,8 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
             defenderType: defenderPiece.type,
           });
           if (!instantKill) {
-            toast.error('Captura compleja aún no soportada en multiplayer', {
-              description: 'Esta captura entraría a la fase de combate (poker) que aún no se sincroniza entre peers. Por ahora solo capturas instantáneas (peón vs cualquiera, rey ataca, o defensor peón).',
+            toast.error('Complex capture not yet supported in multiplayer', {
+              description: 'This capture would enter the combat (poker) phase, which is not yet synchronized between peers. For now only instant captures are allowed (pawn vs anything, king attacks, or pawn defender).',
               duration: 5000,
             });
             return;

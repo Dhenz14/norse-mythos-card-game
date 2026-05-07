@@ -129,8 +129,8 @@ export function useKingChessAbility(side: 'player' | 'opponent' = 'player'): Kin
     // than rejecting after the player picks a tile.
     const matchId = useGameStore.getState().matchId;
     if (matchId) {
-      toast.error('Habilidad del Rey aún no soportada en multiplayer', {
-        description: 'La colocación de minas requiere sincronización entre peers que aún no está implementada. Por ahora la habilidad está deshabilitada en partidas P2P.',
+      toast.error('King ability not yet supported in multiplayer', {
+        description: 'Mine placement requires peer synchronization that is not yet implemented. For now the ability is disabled in P2P matches.',
         duration: 5000,
       });
       return;
