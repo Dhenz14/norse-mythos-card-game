@@ -206,6 +206,10 @@ function getCombatElement(element?: ElementType | string): ElementType {
 	return (element as ElementType | undefined) ?? 'neutral';
 }
 
+// Stable reference for the face-down placeholder rendered before community
+// cards are dealt. Hoisted so the JSX prop is a constant ref across renders.
+const FACEDOWN_PLACEHOLDER_CARD: PokerCard = { suit: 'spades', value: 'A', numericValue: 14 };
+
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
 }
@@ -691,7 +695,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           ) : (
             [0, 1, 2].map(idx => (
               <div key={`faith-placeholder-${idx}`} className="community-slot">
-                <PlayingCard card={{ suit: 'spades', value: 'A', numericValue: 14 }} faceDown />
+                <PlayingCard card={FACEDOWN_PLACEHOLDER_CARD} faceDown />
               </div>
             ))
           )}
