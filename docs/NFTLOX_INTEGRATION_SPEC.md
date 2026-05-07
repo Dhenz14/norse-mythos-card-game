@@ -17,7 +17,7 @@
 | **NFTLox** (external protocol) | Birth & custody | Collection creation, seed minting, instance distribution (`bulk_distribute`), transfers, burns, deterministic IDs/DNAs |
 | **Ragnarok** (`ragnarok-cards` protocol) | Game state | Matches, ELO, decks, rewards, marketplace, anti-cheat, level/XP progression, **pack RNG resolution**, replicate/merge primitives |
 
-The Ragnarok client-side replay engine watches **both** custom_json protocols on Hive L1 and merges them into local IndexedDB. No NFTLox API dependency at runtime.
+Ownership comes from the NFTLox indexer API, cached in local IndexedDB with state-hash invalidation. Game state (matches, ELO, decks, `level`/`xp`) comes from the Ragnarok protocol via the client-side replay engine. The two layers cache and invalidate independently — see [Read-side architecture](#read-side-architecture-testnet-target) below.
 
 ---
 
@@ -77,6 +77,81 @@ The mapping is enforced by `ACTION_AUTH_LEVEL` in NFTLox's protocol package — 
 - **Posting key (everything else)**: `mint`, `bulk_distribute`, `transfer`, `burn`, `list`, `unlist`, `set_data`, `set_data_from`, `extend_schema`, `archive_collection`, `nft_approve`, `nft_approve_all`, `data_operator_approve`, `nft_transfer_from`, `nft_lend`, `nft_return`.
 
 A subset of active actions also requires the signer to be a **registered active settlement node** (`NODE_SIGNED_ACTIONS` — currently `buy_commitment` and `buy`). `create_collection` is active-signed by the creator, not by a node.
+
+---
+
+## Read-side architecture (testnet target)
+
+Ownership is the only thing the client reads from NFTLox. The cache lives in IndexedDB and is invalidated by a per-user state hash.
+
+### Sync flow
+
+```
+Login (post-Hive-Keychain auth)
+    ↓
+GET /api/users/:u/state-hash?collection=RGNRK    ← ~100 bytes
+    ↓
+compare against local cached hash in IndexedDB.nft_meta
+    ↓
+   ┌────┴────┐
+   │ match   │ → cache valid; UI reads from IndexedDB
+   ├─────────┤
+   │ diverge │ → paginated re-sync via /api/users/:u/nfts
+   └─────────┘     atomic IndexedDB transaction (delete removed,
+                   upsert new), persist new lastSyncHash
+```
+
+The client never recomputes a hash. The comparison is `localCachedHash === remoteHash`. The hash is XOR over per-NFT `claim_hash` filtered by `(owner, collection_id)`, computed server-side.
+
+### Cache invalidation triggers
+
+| Trigger | Action |
+|---|---|
+| Login | Hash compare; re-sync on diverge |
+| Post-action (`nftloxTransferCard`, `nftloxBuyCard`, `nftloxOpenPack`, `nftloxBulkDistribute`, `nftloxLendCard`, `nftloxReturnCard`, `nftloxListCard`, `nftloxUnlistCard`, `nftloxBurnCard`, `nftloxReplicate`) | Poll `/api/operation-status/:txId` until confirmed, then re-sync |
+| NFTLox API 5xx / timeout | Cache stays valid for gameplay; transfer/marketplace actions block until next successful sync |
+
+No periodic polling. Self-actions cover writes; login covers external transfers received while offline.
+
+### Endpoint contract (NFTLox-side)
+
+```http
+GET /api/users/:username/state-hash?collection=RGNRK
+```
+
+Response:
+
+```json
+{
+  "username": "alice",
+  "collection_id": "<RGNRK collection id>",
+  "state_hash": "sha256:b7c3...",
+  "nft_count": 42,
+  "last_block_num": 98765432,
+  "updated_at": "2026-04-25T12:00:00.000Z"
+}
+```
+
+Implementation: SQL aggregate `SELECT XOR(claim_hash), COUNT(*), MAX(owner_block_num) FROM nfts WHERE owner = ? AND collection_id = ?` with composite index on `(owner, collection_id)`. O(n) where n is the user's NFT count in the collection — sub-millisecond for typical n ≤ 1000. Promote to a precomputed `user_collection_state_hash` table only if read latency becomes hot.
+
+### IndexedDB layout
+
+| Object store | Key | Value | Source of truth |
+|---|---|---|---|
+| `nft_ownership` | `uid` (= NFTLox `id`) | `HiveCardAsset` mapped from NFTLox NFT object via adapter | NFTLox API |
+| `nft_meta` | string key | `{ lastSyncHash, lastSyncAt, currentUsername }` | local |
+
+Gameplay reads (deck building, collection view, marketplace) hit `nft_ownership` directly — O(1) IndexedDB lookups, zero network round-trips during play. Adapter shape:
+
+```ts
+interface OwnershipAdapter {
+  getStateHash(username: string): Promise<string>;
+  getOwnedCards(username: string, status?: 'active' | 'listed' | 'lent'): Promise<HiveCardAsset[]>;
+  getNFTById(uid: string): Promise<HiveCardAsset | null>;
+}
+```
+
+The single concrete implementation is `NFTLoxApiAdapter`. The interface exists so a future replacement (e.g. fully replay-engine-driven) is a swap, not a rewrite.
 
 ---
 
@@ -171,6 +246,7 @@ NFTLox normalizes image URLs through `toWireUrl()` before hashing — the wire f
 | Production protocol ID (currently `nftlox_testnet`) | Pending |
 | Stable absolute image URL host for each asset (drives `imageHash`) | Pending |
 | Test mint pass on testnet | Pending |
+| `GET /api/users/:u/state-hash?collection=RGNRK` (XOR per-NFT `claim_hash`) | Pending — required by Read-side architecture |
 
 What we **don't** use: NFTLox marketplace, lending, multisig buy. We **do** use `data_operator_approve` + `set_data_from` (required to keep `level`/`xp`/`foil` writable only by Ragnarok admin).
 
@@ -180,9 +256,11 @@ What we **don't** use: NFTLox marketplace, lending, multisig buy. We **do** use 
 
 | File | Role |
 |---|---|
-| `replayEngine.ts` | Add `nftlox_testnet` (later `nftlox`) as second protocol filter alongside `ragnarok-cards` |
-| `replayRules.ts` | Handlers for NFTLox `mint`, `bulk_distribute`, `transfer`, `burn`, `set_data`, `set_data_from` |
-| `HiveSync.ts` | Adapter methods using `nftlox-sdk` builders; wire `seedTxId` provenance refs where applicable |
+| `client/src/data/nft/OwnershipAdapter.ts` | Read-side interface: `getStateHash`, `getOwnedCards`, `getNFTById` |
+| `client/src/data/nft/NFTLoxApiAdapter.ts` | Implementation against `api-nftlox.hivecreators.co` — paginated `/users/:u/nfts`, `/state-hash` |
+| `client/src/data/nft/nftloxSync.ts` | Orchestrator: hash compare → paginated re-sync → atomic IndexedDB transaction |
+| `client/src/data/nft/nftloxIndexedDB.ts` | IndexedDB schema (`nft_ownership`, `nft_meta`) and CRUD |
+| `HiveSync.ts` | Write side — broadcasts NFTLox protocol ops via `custom_json`. Already wired (`nftloxTransferCard`, `nftloxOpenPack`, …) |
 | `genesisAdmin.ts` | Replace custom genesis with NFTLox `create_collection` + `bulk` seed mints |
 | `client/src/game/data/schemas/` | **Source of truth** — `immutableData` schema mirrors these primitives |
 
