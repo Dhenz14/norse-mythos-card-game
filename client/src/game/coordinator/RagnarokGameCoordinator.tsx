@@ -455,6 +455,17 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
 
   const handleCombatEnd = useCallback((winner: 'player' | 'opponent' | 'draw') => {
     try {
+      // Match-end claimed: cards-victory effect (or chess-victory) already
+      // owns the FSM transition into game_over. Clean up poker state and
+      // bail out — dispatching COMBAT_RESOLVED here would race the pending
+      // GAME_ENDED dispatch and flash chess in limbo while the modal closes.
+      if (gameEndProcessedRef.current) {
+        clearPendingCombat();
+        setPokerSlotsSwapped(false);
+        endCombat();
+        return;
+      }
+
       const storeState = useUnifiedCombatStore.getState();
       const freshCombat = storeState.pendingCombat;
       const freshPokerState = storeState.pokerCombatState;
