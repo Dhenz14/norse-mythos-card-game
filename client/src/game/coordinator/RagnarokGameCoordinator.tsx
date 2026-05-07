@@ -603,10 +603,15 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
   // means "I won" — distinct from the canonical chess frame above. The
   // helper deriveIWonForPhase encodes this distinction.
   //
-  // No dispatchFlow(GAME_ENDED) here: GameBoard.tsx reads
-  // gameState.gamePhase directly to render the cards game-over screen,
-  // so the flow state machine path is chess-only. Cards keeps its
-  // presentation in GameBoard, which sees the phase change immediately.
+  // GameOverScreen modal in RagnarokCombatArena renders the immediate
+  // "you won/lost" feedback the moment gamePhase flips. The 1.5s timeout
+  // below holds that modal on screen, then dispatches GAME_ENDED so the
+  // FSM transitions out of 'poker_combat' → PokerCombatPhase unmounts
+  // (taking the modal with it) and GameOverPhase takes over with the
+  // campaign cinematic / story-bridge / star rating it owns. Without
+  // the dispatch, clicking Play Again would route through COMBAT_RESOLVED
+  // back into chess in a limbo state where chess.gameStatus is still
+  // 'playing' but cards declared game-over.
   const cardsGamePhase = useGameStore(s => s.gameState?.gamePhase);
   const cardsWinner = useGameStore(s => s.gameState?.winner);
   useEffect(() => {
@@ -626,6 +631,12 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
       if (ctx) {
         selectOnWinHandler(ctx)({ iWon, turnCount });
       }
+      const initialSub = getInitialGameOverSubPhase({
+        iWon,
+        isCampaign,
+        campaignData,
+      });
+      dispatchFlow({ type: 'GAME_ENDED', initialSub });
     }, 1500);
 
     return () => {
