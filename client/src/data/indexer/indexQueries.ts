@@ -8,11 +8,16 @@
  */
 
 import type { LeaderboardEntry } from '../../../../shared/indexer-types';
-import { ELO_K_FACTOR, ELO_FLOOR } from '../../../../shared/protocol-core/types';
+import { ELO_K_FACTOR, ELO_FLOOR, type CanonicalAction } from '../../../../shared/protocol-core/types';
 import {
 	getLeaderboard, getOpsByPlayerAction, getOpsByPlayer,
 	getSupplyCounter, getSyncMeta, applyOptimisticElo,
 } from './indexDB';
+
+// `satisfies` keeps the literal type 'match_result' while the compiler
+// rejects any drift from CanonicalAction. Promote to a shared const map
+// only if more modules in this layer start needing the same handle.
+const MATCH_RESULT = 'match_result' satisfies CanonicalAction;
 
 // ============================================================
 // Leaderboard Queries
@@ -42,16 +47,25 @@ export interface MatchRecord {
 }
 
 export async function getMatchHistory(username: string): Promise<MatchRecord[]> {
-	const ops = await getOpsByPlayerAction(username, 'match_result');
+	// Both reads hit local IndexedDB on disjoint indices (action+player vs
+	// player). Running them in parallel halves the wait without changing
+	// dedup semantics — the Set below merges by trxId either way.
+	const [opsAsPlayer, allOpsForUser] = await Promise.all([
+		getOpsByPlayerAction(username, MATCH_RESULT),
+		getOpsByPlayer(username),
+	]);
 
-	const asCounterparty = await getOpsByPlayer(username).then(all =>
-		all.filter(op => op.action === 'match_result' && op.counterparty === username)
+	const opsAsCounterparty = allOpsForUser.filter(
+		op => op.action === MATCH_RESULT && op.counterparty === username,
 	);
 
+	// Set-based dedup keyed by trxId. opsAsPlayer is processed first so it
+	// wins on collision — that branch carries `eloAfter` which the
+	// counterparty view doesn't expose.
 	const seen = new Set<string>();
 	const matches: MatchRecord[] = [];
 
-	for (const op of ops) {
+	for (const op of opsAsPlayer) {
 		seen.add(op.trxId);
 		matches.push({
 			trxId: op.trxId,
@@ -63,7 +77,7 @@ export async function getMatchHistory(username: string): Promise<MatchRecord[]> 
 		});
 	}
 
-	for (const op of asCounterparty) {
+	for (const op of opsAsCounterparty) {
 		if (seen.has(op.trxId)) continue;
 		seen.add(op.trxId);
 		matches.push({
