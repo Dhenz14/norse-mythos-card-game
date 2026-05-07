@@ -12,7 +12,7 @@ import {
   type PetData,
 } from '../types/PokerCombatTypes';
 import { DEFAULT_PORTRAIT } from '../utils/art/artMapping';
-import type { GameOverSubPhase, GameResult } from '../flow/round/types';
+import type { GameOverSubPhase } from '../flow/round/types';
 
 export type CampaignData = {
   readonly mission: CampaignMission;
@@ -191,32 +191,25 @@ export function getWinnerFromGameStatus(status: ChessGameStatus): 'player' | 'op
   return null;
 }
 
+/**
+ * Decide which sub-phase the game-over screen should open in. Frame-agnostic
+ * by design: it asks "did I win?" (boolean) rather than "what's the canonical
+ * winner?" — that distinction is the caller's job (see `deriveIWonForPhase`),
+ * and conflating it here would silently mis-attribute cinematics in P2P
+ * chess where canonical and viewer frames diverge for the second-mover.
+ */
 export function getInitialGameOverSubPhase(input: {
-  readonly winner: 'player' | 'opponent';
+  readonly iWon: boolean;
   readonly isCampaign: boolean;
   readonly campaignData: CampaignData;
 }): GameOverSubPhase {
-  const { winner, isCampaign, campaignData } = input;
+  const { iWon, isCampaign, campaignData } = input;
   if (!isCampaign || !campaignData) return 'result';
 
   const hasVictoryCinematic =
-    winner === 'player' && (campaignData.mission.victoryCinematic?.length ?? 0) > 0;
+    iWon && (campaignData.mission.victoryCinematic?.length ?? 0) > 0;
   const hasDefeatCinematic =
-    winner === 'opponent' && (campaignData.mission.defeatCinematic?.length ?? 0) > 0;
+    !iWon && (campaignData.mission.defeatCinematic?.length ?? 0) > 0;
 
   return hasVictoryCinematic || hasDefeatCinematic ? 'cinematic' : 'result';
-}
-
-export function buildGameResult(input: {
-  readonly winner: 'player' | 'opponent';
-  readonly turnCount: number;
-  readonly campaignData: CampaignData;
-}): GameResult {
-  return {
-    winner: input.winner,
-    playerTurnCount: input.turnCount,
-    victoryCinematic: input.campaignData?.mission.victoryCinematic ?? null,
-    defeatCinematic: input.campaignData?.mission.defeatCinematic ?? null,
-    storyBridge: input.campaignData?.mission.storyBridge ?? null,
-  };
 }

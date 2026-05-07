@@ -18,7 +18,7 @@
 */
 
 import type { ArmySelection, ChessPiece } from '../../types/ChessTypes';
-import type { CinematicIntro, CinematicScene } from '../../campaign/campaignTypes';
+import type { CinematicIntro } from '../../campaign/campaignTypes';
 
 /*
   Sub-routing inside the game_over state. Campaign missions can chain
@@ -70,19 +70,6 @@ export type CombatHandoff = {
 };
 
 /*
-  Game-over outcome. `winner: 'draw'` is intentionally NOT modelled at
-  the FSM level — the existing handleCombatEnd path treats draw as a
-  resume-chess case, never as a game ending.
-*/
-export type GameResult = {
-	readonly winner: 'player' | 'opponent';
-	readonly playerTurnCount: number;
-	readonly victoryCinematic: ReadonlyArray<CinematicScene> | null;
-	readonly defeatCinematic: ReadonlyArray<CinematicScene> | null;
-	readonly storyBridge: ReadonlyArray<CinematicScene> | null;
-};
-
-/*
   Plan for what happens AFTER the cinematic completes. Captured at
   cinematic *entry* time (when the coordinator has full campaign
   context) and stored in the cinematic state itself. CINEMATIC_DONE
@@ -121,7 +108,6 @@ export type RoundFlowState =
 	| { readonly tag: 'poker_combat'; readonly handoff: CombatHandoff }
 	| {
 			readonly tag: 'game_over';
-			readonly result: GameResult;
 			readonly sub: GameOverSubPhase;
 	  };
 
@@ -146,7 +132,6 @@ export type FlowEvent =
 	| { readonly type: 'COMBAT_RESOLVED' }
 	| {
 			readonly type: 'GAME_ENDED';
-			readonly result: GameResult;
 			readonly initialSub: GameOverSubPhase;
 	  }
 	| {

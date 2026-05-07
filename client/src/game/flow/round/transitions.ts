@@ -40,7 +40,6 @@ export function nextState(
 			if (event.type === 'GAME_ENDED') {
 				return {
 					tag: 'game_over',
-					result: event.result,
 					sub: event.initialSub,
 				};
 			}

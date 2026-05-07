@@ -17,7 +17,6 @@ export {
 	type MissionIntroData,
 	type CombatPieces,
 	type CombatHandoff,
-	type GameResult,
 	initialState,
 } from './round/types';
 

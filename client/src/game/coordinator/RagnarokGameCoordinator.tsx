@@ -5,7 +5,7 @@ import { ArmySelection as ArmySelectionType } from '../types/ChessTypes';
 import { useChessCombatAdapter } from '../hooks/useChessCombatAdapter';
 import { getDefaultArmySelection } from '../data/ChessPieceConfig';
 import { useCampaignStore } from '../campaign';
-import { deriveIntro, deriveOpponentArmyForMode, selectOnWinHandler, useMatchStore } from '../match';
+import { deriveIntro, deriveIWonForPhase, deriveOpponentArmyForMode, selectOnWinHandler, useMatchStore } from '../match';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { routes } from '../../lib/routes';
 import { usePokerCombatAdapter } from '../hooks/usePokerCombatAdapter';
@@ -29,7 +29,6 @@ import { resolveHeroPortrait } from '../utils/art/artMapping';
 import { useCampaignGameBootstrap } from './hooks/useCampaignGameBootstrap';
 import { useBossRuleEffects } from './hooks/useBossRuleEffects';
 import {
-  buildGameResult,
   buildPetDataFromChessPiece,
   getArmyForOwner,
   getChessRealmClass,
@@ -62,7 +61,6 @@ import '../components/campaign/cinematic-crawl.css';
 // (their only consumer). The coordinator no longer carries them.
 
 type RagnarokGameCoordinatorProps = {
-  onGameEnd?: (winner: 'player' | 'opponent') => void;
   initialArmy?: ArmySelectionType | null;
   /**
    * Opposing army announced by the remote peer in P2P mode. When provided,
@@ -73,7 +71,7 @@ type RagnarokGameCoordinatorProps = {
   opponentArmy?: ArmySelectionType | null;
 };
 
-const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGameEnd, initialArmy = null, opponentArmy: opponentArmyProp = null }) => {
+const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initialArmy = null, opponentArmy: opponentArmyProp = null }) => {
   // Route-level MatchSetup wrappers populate this before mounting the
   // coordinator. The coordinator renders phases; it no longer decides which
   // public mode created the match.
@@ -180,7 +178,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     // P2P wire prop wins for peer matches — opponent army comes off
     // the wire and is not derivable from ctx alone.
     if (opponentArmyProp) return opponentArmyProp;
-    // Fase 4 C8: derive from ctx via mode modules. ai → solo builder
+    // Fase 4 C8: derive from ctx via mode modules. ai → single builder
     // (default army), scripted → campaign builder (mission-specific).
     if (ctx) {
       const fromMode = deriveOpponentArmyForMode(ctx);
@@ -539,21 +537,29 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
     }
   }, [pokerSlotsSwapped, resolveCombat, clearPendingCombat, endCombat, playSoundEffect, updatePieceStamina, updatePieceHealth, incrementAllStamina, nextTurn, setPokerSlotsSwapped, dispatchFlow, flowState?.tag]);
 
+  // Chess-victory game-end pipeline. Fires when chess reaches checkmate /
+  // stalemate / king-down (boardState.gameStatus). The cards-victory
+  // pipeline (hero HP=0) lives in the next useEffect — they share
+  // `gameEndProcessedRef` for idempotency so only the first signal wins.
   useEffect(() => {
     const winner = getWinnerFromGameStatus(boardState.gameStatus);
     if (!winner) return;
     if (gameEndProcessedRef.current) return;
     gameEndProcessedRef.current = true;
 
-    // `winner` is the CANONICAL winning side ('player' = first-mover globally).
-    // Translate to viewer-relative for sound + campaign rewards: I won iff
-    // canonical winner matches my canonical side.
-    const iWon = winner === myCanonicalSide;
+    // Chess uses the CANONICAL frame ('player' = first-mover globally).
+    // deriveIWonForPhase encapsulates the comparison rule so it can't get
+    // mixed up with the viewer-relative cards path below.
+    const iWon = deriveIWonForPhase({
+      kind: 'chess',
+      canonicalWinner: winner,
+      myCanonicalSide,
+    });
     playSoundEffect(iWon ? 'victory' : 'defeat');
     gameOverTimerRef.current = setTimeout(() => {
       gameOverTimerRef.current = null;
       // Fase 4 C10 — mode-specific reward dispatch lives in match/modes/X/lifecycle.ts.
-      // selectOnWinHandler picks campaign / solo / p2p based on opponent.kind;
+      // selectOnWinHandler picks campaign / single / p2p based on opponent.kind;
       // each handler is responsible for its own gating (iWon check, idempotency,
       // store dispatch). Pre-Fase-4 inline campaign logic moved verbatim into
       // match/modes/campaign/lifecycle.ts.
@@ -561,18 +567,64 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
         selectOnWinHandler(ctx)({ iWon, turnCount });
       }
       const initialSub = getInitialGameOverSubPhase({
-        winner,
+        iWon,
         isCampaign,
         campaignData,
       });
-      const result = buildGameResult({
-        winner,
-        turnCount,
-        campaignData,
-      });
-      dispatchFlow({ type: 'GAME_ENDED', result, initialSub });
-      if (onGameEnd) {
-        onGameEnd(winner);
+      dispatchFlow({ type: 'GAME_ENDED', initialSub });
+    }, 1500);
+
+    return () => {
+      if (gameOverTimerRef.current) {
+        clearTimeout(gameOverTimerRef.current);
+        gameOverTimerRef.current = null;
+      }
+    };
+    // Deps intentionally minimal: only the trigger signal + `playSoundEffect`.
+    // `ctx`, `turnCount`, `myCanonicalSide`, etc. are read via stale closure
+    // on purpose — they capture the values at the moment game-over was
+    // detected, and gameEndProcessedRef ensures we only dispatch once anyway.
+    // Adding them to the deps array would let mid-flight re-renders cancel
+    // the 1.5s timer (cleanup runs on every re-render with new deps), losing
+    // the dispatch entirely. eslint-disable to make the intent explicit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boardState.gameStatus, playSoundEffect]);
+
+  // Cards-victory game-end pipeline. AttackResolutionService.ts:180 sets
+  // gameState.gamePhase='game_over' when a player's hero HP reaches 0.
+  // Without this effect, P2P cards-victory would bypass selectOnWinHandler
+  // entirely — onP2PMatchEnd (future ELO submit) and onCampaignMatchEnd
+  // (mission-complete reward) would never fire for non-chess wins. The
+  // chess-victory effect above covers the chess-mate path; both share
+  // gameEndProcessedRef so only the first signal triggers the lifecycle.
+  //
+  // Frame: `gameState.winner` is VIEWER-RELATIVE (post-flip on the joiner
+  // side via engine/wireHash.ts:flipGameState). On every peer 'player'
+  // means "I won" — distinct from the canonical chess frame above. The
+  // helper deriveIWonForPhase encodes this distinction.
+  //
+  // No dispatchFlow(GAME_ENDED) here: GameBoard.tsx reads
+  // gameState.gamePhase directly to render the cards game-over screen,
+  // so the flow state machine path is chess-only. Cards keeps its
+  // presentation in GameBoard, which sees the phase change immediately.
+  const cardsGamePhase = useGameStore(s => s.gameState?.gamePhase);
+  const cardsWinner = useGameStore(s => s.gameState?.winner);
+  useEffect(() => {
+    if (cardsGamePhase !== 'game_over') return;
+    if (!cardsWinner || cardsWinner === 'draw') return;
+    if (gameEndProcessedRef.current) return;
+    gameEndProcessedRef.current = true;
+
+    const iWon = deriveIWonForPhase({
+      kind: 'cards',
+      viewerWinner: cardsWinner,
+    });
+    playSoundEffect(iWon ? 'victory' : 'defeat');
+
+    gameOverTimerRef.current = setTimeout(() => {
+      gameOverTimerRef.current = null;
+      if (ctx) {
+        selectOnWinHandler(ctx)({ iWon, turnCount });
       }
     }, 1500);
 
@@ -582,7 +634,12 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ onGam
         gameOverTimerRef.current = null;
       }
     };
-  }, [boardState.gameStatus, onGameEnd, playSoundEffect]);
+    // Same minimal-deps discipline as the chess effect above: trigger
+    // signals only, lifecycle inputs (ctx, turnCount) read via stale
+    // closure intentionally so mid-flight re-renders cannot cancel the
+    // dispatch timer.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardsGamePhase, cardsWinner, playSoundEffect]);
 
   useEffect(() => {
     if (flowState?.tag === 'chess' && boardState.currentTurn === 'player' && boardState.gameStatus === 'playing') {
