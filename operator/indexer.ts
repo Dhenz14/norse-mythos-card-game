@@ -183,9 +183,28 @@ function applyTransferOp(payload: Record<string, unknown>): DerivedState | undef
 	return uid ? { cardUid: uid, cardId } : undefined;
 }
 
+function applyCampaignResult(payload: Record<string, unknown>): DerivedState | undefined {
+	const missionId = payload.m as string | undefined;
+	const difficulty = payload.d as string | undefined;
+	if (!missionId || !difficulty) return undefined;
+
+	const transcriptCID = payload.tc as string | undefined;
+	if (transcriptCID) {
+		transcriptCIDs.push(transcriptCID);
+	}
+
+	return {
+		campaignMissionId: missionId,
+		campaignDifficulty: difficulty,
+		campaignStatus: 'pending_verification',
+		transcriptCID,
+	};
+}
+
 function derivedStateFor(action: string, payload: Record<string, unknown>): DerivedState | undefined {
 	switch (action) {
 		case 'match_result': return applyMatchResult(payload);
+		case 'campaign_result': return applyCampaignResult(payload);
 		case 'mint_batch': return applyMintOp(payload);
 		case 'card_transfer': return applyTransferOp(payload);
 		default: return undefined;

@@ -18,6 +18,7 @@ import type {
 	AuthBody,
 	NFTEventType,
 	NFTEventCallback,
+	CampaignResultBroadcastPayload,
 } from './INFTBridge';
 
 const SUCCESS: BroadcastResult = { success: true };
@@ -112,6 +113,10 @@ export class LocalNFTBridge implements INFTBridge {
 	// ── Transactions (no-ops) ──
 
 	async claimReward(_rewardId: string): Promise<BroadcastResult> {
+		return SUCCESS;
+	}
+
+	async submitCampaignResult(_payload: CampaignResultBroadcastPayload): Promise<BroadcastResult> {
 		return SUCCESS;
 	}
 

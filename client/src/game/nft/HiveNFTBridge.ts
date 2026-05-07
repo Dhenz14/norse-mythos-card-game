@@ -25,6 +25,7 @@ import type {
 	AuthBody,
 	NFTEventType,
 	NFTEventCallback,
+	CampaignResultBroadcastPayload,
 } from './INFTBridge';
 
 export class HiveNFTBridge implements INFTBridge {
@@ -122,6 +123,10 @@ export class HiveNFTBridge implements INFTBridge {
 
 	async claimReward(rewardId: string): Promise<BroadcastResult> {
 		return hiveSync.claimReward(rewardId);
+	}
+
+	async submitCampaignResult(payload: CampaignResultBroadcastPayload): Promise<BroadcastResult> {
+		return hiveSync.submitCampaignResult(payload);
 	}
 
 	async transferCard(cardUid: string, toUser: string, memo?: string): Promise<BroadcastResult> {

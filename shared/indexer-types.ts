@@ -57,6 +57,10 @@ export interface DerivedState {
 	loser?: string;
 	supplyAfter?: number;
 	runeChange?: number;
+	campaignMissionId?: string;
+	campaignDifficulty?: string;
+	campaignStatus?: 'pending_verification' | 'verified' | 'rejected';
+	transcriptCID?: string;
 }
 
 // ============================================================

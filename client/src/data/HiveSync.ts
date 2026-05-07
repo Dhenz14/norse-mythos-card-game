@@ -40,6 +40,19 @@ export interface HiveBroadcastResult {
   error?: string;
 }
 
+export interface HiveCampaignResultPayload {
+  v: 1;
+  m: string;
+  d: "normal" | "heroic" | "mythic";
+  n: number;
+  sb: number;
+  rh: string;
+  tr: string;
+  tc?: string;
+  fh: string;
+  t: number;
+}
+
 export interface HiveSignatureResult {
   success: boolean;
   signature?: string;
@@ -658,6 +671,10 @@ export class HiveSync {
     return this.broadcastCustomJson("rp_reward_claim", {
       reward_id: rewardId,
     });
+  }
+
+  async submitCampaignResult(payload: HiveCampaignResultPayload): Promise<HiveBroadcastResult> {
+    return this.broadcastCustomJson("rp_campaign_result", { ...payload });
   }
 
   async signMessage(

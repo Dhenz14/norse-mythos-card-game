@@ -7,9 +7,8 @@
  */
 
 import type {
-	StateAdapter, CardAsset, GenesisRecord, EloRecord,
-	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
-	PackAsset, PackSupplyRecord, CompanionTransfer,
+	StateAdapter, CardAsset,
+	PackAsset, PackSupplyRecord,
 	MarketListing, MarketOffer, DuatClaimRecord,
 } from '../../../../shared/protocol-core/types';
 import {
@@ -23,6 +22,9 @@ import {
 	advancePlayerNonce,
 	getEloRating, putEloRating,
 	getRewardClaim, putRewardClaim,
+	advanceCampaignNonce as idbAdvanceCampaignNonce,
+	getCampaignResult as idbGetCampaignResult, putCampaignResult as idbPutCampaignResult,
+	getCampaignProgress as idbGetCampaignProgress, putCampaignProgress as idbPutCampaignProgress,
 	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
 	getPacksByOwner as idbGetPacksByOwner,
 	getPackSupply as idbGetPackSupply, putPackSupply as idbPutPackSupply,
@@ -163,6 +165,22 @@ export const clientStateAdapter: StateAdapter = {
 			claimKey: `${account}:${rewardId}`, account, rewardId,
 			claimedAt: Date.now(), blockNum, trxId: '',
 		});
+	},
+
+	async advanceCampaignNonce(account, nonce) {
+		return idbAdvanceCampaignNonce(account, nonce);
+	},
+	async getCampaignResult(resultKey) {
+		return await idbGetCampaignResult(resultKey) ?? null;
+	},
+	async putCampaignResult(result) {
+		await idbPutCampaignResult(result);
+	},
+	async getCampaignProgress(account, missionId) {
+		return await idbGetCampaignProgress(account, missionId) ?? null;
+	},
+	async putCampaignProgress(progress) {
+		await idbPutCampaignProgress(progress);
 	},
 
 	async isSlashed(account) { return isAccountSlashed(account); },

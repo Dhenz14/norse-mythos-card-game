@@ -300,7 +300,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
       active: canProceedToBattle,
     },
   ];
-  const soloActionLabel = canProceedToBattle
+  const singleActionLabel = canProceedToBattle
     ? 'Launch Battle'
     : isArmyComplete
       ? 'Complete Loadouts'
@@ -672,7 +672,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
           </div>
         )}
 
-        {/* Main action button - Matchmaking for multiplayer, Start Battle for solo */}
+        {/* Main action button - Matchmaking for multiplayer, Start Battle for single-player */}
         {isMultiplayer ? (
           <motion.button
             whileHover={matchmakingButtonReady ? { scale: 1.02 } : undefined}
@@ -691,7 +691,7 @@ const ArmySelection: React.FC<ArmySelectionProps> = ({ onComplete, onQuickStart,
             disabled={!canProceedToBattle}
             className="norse-battle-btn"
           >
-            {soloActionLabel}
+            {singleActionLabel}
           </motion.button>
         )}
       </div>

@@ -182,6 +182,21 @@ export const RewardClaimPayload = z.object({
 	reward_id: z.string().min(1),
 });
 
+// ── rp_campaign_result ──
+
+export const CampaignResultPayload = z.object({
+	v: z.literal(1).optional(),
+	m: z.string().min(1),
+	d: z.enum(['normal', 'heroic', 'mythic']),
+	n: PositiveInt,
+	sb: PositiveInt,
+	rh: z.string().min(1),
+	tr: z.string().min(1),
+	tc: z.string().min(1).optional(),
+	fh: z.string().min(1),
+	t: PositiveInt,
+});
+
 // ── rp_team_submit (informational only, no state change) ──
 
 export const TeamSubmitPayload = z.object({}).passthrough();
@@ -249,6 +264,7 @@ export const OP_SCHEMAS: Record<string, z.ZodType> = {
 	rp_level_up: LevelUpPayload,
 	rp_pack_open: PackOpenPayload,
 	rp_reward_claim: RewardClaimPayload,
+	rp_campaign_result: CampaignResultPayload,
 	rp_team_submit: TeamSubmitPayload,
 	// v1.1
 	rp_pack_mint: PackMintPayload,

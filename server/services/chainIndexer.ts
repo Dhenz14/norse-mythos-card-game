@@ -17,10 +17,10 @@ import {
 	type ProtocolCoreDeps,
 	type CardDataProvider,
 	type RewardProvider,
-	type SignatureVerifier,
 } from '../../shared/protocol-core';
 import { serverStateAdapter } from './serverStateAdapter';
 import { serverSignatureVerifier } from './hiveSignatureVerifier';
+import { campaignRegistryProvider } from '../../shared/campaign/registry';
 import {
 	registerAccount,
 	getBlockCursor, setBlockCursor,
@@ -162,6 +162,7 @@ function buildDeps(): ProtocolCoreDeps {
 		state: serverStateAdapter,
 		cards: serverCardData,
 		rewards: serverRewards,
+		campaigns: campaignRegistryProvider,
 		sigs: serverSignatureVerifier,
 	};
 }

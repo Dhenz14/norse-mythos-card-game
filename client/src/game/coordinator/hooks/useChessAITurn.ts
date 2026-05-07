@@ -2,7 +2,7 @@
  * useChessAITurn — wires the bot driver into the chess phase.
  *
  * The hook is the single place that decides "is the AI in charge of the
- * opponent right now?". The gate is `!matchSeed`: in solo mode no peer
+ * opponent right now?". The gate is `!matchSeed`: in single mode no peer
  * exists so the AI plays the opponent; in P2P the seed is set at
  * seed_reveal and remote envelopes drive the opponent instead — firing
  * the AI there would mutate state the remote never agreed to (the

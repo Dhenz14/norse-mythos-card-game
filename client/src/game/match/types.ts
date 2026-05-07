@@ -17,7 +17,7 @@
  *   1. Two PRIMITIVE axes: opponent (who plays the other side) and
  *      reward (what victory gives). Authority, army provider, intro,
  *      phase composition all DERIVE from these two — see derived.ts.
- *   2. Each public mode (solo / campaign / p2p) is a function-pure
+ *   2. Each public mode (single / campaign / p2p) is a function-pure
  *      resolver in match/modes/<mode>/resolver.ts. The resolver body
  *      IS the "intentionality" of the mode — read it to know what the
  *      mode means in this game.

@@ -25,7 +25,7 @@ belongs.
 │  coordinator/                 mounts phases, owns FSM            │
 │  ▲ reads MatchContext + dispatches FSM events                    │
 │  │                                                               │
-│  match/        modes/{solo,campaign,p2p}/{resolver,lifecycle}    │
+│  match/        modes/{single,campaign,p2p}/{resolver,lifecycle}  │
 │  ▲ pure functions: input → MatchContext, MatchContext → reward   │
 │  │                                                               │
 │  stores/                      Zustand slices (game, combat, peer)│
@@ -102,7 +102,7 @@ undefined` and gated every effect with ad-hoc guards (`p2pInitApplied`,
 sees a complete context at first render.
 
 **Real example.** `client/src/game/match/modes/p2p/MatchSetupP2P.tsx`.
-Solo + campaign analogs are scheduled for Fase 7 C15a.
+Single + campaign analogs are scheduled for Fase 7 C15a.
 
 ---
 
@@ -247,7 +247,7 @@ itself is mode-agnostic.
 ```ts
 export function selectOnWinHandler(ctx: MatchContext) {
 	switch (ctx.opponent.kind) {
-		case 'ai':       return (end) => onSoloMatchEnd(ctx, end);
+		case 'ai':       return (end) => onSingleMatchEnd(ctx, end);
 		case 'scripted': return (end) => onCampaignMatchEnd(ctx, end);
 		case 'peer':     return (end) => onP2PMatchEnd(ctx, end);
 	}
@@ -436,11 +436,11 @@ hook.
 **What it was.** A short-lived hook that synthesized a `MatchContext`
 from legacy store shapes (campaign + peer) during the transition to
 mode-specific Setup wrappers. It existed to keep the coordinator
-working before `<MatchSetupP2P/>` and its solo / campaign analogs
+working before `<MatchSetupP2P/>` and its single / campaign analogs
 landed.
 
 **Status.** Scheduled for deletion in Phase 7 C15b once
-`<MatchSetupSolo/>` and `<MatchSetupCampaign/>` ship.
+`<MatchSetupSingle/>` and `<MatchSetupCampaign/>` ship.
 
 **Why the term is retired.** "Bridge" overlaps semantically with
 **Adapter** — both translate between shapes — but signals nothing

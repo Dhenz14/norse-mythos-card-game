@@ -7,8 +7,8 @@
  */
 
 import type {
-	StateAdapter, CardAsset, GenesisRecord, EloRecord,
-	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
+	StateAdapter, CardAsset, GenesisRecord,
+	MatchAnchorRecord, PackCommitRecord, SupplyRecord,
 } from '../../shared/protocol-core/types';
 import {
 	getCard as csGetCard, putCard as csPutCard, deleteCard as csDeleteCard,
@@ -21,6 +21,9 @@ import {
 	getMatchAnchor as csGetMatchAnchor, setMatchAnchor as csSetMatchAnchor,
 	getPackCommit as csGetPackCommit, setPackCommit as csSetPackCommit,
 	hasRewardClaim as csHasRewardClaim, addRewardClaim as csAddRewardClaim,
+	advanceCampaignNonce as csAdvanceCampaignNonce,
+	getCampaignResult as csGetCampaignResult, setCampaignResult as csSetCampaignResult,
+	getCampaignProgress as csGetCampaignProgress, setCampaignProgress as csSetCampaignProgress,
 	isSlashed as csIsSlashed, addSlashed as csAddSlashed,
 	getQueueEntry as csGetQueueEntry, setQueueEntry as csSetQueueEntry,
 	deleteQueueEntryFn as csDeleteQueueEntry,
@@ -29,7 +32,6 @@ import {
 	type SupplyCounterRecord,
 	type MatchAnchorStateRecord,
 	type PackCommitStateRecord,
-	type TokenBalanceRecord,
 } from './chainState';
 
 // ============================================================
@@ -167,6 +169,14 @@ export const serverStateAdapter: StateAdapter = {
 
 	async hasRewardClaim(account, rewardId) { return csHasRewardClaim(`${account}:${rewardId}`); },
 	async putRewardClaim(account, rewardId) { csAddRewardClaim(`${account}:${rewardId}`); },
+
+	async advanceCampaignNonce(account, nonce) { return csAdvanceCampaignNonce(account, nonce); },
+	async getCampaignResult(resultKey) { return csGetCampaignResult(resultKey) ?? null; },
+	async putCampaignResult(result) { csSetCampaignResult(result); },
+	async getCampaignProgress(account, missionId) {
+		return csGetCampaignProgress(account, missionId) ?? null;
+	},
+	async putCampaignProgress(progress) { csSetCampaignProgress(progress); },
 
 	async isSlashed(account) { return csIsSlashed(account); },
 	async slash(account) { csAddSlashed(account); },

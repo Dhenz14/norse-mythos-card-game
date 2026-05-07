@@ -12,6 +12,10 @@
 
 import fs from 'fs';
 import path from 'path';
+import type {
+	CampaignProgressRecord,
+	CampaignResultRecord,
+} from '../../shared/protocol-core/types';
 
 const DEFAULT_ELO_RATING = 1000;
 
@@ -121,6 +125,9 @@ interface SerializedState {
 	matchAnchors?: [string, MatchAnchorStateRecord][];
 	packCommits?: [string, PackCommitStateRecord][];
 	rewardClaims?: string[];
+	campaignNonces?: [string, number][];
+	campaignResults?: [string, CampaignResultRecord][];
+	campaignProgress?: [string, CampaignProgressRecord][];
 	slashedAccounts?: string[];
 }
 
@@ -144,6 +151,9 @@ const tokenBalances = new Map<string, TokenBalanceRecord>();
 const matchAnchors = new Map<string, MatchAnchorStateRecord>();
 const packCommits = new Map<string, PackCommitStateRecord>();
 const rewardClaims = new Set<string>();
+const campaignNonces = new Map<string, number>();
+const campaignResults = new Map<string, CampaignResultRecord>();
+const campaignProgress = new Map<string, CampaignProgressRecord>();
 const slashedAccounts = new Set<string>();
 const queueEntries = new Map<string, QueueStateRecord>();
 
@@ -235,6 +245,15 @@ export function loadState(): void {
 		rewardClaims.clear();
 		for (const c of data.rewardClaims ?? []) rewardClaims.add(c);
 
+		campaignNonces.clear();
+		for (const [k, v] of data.campaignNonces ?? []) campaignNonces.set(k, v);
+
+		campaignResults.clear();
+		for (const [k, v] of data.campaignResults ?? []) campaignResults.set(k, v);
+
+		campaignProgress.clear();
+		for (const [k, v] of data.campaignProgress ?? []) campaignProgress.set(k, v);
+
 		slashedAccounts.clear();
 		for (const a of data.slashedAccounts ?? []) slashedAccounts.add(a);
 
@@ -264,6 +283,9 @@ export function saveState(): void {
 			matchAnchors: [...matchAnchors.entries()],
 			packCommits: [...packCommits.entries()],
 			rewardClaims: [...rewardClaims],
+			campaignNonces: [...campaignNonces.entries()],
+			campaignResults: [...campaignResults.entries()],
+			campaignProgress: [...campaignProgress.entries()],
 			slashedAccounts: [...slashedAccounts],
 		};
 		const tmpFile = STATE_FILE + '.tmp';
@@ -518,6 +540,32 @@ export function getUnrevealedCommitsBefore(deadlineBlock: number): PackCommitSta
 
 export function hasRewardClaim(key: string): boolean { return rewardClaims.has(key); }
 export function addRewardClaim(key: string): void { rewardClaims.add(key); markDirty(); }
+
+export function advanceCampaignNonce(account: string, nonce: number): boolean {
+	const current = campaignNonces.get(account) ?? 0;
+	if (nonce <= current) return false;
+	campaignNonces.set(account, nonce);
+	markDirty();
+	return true;
+}
+
+export function getCampaignResult(resultKey: string): CampaignResultRecord | undefined {
+	return campaignResults.get(resultKey);
+}
+
+export function setCampaignResult(result: CampaignResultRecord): void {
+	campaignResults.set(result.resultKey, result);
+	markDirty();
+}
+
+export function getCampaignProgress(account: string, missionId: string): CampaignProgressRecord | undefined {
+	return campaignProgress.get(`${account}:${missionId}`);
+}
+
+export function setCampaignProgress(progress: CampaignProgressRecord): void {
+	campaignProgress.set(`${progress.account}:${progress.missionId}`, progress);
+	markDirty();
+}
 
 export function isSlashed(account: string): boolean { return slashedAccounts.has(account); }
 export function addSlashed(account: string): void { slashedAccounts.add(account); markDirty(); }

@@ -3,7 +3,7 @@
    aplicado vía Tailwind `bg-(image:--bg-vault-nav)` en CollectionPage.tsx.
    Los siguientes paneles, inputs y micro-componentes que tenían equivalente
    directo en Tailwind (vault-panel, vault-input, supply-meter, completion-bar,
-   rarity-stat-card) ahora viven inline en el JSX. Solo permanece aquí lo que
+   rarity-stat-card) ahora viven inline en el JSX. Unicamente permanece aquí lo que
    requiere pseudo-elementos, animaciones, multi-shadow, o naming dinámico. */
 
 /* ========== Mastery Badges (tier-driven, naming dinámico) ========== */
@@ -183,7 +183,7 @@
 .supply-meter-fill-epic { background: linear-gradient(90deg, var(--rarity-epic-deep), var(--rarity-epic-color)); }
 .supply-meter-fill-mythic { background: linear-gradient(90deg, var(--danger-500), var(--rarity-epic-color), var(--info-400)); }
 
-/* ========== Card Frame Glows (solo mythic — multi-shadow apilados) ========== */
+/* ========== Card Frame Glows (mythic only — multi-shadow apilados) ========== */
 .card-frame {
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

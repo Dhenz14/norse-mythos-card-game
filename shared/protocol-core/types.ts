@@ -35,7 +35,7 @@ export const PACK_SIZES: Record<string, number> = {
 };
 
 // ============================================================
-// Canonical Op Actions (19 total — v1.0 base + v1.1 extensions)
+// Canonical Op Actions (v1.0 base + v1.1/v1.2 extensions)
 // ============================================================
 
 export type CanonicalAction =
@@ -52,6 +52,7 @@ export type CanonicalAction =
 	| 'queue_leave'
 	| 'match_anchor'
 	| 'match_result'
+	| 'campaign_result'
 	| 'slash_evidence'
 	// v1.1: Pack NFTs
 	| 'pack_mint'
@@ -92,7 +93,7 @@ export const ACTIVE_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
 ]);
 
 export const POSTING_AUTH_OPS: ReadonlySet<CanonicalAction> = new Set([
-	'queue_join', 'queue_leave', 'match_anchor', 'match_result',
+	'queue_join', 'queue_leave', 'match_anchor', 'match_result', 'campaign_result',
 	'pack_commit', 'pack_reveal', 'reward_claim', 'level_up',
 	// Marketplace: listing/offers use posting key
 	'market_list', 'market_unlist', 'market_offer', 'market_reject',
@@ -257,6 +258,63 @@ export interface SupplyRecord {
 }
 
 // ============================================================
+// Campaign Progress
+// ============================================================
+
+export type CampaignDifficulty = 'normal' | 'heroic' | 'mythic';
+
+export type CampaignResultStatus =
+	| 'pending_verification'
+	| 'verified'
+	| 'rejected';
+
+export interface CampaignRegistryMission {
+	id: string;
+	chapterId: string;
+	prerequisiteIds: string[];
+	allowedDifficulties: CampaignDifficulty[];
+	starThresholds: { threeStar: number; twoStar: number };
+}
+
+export interface CampaignRegistryProvider {
+	getRegistryHash(): string;
+	getMission(missionId: string): CampaignRegistryMission | null;
+}
+
+export interface CampaignResultRecord {
+	resultKey: string;
+	account: string;
+	missionId: string;
+	difficulty: CampaignDifficulty;
+	nonce: number;
+	startBlock: number;
+	startBlockId: string;
+	rulesetHash: string;
+	seed: string;
+	turnCount: number;
+	stars: number;
+	transcriptRoot: string;
+	transcriptCid?: string;
+	finalStateHash: string;
+	status: CampaignResultStatus;
+	rejectionReason?: string;
+	trxId: string;
+	blockNum: number;
+	timestamp: number;
+}
+
+export interface CampaignProgressRecord {
+	account: string;
+	missionId: string;
+	bestDifficulty: CampaignDifficulty;
+	bestTurns: number;
+	bestStars: number;
+	completedAtBlock: number;
+	completedTrxId: string;
+	status: 'verified';
+}
+
+// ============================================================
 // State Adapter — storage abstraction
 //
 // The protocol core calls these. Client implements with IndexedDB,
@@ -301,6 +359,13 @@ export interface StateAdapter {
 	// Reward claims
 	hasRewardClaim(account: string, rewardId: string): Promise<boolean>;
 	putRewardClaim(account: string, rewardId: string, blockNum: number): Promise<void>;
+
+	// Campaign progress
+	advanceCampaignNonce(account: string, nonce: number): Promise<boolean>;
+	getCampaignResult(resultKey: string): Promise<CampaignResultRecord | null>;
+	putCampaignResult(result: CampaignResultRecord): Promise<void>;
+	getCampaignProgress(account: string, missionId: string): Promise<CampaignProgressRecord | null>;
+	putCampaignProgress(progress: CampaignProgressRecord): Promise<void>;
 
 	// Slash state
 	isSlashed(account: string): Promise<boolean>;

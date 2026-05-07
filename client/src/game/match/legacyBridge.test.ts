@@ -11,7 +11,7 @@ const baseInputs: LegacySynthInputs = {
 };
 
 describe('synthesizeLegacyMatchContext', () => {
-	it('returns a solo (ai opponent) ctx when no campaign mission and not P2P', () => {
+	it('returns a single (ai opponent) ctx when no campaign mission and not P2P', () => {
 		const ctx = synthesizeLegacyMatchContext(baseInputs);
 		if (!ctx) throw new Error('expected ctx');
 		expect(ctx.opponent.kind).toBe('ai');

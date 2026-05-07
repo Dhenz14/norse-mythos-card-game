@@ -6,7 +6,7 @@
  * rules (replayRules.ts), and writes results here. All game state is
  * derived from the chain — no server, no trust assumptions.
  *
- * Object stores (13 total):
+ * Object stores:
  *   cards            keyed by uid              — HiveCardAsset NFT records
  *   matches          keyed by matchId          — HiveMatchResult rows (indexed by participant)
  *   sync_cursors     keyed by account          — replay progress per account (lastHistoryIndex, lastSyncedAt)
@@ -20,6 +20,9 @@
  *   elo_ratings      keyed by account          — chain-derived ELO (K=32), wins, losses
  *   pending_slashes  keyed by evidenceKey      — queued slash evidence awaiting RPC verification
  *   reward_claims    keyed by claimKey          — tracks which milestone rewards each account claimed
+ *   campaign_nonces  keyed by account           — monotonic anti-replay nonces for campaign_result
+ *   campaign_results keyed by resultKey         — submitted campaign clears pending replay verification
+ *   campaign_progress keyed by progressKey      — verified campaign mission progress
  *
  * All writes are idempotent — safe to re-apply the same op.
  * DB version 6 — upgrade handler creates any missing stores.
@@ -28,9 +31,13 @@
 import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schemas/HiveTypes';
 import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 import { DEFAULT_ELO_RATING } from './hiveConfig';
+import type {
+	CampaignProgressRecord,
+	CampaignResultRecord,
+} from '../../../../shared/protocol-core/types';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 
 let _db: IDBDatabase | null = null;
 
@@ -114,6 +121,20 @@ function openDB(): Promise<IDBDatabase> {
 
 			if (!db.objectStoreNames.contains('reward_claims')) {
 				db.createObjectStore('reward_claims', { keyPath: 'claimKey' });
+			}
+
+			if (!db.objectStoreNames.contains('campaign_nonces')) {
+				db.createObjectStore('campaign_nonces', { keyPath: 'account' });
+			}
+			if (!db.objectStoreNames.contains('campaign_results')) {
+				const results = db.createObjectStore('campaign_results', { keyPath: 'resultKey' });
+				results.createIndex('by_account', 'account', { unique: false });
+				results.createIndex('by_mission', 'missionId', { unique: false });
+			}
+			if (!db.objectStoreNames.contains('campaign_progress')) {
+				const progress = db.createObjectStore('campaign_progress', { keyPath: 'progressKey' });
+				progress.createIndex('by_account', 'account', { unique: false });
+				progress.createIndex('by_mission', 'missionId', { unique: false });
 			}
 
 			// v1.1: Pack NFTs
@@ -545,6 +566,61 @@ export const getRewardClaim = (account: string, rewardId: string): Promise<Rewar
 
 export const putRewardClaim = (claim: RewardClaim): Promise<void> =>
 	idbPut('reward_claims', claim);
+
+// ---------------------------------------------------------------------------
+// Campaign Result API — pending replay verification until verifier ships
+// ---------------------------------------------------------------------------
+
+export interface CampaignNonce {
+	account: string;
+	highestCampaignNonce: number;
+}
+
+interface StoredCampaignProgress extends CampaignProgressRecord {
+	progressKey: string;
+}
+
+export async function advanceCampaignNonce(account: string, nonce: number): Promise<boolean> {
+	const db = await openDB();
+	return new Promise((resolve, reject) => {
+		let accepted = false;
+		const tx = db.transaction('campaign_nonces', 'readwrite');
+		const store = tx.objectStore('campaign_nonces');
+		const getReq = store.get(account);
+		getReq.onsuccess = () => {
+			const current = (getReq.result as CampaignNonce | undefined) ?? {
+				account,
+				highestCampaignNonce: 0,
+			};
+			if (nonce <= current.highestCampaignNonce) {
+				return;
+			}
+			accepted = true;
+			store.put({ account, highestCampaignNonce: nonce });
+		};
+		getReq.onerror = () => reject(getReq.error);
+		tx.oncomplete = () => resolve(accepted);
+		tx.onerror = () => reject(tx.error);
+	});
+}
+
+export const getCampaignResult = (resultKey: string): Promise<CampaignResultRecord | undefined> =>
+	idbGet<CampaignResultRecord>('campaign_results', resultKey);
+
+export const putCampaignResult = (result: CampaignResultRecord): Promise<void> =>
+	idbPut('campaign_results', result);
+
+export const getCampaignProgress = (
+	account: string,
+	missionId: string,
+): Promise<CampaignProgressRecord | undefined> =>
+	idbGet<StoredCampaignProgress>('campaign_progress', `${account}:${missionId}`);
+
+export const putCampaignProgress = (progress: CampaignProgressRecord): Promise<void> =>
+	idbPut('campaign_progress', {
+		...progress,
+		progressKey: `${progress.account}:${progress.missionId}`,
+	});
 
 // ---------------------------------------------------------------------------
 // v1.1: Pack NFTs

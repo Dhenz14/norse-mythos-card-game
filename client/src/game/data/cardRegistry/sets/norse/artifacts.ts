@@ -632,7 +632,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		artifactEffect: {
 			type: 'sumarbrander',
 			passiveMinionAttackBuff: 1,
-			soloAttackDoubleDamage: true
+			singleAttackDoubleDamage: true
 		},
 		categories: ['norse_artifact']
 	},

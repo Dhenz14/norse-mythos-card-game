@@ -76,6 +76,44 @@ export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | nu
 	}
 }
 
+// ── Did-I-win? frame-aware derivation ─────────────────────────────────────
+
+/**
+ * Discriminated input to `deriveIWonForPhase`. The `kind` tag forces the
+ * caller to declare which engine emitted the `winner` field, because
+ * cards and chess use DIFFERENT coordinate systems for their winner:
+ *
+ *   - Cards: VIEWER-RELATIVE. `gameState.winner` is post-flip on the
+ *     joiner side (see `engine/wireHash.ts:flipGameState`); on every
+ *     peer `'player'` means "I won". The frame is local — comparing
+ *     across peers requires re-flipping.
+ *
+ *   - Chess: CANONICAL. The chess winner is the global first-mover or
+ *     second-mover, identical on both peers. Translating to "I won"
+ *     requires matching against `myCanonicalSide`.
+ *
+ * Mixing these frames silently mis-attributes victory ~50% of the time
+ * in P2P (the host/joiner pair flips on cards but not on chess). This
+ * helper is the single source of truth for the comparison rule.
+ */
+export type WinnerSignal =
+	| { kind: 'cards'; viewerWinner: 'player' | 'opponent' }
+	| { kind: 'chess'; canonicalWinner: 'player' | 'opponent'; myCanonicalSide: 'player' | 'opponent' };
+
+/**
+ * Derive whether the local player won, given a winner emitted by either
+ * the cards engine (viewer-relative) or the chess engine (canonical).
+ * Pure: same input → same output, no store reads.
+ */
+export function deriveIWonForPhase(signal: WinnerSignal): boolean {
+	switch (signal.kind) {
+		case 'cards':
+			return signal.viewerWinner === 'player';
+		case 'chess':
+			return signal.canonicalWinner === signal.myCanonicalSide;
+	}
+}
+
 // ── Intro spec ────────────────────────────────────────────────────────────
 
 /**
@@ -83,7 +121,7 @@ export function deriveOpponentArmyForMode(ctx: MatchContext): ArmySelection | nu
  *
  * Today the only non-trivial intro is the campaign chapter cinematic
  * that plays the FIRST time the player visits a chapter. Other modes
- * (solo, P2P) skip straight into match setup. Future: VS screen for
+ * (single, P2P) skip straight into match setup. Future: VS screen for
  * P2P, mission-brief for tutorials, etc. — slot into this union.
  */
 export type IntroSpec =

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_CHAPTERS } from '../campaign';
-import { deriveAuthority, deriveIntro, deriveOpponentArmyForMode } from './derived';
+import { deriveAuthority, deriveIntro, deriveIWonForPhase, deriveOpponentArmyForMode } from './derived';
 import type { MatchContext } from './types';
 
 const KNOWN_CHAPTER = ALL_CHAPTERS[0];
@@ -60,7 +60,7 @@ describe('deriveAuthority', () => {
 });
 
 describe('deriveOpponentArmyForMode', () => {
-	it('returns a non-null ArmySelection for ai opponent (delegates to solo builder)', () => {
+	it('returns a non-null ArmySelection for ai opponent (delegates to single builder)', () => {
 		const army = deriveOpponentArmyForMode(aiCtx);
 		expect(army).not.toBeNull();
 	});
@@ -77,7 +77,7 @@ describe('deriveOpponentArmyForMode', () => {
 });
 
 describe('deriveIntro', () => {
-	it('returns none for ai (solo) opponent regardless of seenChapterIds', () => {
+	it('returns none for ai (single) opponent regardless of seenChapterIds', () => {
 		expect(deriveIntro(aiCtx, [])).toEqual({ kind: 'none' });
 		expect(deriveIntro(aiCtx, [KNOWN_CHAPTER.id])).toEqual({ kind: 'none' });
 	});
@@ -120,5 +120,51 @@ describe('deriveIntro', () => {
 			},
 		};
 		expect(deriveIntro(ctxWithoutCinematic, [])).toEqual({ kind: 'none' });
+	});
+});
+
+describe('deriveIWonForPhase', () => {
+	describe('cards (viewer-relative frame)', () => {
+		it('returns true when viewerWinner is "player" — local peer always sees themselves as player', () => {
+			expect(deriveIWonForPhase({ kind: 'cards', viewerWinner: 'player' })).toBe(true);
+		});
+
+		it('returns false when viewerWinner is "opponent" — the other side won from local POV', () => {
+			expect(deriveIWonForPhase({ kind: 'cards', viewerWinner: 'opponent' })).toBe(false);
+		});
+	});
+
+	describe('chess (canonical frame)', () => {
+		it('returns true when canonicalWinner matches myCanonicalSide (first-mover, I am first-mover)', () => {
+			expect(deriveIWonForPhase({
+				kind: 'chess',
+				canonicalWinner: 'player',
+				myCanonicalSide: 'player',
+			})).toBe(true);
+		});
+
+		it('returns true when canonicalWinner matches myCanonicalSide (second-mover, I am second-mover)', () => {
+			expect(deriveIWonForPhase({
+				kind: 'chess',
+				canonicalWinner: 'opponent',
+				myCanonicalSide: 'opponent',
+			})).toBe(true);
+		});
+
+		it('returns false when canonicalWinner differs from myCanonicalSide (first-mover won, I am second-mover)', () => {
+			expect(deriveIWonForPhase({
+				kind: 'chess',
+				canonicalWinner: 'player',
+				myCanonicalSide: 'opponent',
+			})).toBe(false);
+		});
+
+		it('returns false when canonicalWinner differs from myCanonicalSide (second-mover won, I am first-mover)', () => {
+			expect(deriveIWonForPhase({
+				kind: 'chess',
+				canonicalWinner: 'opponent',
+				myCanonicalSide: 'player',
+			})).toBe(false);
+		});
 	});
 });

@@ -94,13 +94,23 @@ export interface ChessPrevHashes {
  * Returns a branded value so the consumers (`sendChessMove`,
  * `sendChessAttack`) cannot accept literally-constructed hashes.
  *
- * TODO(OPEN-8): `peerStore.isHost` is the WS-host axis, which diverges
- * from `isCardsAuthority` ~50% of the time in the symmetric setup. The
- * cards hash perspective should follow the cards-authority axis. Tracked
- * separately because it requires resolving the cards-authority canon
- * everywhere; not part of TD-27c-chess fix.
+ * Why `peerStore.isHost` here:
+ *   `isCardsAuthority` selects the canonical perspective for the cards
+ *   hash. Today cards is host-authoritative (see PVP_WIRE_PROTOCOL §5
+ *   "Cards Phase — Host-Authoritative"), so `isCardsAuthority === isHost`
+ *   is a literal alias — see `useWireSync.ts:70`. The host stores state
+ *   from its own perspective; the joiner flips into host perspective
+ *   before hashing so the bytes match (`computeCardsPrevStateHash`).
+ *
+ * TODO(OPEN-8): when cards migrates to symmetric (chess-style), the cards
+ * hash perspective will be derived from `Authority.myRole` (first-mover
+ * is the canonical owner), NOT from the WS-transport `isHost` axis. The
+ * three sites that today read `peerStore.isHost` as a cards-authority
+ * proxy must move together: `useWireSync.ts:70`, this function, and
+ * `BlockchainSubscriber.ts:319` (proposer gate). Tracked in OPEN-8.
  */
 export function captureChessPrevHashes(): ChessPrevHashes {
+	// Today: cards-authority === ws-host. See JSDoc above.
 	const isCardsAuthority = usePeerStore.getState().isHost;
 	const cards = computeCardsPrevStateHash(
 		useGameStore.getState().gameState,

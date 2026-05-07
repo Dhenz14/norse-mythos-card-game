@@ -20,8 +20,8 @@ export type {
 
 export { useMatchStore } from './store';
 
-export { deriveAuthority, deriveOpponentArmyForMode, deriveIntro } from './derived';
-export type { Authority, IntroSpec } from './derived';
+export { deriveAuthority, deriveOpponentArmyForMode, deriveIntro, deriveIWonForPhase } from './derived';
+export type { Authority, IntroSpec, WinnerSignal } from './derived';
 
 export { selectOnWinHandler } from './onWinDispatch';
 export type { MatchEndContext } from './onWinDispatch';

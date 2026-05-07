@@ -1,6 +1,6 @@
 /**
  * Legacy bridge HOOK — drives useMatchStore from legacy stores for
- * solo + campaign flows.
+ * single + campaign flows.
  *
  * Pure projection logic lives in `legacySynth.ts` so tests can run
  * without pulling in client-only modules (gameStore touches localStorage
@@ -13,7 +13,7 @@
  *   ctx the wrapper just installed (synth returns null for P2P; old
  *   code would treat null as "clear the store").
  *
- * THIS FILE IS THROWAWAY. Fase 7 deletes it once solo / campaign flows
+ * THIS FILE IS THROWAWAY. Fase 7 deletes it once single / campaign flows
  * shift to a menu-driven resolver path; from there, the coordinator
  * never needs to derive ctx from legacy stores.
  */

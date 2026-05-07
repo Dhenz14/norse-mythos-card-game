@@ -32,6 +32,19 @@ export interface AuthBody {
 	[key: string]: unknown;
 }
 
+export interface CampaignResultBroadcastPayload {
+	v: 1;
+	m: string;
+	d: 'normal' | 'heroic' | 'mythic';
+	n: number;
+	sb: number;
+	rh: string;
+	tr: string;
+	tc?: string;
+	fh: string;
+	t: number;
+}
+
 export type NFTEventType =
 	| 'card:transferred'
 	| 'token:updated'
@@ -83,6 +96,7 @@ export interface INFTBridge {
 
 	// ── Transactions ──
 	claimReward(rewardId: string): Promise<BroadcastResult>;
+	submitCampaignResult(payload: CampaignResultBroadcastPayload): Promise<BroadcastResult>;
 	transferCard(cardUid: string, toUser: string, memo?: string): Promise<BroadcastResult>;
 	transferCards(cardUids: string[], toUser: string, memo?: string): Promise<BroadcastResult>;
 	openPack(packType: string, quantity?: number): Promise<BroadcastResult>;

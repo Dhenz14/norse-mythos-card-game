@@ -19,6 +19,7 @@ import {
 	type ReplayContext,
 	type ProtocolCoreDeps,
 } from '../../../../shared/protocol-core';
+import { campaignRegistryProvider } from '../../../../shared/campaign/registry';
 import { clientStateAdapter } from './clientStateAdapter';
 import { clientSignatureVerifier } from './clientSignatureVerifier';
 import { hiveEvents } from '../HiveEvents';
@@ -140,6 +141,7 @@ function buildDeps(): ProtocolCoreDeps {
 		state: clientStateAdapter,
 		cards: getCardDataProviderAdapter(),
 		rewards: rewardProviderAdapter,
+		campaigns: campaignRegistryProvider,
 		sigs: clientSignatureVerifier,
 	};
 }
