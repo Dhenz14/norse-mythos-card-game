@@ -1283,11 +1283,7 @@ export function useWireSync() {
 						send({ type: 'result_reject', reason: 'no_hive_account' });
 					} else {
 						// Strong divergence signal — proposer claims one outcome,
-						// our local game state disagrees. R4 step 2 (slash policy)
-						// is gated on telemetry from this event: both sides log
-						// their full context (BlockchainSubscriber.ts mirrors the
-						// proposer side under 'result_rejection_received') so a
-						// future audit can tell legitimate disagreement from cheat.
+						// our local game state disagrees. Persist context for audit.
 						recordSessionEvent('result_rejected', {
 							reason: 'winner_mismatch',
 							proposalId: data.proposalId,

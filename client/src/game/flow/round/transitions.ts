@@ -53,10 +53,8 @@ export function nextState(
 
 		case 'poker_combat': {
 			if (event.type === 'COMBAT_RESOLVED') return { tag: 'chess' };
-			// Cards-victory match-end (hero HP=0): the cards engine declares
-			// game-over from inside the duel. Skip the chess return-trip and
-			// jump straight to the game_over phase so GameOverPhase can play
-			// cinematic / bridge / star rating just like the chess-victory path.
+			// Cards-victory match-end: the cards engine declares game-over
+			// from inside the duel, so skip the chess return-trip.
 			if (event.type === 'GAME_ENDED') return { tag: 'game_over', sub: event.initialSub };
 			return state;
 		}

@@ -455,10 +455,9 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
 
   const handleCombatEnd = useCallback((winner: 'player' | 'opponent' | 'draw') => {
     try {
-      // Match-end claimed: cards-victory effect (or chess-victory) already
-      // owns the FSM transition into game_over. Clean up poker state and
-      // bail out — dispatching COMBAT_RESOLVED here would race the pending
-      // GAME_ENDED dispatch and flash chess in limbo while the modal closes.
+      // Match-end already claimed by a victory effect that owns the FSM
+      // transition into game_over. Dispatching COMBAT_RESOLVED here would
+      // race the pending GAME_ENDED and flash chess in limbo.
       if (gameEndProcessedRef.current) {
         clearPendingCombat();
         setPokerSlotsSwapped(false);
@@ -601,28 +600,12 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardState.gameStatus, playSoundEffect]);
 
-  // Cards-victory game-end pipeline. AttackResolutionService.ts:180 sets
-  // gameState.gamePhase='game_over' when a player's hero HP reaches 0.
-  // Without this effect, P2P cards-victory would bypass selectOnWinHandler
-  // entirely — onP2PMatchEnd (future ELO submit) and onCampaignMatchEnd
-  // (mission-complete reward) would never fire for non-chess wins. The
-  // chess-victory effect above covers the chess-mate path; both share
-  // gameEndProcessedRef so only the first signal triggers the lifecycle.
-  //
-  // Frame: `gameState.winner` is VIEWER-RELATIVE (post-flip on the joiner
-  // side via engine/wireHash.ts:flipGameState). On every peer 'player'
-  // means "I won" — distinct from the canonical chess frame above. The
-  // helper deriveIWonForPhase encodes this distinction.
-  //
-  // GameOverScreen modal in RagnarokCombatArena renders the immediate
-  // "you won/lost" feedback the moment gamePhase flips. The 1.5s timeout
-  // below holds that modal on screen, then dispatches GAME_ENDED so the
-  // FSM transitions out of 'poker_combat' → PokerCombatPhase unmounts
-  // (taking the modal with it) and GameOverPhase takes over with the
-  // campaign cinematic / story-bridge / star rating it owns. Without
-  // the dispatch, clicking Play Again would route through COMBAT_RESOLVED
-  // back into chess in a limbo state where chess.gameStatus is still
-  // 'playing' but cards declared game-over.
+  // Cards-victory match-end (hero HP=0 in cards combat). The 1.5s timeout
+  // holds the GameOverScreen modal on screen before dispatching GAME_ENDED;
+  // without it the FSM stays in 'poker_combat' and routes back to chess
+  // in a limbo state (chess.gameStatus='playing' while cards declared
+  // game-over). Shares gameEndProcessedRef with the chess-victory effect
+  // above so only the first signal owns the lifecycle dispatch.
   const cardsGamePhase = useGameStore(s => s.gameState?.gamePhase);
   const cardsWinner = useGameStore(s => s.gameState?.winner);
   useEffect(() => {

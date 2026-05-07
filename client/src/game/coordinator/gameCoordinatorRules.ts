@@ -192,11 +192,9 @@ export function getWinnerFromGameStatus(status: ChessGameStatus): 'player' | 'op
 }
 
 /**
- * Decide which sub-phase the game-over screen should open in. Frame-agnostic
- * by design: it asks "did I win?" (boolean) rather than "what's the canonical
- * winner?" — that distinction is the caller's job (see `deriveIWonForPhase`),
- * and conflating it here would silently mis-attribute cinematics in P2P
- * chess where canonical and viewer frames diverge for the second-mover.
+ * Frame-agnostic: takes `iWon` (boolean), not a canonical winner.
+ * Conflating frames here mis-attributes cinematics for P2P
+ * second-movers; callers reduce via `deriveIWonForPhase` first.
  */
 export function getInitialGameOverSubPhase(input: {
   readonly iWon: boolean;

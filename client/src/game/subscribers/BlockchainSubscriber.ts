@@ -315,16 +315,10 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 const DUAL_SIG_TIMEOUT_MS = 30_000;
 
 /**
- * Outcome of waiting for the counterparty's signature on a result_propose.
- *
- * Distinguishing `rejected` from `timeout` matters for two reasons:
- *   1. UX — the proposer (winner) needs to know WHY their result wasn't
- *      broadcast on-chain. A reject is the opponent actively saying "no";
- *      a timeout is silence (network drop, client crash, etc.).
- *   2. Diagnostics — `winner_mismatch` is a strong divergence signal that
- *      should surface as a slash-evidence candidate eventually (R4 step 2,
- *      pending policy decision). Today it just emits a verbose warn so we
- *      gather telemetry before deciding the slash policy.
+ * Distinguishes proposer-side outcomes that require different UX:
+ * `rejected` = peer actively said no (with reason); `timeout` =
+ * silence (network drop, client crash). Reason is also persisted
+ * via recordSessionEvent for forensic audit.
  */
 type CountersignOutcome =
 	| { kind: 'signed'; sig: string }
@@ -348,13 +342,7 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 
 		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty.
 		// Surface the failure mode to the user so a silently-blocked broadcast doesn't look
-		// like the match was registered on-chain.
-		//
-		// Also persist the failure to the session log via recordSessionEvent so
-		// downloadSessionLog can export side-by-side context with the receiver
-		// (useWireSync.ts emits 'result_rejected' from the rejecting peer). Both
-		// halves are needed to gate R4 step 2's slash policy on real telemetry
-		// rather than guess at whether winner_mismatch is bug or cheat.
+		// like the match was registered on-chain. Persist context for forensic audit.
 		if (outcome.kind === 'rejected') {
 			debug.warn(`[BlockchainSubscriber] Dual-sig rejected by counterparty (reason=${outcome.reason}) — match result not broadcast`);
 			recordSessionEvent('result_rejection_received', {
