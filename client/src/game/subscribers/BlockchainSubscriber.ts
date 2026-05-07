@@ -13,7 +13,7 @@ import { xpKeyFor } from '@/data/blockchain/cardXPRewards';
 import { getEconomicLevelForXP } from '@shared/protocol-core/cardProgression';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
-import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
+import { getActiveTranscript, clearTranscript, recordSessionEvent } from '@/data/blockchain/transcriptBuilder';
 import { pinTranscript } from '@/data/blockchain/transcriptIPFS';
 import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
 import { computePoW } from '@/data/blockchain/proofOfWork';
@@ -314,6 +314,23 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 
 const DUAL_SIG_TIMEOUT_MS = 30_000;
 
+/**
+ * Outcome of waiting for the counterparty's signature on a result_propose.
+ *
+ * Distinguishing `rejected` from `timeout` matters for two reasons:
+ *   1. UX — the proposer (winner) needs to know WHY their result wasn't
+ *      broadcast on-chain. A reject is the opponent actively saying "no";
+ *      a timeout is silence (network drop, client crash, etc.).
+ *   2. Diagnostics — `winner_mismatch` is a strong divergence signal that
+ *      should surface as a slash-evidence candidate eventually (R4 step 2,
+ *      pending policy decision). Today it just emits a verbose warn so we
+ *      gather telemetry before deciding the slash policy.
+ */
+type CountersignOutcome =
+	| { kind: 'signed'; sig: string }
+	| { kind: 'rejected'; reason: string }
+	| { kind: 'timeout' };
+
 async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatchResult> {
 	const peer = usePeerStore.getState();
 	if (peer.connectionState !== 'connected' || !peer.isHost) return result;
@@ -324,13 +341,49 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 		const proposalId = crypto.randomUUID();
 		peer.send({ type: 'result_propose', result, hash: result.hash, broadcasterSig, proposalId });
 
-		const counterpartySig = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
-		if (counterpartySig) {
-			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: counterpartySig } };
+		const outcome = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
+		if (outcome.kind === 'signed') {
+			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: outcome.sig } };
 		}
 
-		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty
-		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — ranked match result blocked (requires both signatures)');
+		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty.
+		// Surface the failure mode to the user so a silently-blocked broadcast doesn't look
+		// like the match was registered on-chain.
+		//
+		// Also persist the failure to the session log via recordSessionEvent so
+		// downloadSessionLog can export side-by-side context with the receiver
+		// (useWireSync.ts emits 'result_rejected' from the rejecting peer). Both
+		// halves are needed to gate R4 step 2's slash policy on real telemetry
+		// rather than guess at whether winner_mismatch is bug or cheat.
+		if (outcome.kind === 'rejected') {
+			debug.warn(`[BlockchainSubscriber] Dual-sig rejected by counterparty (reason=${outcome.reason}) — match result not broadcast`);
+			recordSessionEvent('result_rejection_received', {
+				reason: outcome.reason,
+				matchId: result.matchId,
+				proposerWinner: result.winner.username,
+				proposerLoser: result.loser.username,
+				proposalId,
+			});
+			GameEventBus.emitNotification({
+				level: 'warning',
+				message: `Opponent rejected match result (${outcome.reason}). Result was not broadcast on-chain.`,
+				duration: 8000,
+			});
+		} else {
+			debug.warn('[BlockchainSubscriber] Dual-sig timed out (30s) — match result not broadcast');
+			recordSessionEvent('result_countersign_timeout', {
+				matchId: result.matchId,
+				proposerWinner: result.winner.username,
+				proposerLoser: result.loser.username,
+				proposalId,
+				timeoutMs: DUAL_SIG_TIMEOUT_MS,
+			});
+			GameEventBus.emitNotification({
+				level: 'warning',
+				message: 'Opponent did not sign the match result in time. Result was not broadcast on-chain.',
+				duration: 8000,
+			});
+		}
 		return result; // No signatures attached = downstream won't broadcast
 	} catch (err) {
 		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — match result will not be broadcast:', err);
@@ -338,24 +391,35 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 	}
 }
 
-function waitForCountersign(timeoutMs: number): Promise<string | null> {
+function waitForCountersign(timeoutMs: number): Promise<CountersignOutcome> {
 	return new Promise((resolve) => {
 		const conn = usePeerStore.getState().connection;
-		if (!conn) { resolve(null); return; }
+		if (!conn) { resolve({ kind: 'timeout' }); return; }
 
 		let settled = false;
 		const c = conn; // capture non-null ref for closures
 
 		const timer = setTimeout(() => {
-			if (!settled) { settled = true; c.off('data', handler); resolve(null); }
+			if (!settled) { settled = true; c.off('data', handler); resolve({ kind: 'timeout' }); }
 		}, timeoutMs);
 
 		function handler(data: unknown) {
 			const msg = data as Record<string, unknown>;
 			if (msg.type === 'result_countersign' && typeof msg.counterpartySig === 'string') {
-				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(msg.counterpartySig); }
+				if (!settled) {
+					settled = true;
+					clearTimeout(timer);
+					c.off('data', handler);
+					resolve({ kind: 'signed', sig: msg.counterpartySig });
+				}
 			} else if (msg.type === 'result_reject') {
-				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(null); }
+				if (!settled) {
+					settled = true;
+					clearTimeout(timer);
+					c.off('data', handler);
+					const reason = typeof msg.reason === 'string' ? msg.reason : 'unknown';
+					resolve({ kind: 'rejected', reason });
+				}
 			}
 		}
 

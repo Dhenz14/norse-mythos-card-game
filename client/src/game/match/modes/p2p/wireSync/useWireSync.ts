@@ -1218,6 +1218,13 @@ export function useWireSync() {
 				case 'result_propose': {
 					if (!data.result || !data.hash || typeof data.hash !== 'string' ||
 						!data.result.winner?.username || !data.result.loser?.username) {
+						recordSessionEvent('result_rejected', {
+							reason: 'malformed_proposal',
+							proposalId: data.proposalId,
+							matchId: data.result?.matchId,
+							proposerWinner: data.result?.winner?.username,
+							proposerLoser: data.result?.loser?.username,
+						});
 						send({ type: 'result_reject', reason: 'malformed_proposal' });
 						break;
 					}
@@ -1253,11 +1260,43 @@ export function useWireSync() {
 							const sig = await getNFTBridge().signResultHash(data.hash);
 							send({ type: 'result_countersign', counterpartySig: sig, proposalId: data.proposalId });
 						} catch {
+							recordSessionEvent('result_rejected', {
+								reason: 'signing_failed',
+								proposalId: data.proposalId,
+								matchId: data.result.matchId,
+								proposerWinner: data.result.winner.username,
+								proposerLoser: data.result.loser.username,
+								clientUsername,
+								myWinner,
+							});
 							send({ type: 'result_reject', reason: 'signing_failed' });
 						}
 					} else if (!clientUsername) {
+						recordSessionEvent('result_rejected', {
+							reason: 'no_hive_account',
+							proposalId: data.proposalId,
+							matchId: data.result.matchId,
+							proposerWinner: data.result.winner.username,
+							proposerLoser: data.result.loser.username,
+							myWinner,
+						});
 						send({ type: 'result_reject', reason: 'no_hive_account' });
 					} else {
+						// Strong divergence signal — proposer claims one outcome,
+						// our local game state disagrees. R4 step 2 (slash policy)
+						// is gated on telemetry from this event: both sides log
+						// their full context (BlockchainSubscriber.ts mirrors the
+						// proposer side under 'result_rejection_received') so a
+						// future audit can tell legitimate disagreement from cheat.
+						recordSessionEvent('result_rejected', {
+							reason: 'winner_mismatch',
+							proposalId: data.proposalId,
+							matchId: data.result.matchId,
+							proposerWinner: data.result.winner.username,
+							proposerLoser: data.result.loser.username,
+							clientUsername,
+							myWinner,
+						});
 						send({ type: 'result_reject', reason: 'winner_mismatch' });
 					}
 					break;
