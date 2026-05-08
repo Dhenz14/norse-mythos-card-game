@@ -56,6 +56,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     pendingAttackAnimation,
     matchupGlowMap,
     canPlaceAtHoveredPosition,
+    effectiveSelectedPieceId,
     handleCellClick,
     handleCellHover,
     handleCellLeave,
@@ -91,7 +92,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     return () => window.removeEventListener('resize', updateBoardRect);
   }, []);
   
-  const { currentTurn, selectedPiece, gameStatus } = boardState;
+  const { currentTurn, gameStatus } = boardState;
   // Local viewer's canonical side. SP defaults to 'player' (human is first-mover);
   // P2P sets via deriveCanonicalSide at handshake. Drives all viewer-relative
   // presentation: "your turn" banner, victory/defeat text, board orientation.
@@ -290,7 +291,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
                 piece={piece}
                 visualState={getPieceVisualState({
                   pieceId: piece.id,
-                  selectedPieceId: selectedPiece?.id ?? null,
+                  selectedPieceId: effectiveSelectedPieceId,
                   isAttackTarget: isAttack,
                   isLocked: isPieceLocked,
                 })}

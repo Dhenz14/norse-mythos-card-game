@@ -53,6 +53,10 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
   const [noMovesMessage, setNoMovesMessage] = useState<string | null>(null);
   const [instantKillFlash, setInstantKillFlash] = useState<InstantKillFlash | null>(null);
   const [hoverPosition, setHoverPosition] = useState<ChessBoardPosition | null>(null);
+  const [enemyHoverPreview, setEnemyHoverPreview] = useState<{
+    readonly moves: readonly ChessBoardPosition[];
+    readonly attacks: readonly ChessBoardPosition[];
+  } | null>(null);
   const [minePlacementEffect, setMinePlacementEffect] = useState<MinePlacementEffect | null>(null);
   const [mineTriggerEffect, setMineTriggerEffect] = useState<MineTriggerEffect | null>(null);
   const [screenShake, setScreenShake] = useState(false);
@@ -367,23 +371,57 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     getValidMoves,
   ]);
 
+  // Single-mode-only enemy preview: hovering an opponent piece reveals
+  // its valid moves so the player can study the AI before/after its turn.
+  // P2P stays opaque (fair play) — the matchId gate below disables it.
+  // Mine placement mode owns the hover state during ability use, so we
+  // skip the preview entirely while placing.
+  const matchId = useGameStore(s => s.matchId);
+  const isSingleMode = !matchId;
+
   const handleCellHover = useCallback((row: number, col: number) => {
-    if (!isPlacementMode) return;
-    setHoverPosition({ row, col });
-  }, [isPlacementMode]);
+    if (isPlacementMode) {
+      setHoverPosition({ row, col });
+      return;
+    }
+    if (!isSingleMode) return;
+    const piece = getPieceAt({ row, col });
+    if (!piece || piece.owner === myCanonicalSide) {
+      setEnemyHoverPreview(null);
+      return;
+    }
+    const { moves, attacks } = getValidMoves(piece);
+    setEnemyHoverPreview({ moves, attacks });
+  }, [isPlacementMode, isSingleMode, getPieceAt, getValidMoves, myCanonicalSide]);
 
   const handleCellLeave = useCallback(() => {
     setHoverPosition(null);
+    setEnemyHoverPreview(null);
   }, []);
 
+  // MovePlates leak intent when the AI selects its piece during its turn:
+  // the slice populates validMoves/attackMoves regardless of ownership, so
+  // we gate by `selectedPiece.owner === myCanonicalSide` (matches the same
+  // gate already used for matchupGlowMap above). Hover-preview adds a
+  // separate, hover-only source for enemy pieces.
+  const showsSelectionMoves = !!selectedPiece && selectedPiece.owner === myCanonicalSide;
+
   const isValidMovePosition = useCallback(
-    (row: number, col: number) => containsPosition(validMoves, row, col),
-    [validMoves],
+    (row: number, col: number) => {
+      if (showsSelectionMoves && containsPosition(validMoves, row, col)) return true;
+      if (enemyHoverPreview && containsPosition(enemyHoverPreview.moves, row, col)) return true;
+      return false;
+    },
+    [showsSelectionMoves, validMoves, enemyHoverPreview],
   );
 
   const isAttackPosition = useCallback(
-    (row: number, col: number) => containsPosition(attackMoves, row, col),
-    [attackMoves],
+    (row: number, col: number) => {
+      if (showsSelectionMoves && containsPosition(attackMoves, row, col)) return true;
+      if (enemyHoverPreview && containsPosition(enemyHoverPreview.attacks, row, col)) return true;
+      return false;
+    },
+    [showsSelectionMoves, attackMoves, enemyHoverPreview],
   );
 
   const isMinePreviewTile = useCallback(
@@ -413,6 +451,15 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
 
   const canPlaceAtHoveredPosition = isPlacementMode && hoverPosition !== null && isValidPlacement(hoverPosition);
 
+  // Selected-piece glow policy: only mine. We never auto-leak the
+  // opponent's selection — neither the AI's mid-think pick nor a P2P
+  // peer's tap-to-pick. The player can still see what enemy pieces can
+  // do via the explicit hover preview (single mode only, opt-in).
+  const effectiveSelectedPieceId: string | null =
+    selectedPiece && selectedPiece.owner === myCanonicalSide
+      ? selectedPiece.id
+      : null;
+
   return {
     boardState,
     getPieceAt,
@@ -423,6 +470,7 @@ export function useChessBoardInteractions(input: UseChessBoardInteractionsInput)
     pendingAttackAnimation,
     matchupGlowMap,
     canPlaceAtHoveredPosition,
+    effectiveSelectedPieceId,
     handleCellClick,
     handleCellHover,
     handleCellLeave,

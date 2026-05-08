@@ -54,6 +54,10 @@ export function synthesizeLegacyMatchContext(
 			identity: identityFactory.create(),
 			missionId: input.campaignMission,
 			difficulty: input.campaignDifficulty,
+			// legacy bridge does not participate in protocol v1 — null
+			// matches the contract that this synth is the pre-protocol
+			// path that will go away with Fase 7.
+			localRunId: null,
 		});
 		if (!result.ok) return null;
 		return result.ctx;
