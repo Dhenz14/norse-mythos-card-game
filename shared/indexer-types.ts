@@ -5,7 +5,12 @@
  * See docs/DECENTRALIZED_INDEXER_DESIGN.md for full architecture.
  */
 
-import { RAGNAROK_PROTOCOL_IDS, type CanonicalAction } from './protocol-core/types';
+import {
+	RAGNAROK_PROTOCOL_IDS,
+	type CampaignDifficulty,
+	type CampaignSubmissionStatus,
+	type CanonicalAction,
+} from './protocol-core/types';
 
 // ============================================================
 // Constants
@@ -57,9 +62,12 @@ export interface DerivedState {
 	loser?: string;
 	supplyAfter?: number;
 	runeChange?: number;
+	campaignId?: string;
 	campaignMissionId?: string;
-	campaignDifficulty?: string;
-	campaignStatus?: 'pending_verification' | 'verified' | 'rejected';
+	campaignDifficulty?: CampaignDifficulty;
+	campaignLocalRunId?: string;
+	campaignLocalStartedAt?: number;
+	campaignSubmissionStatus?: CampaignSubmissionStatus;
 	transcriptCID?: string;
 }
 

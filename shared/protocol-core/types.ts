@@ -258,18 +258,19 @@ export interface SupplyRecord {
 }
 
 // ============================================================
-// Campaign Progress
+// Campaign Submissions + Progress
 // ============================================================
 
 export type CampaignDifficulty = 'normal' | 'heroic' | 'mythic';
 
-export type CampaignResultStatus =
-	| 'pending_verification'
-	| 'verified'
+export type CampaignSubmissionStatus =
+	| 'queued'
+	| 'consumed'
 	| 'rejected';
 
 export interface CampaignRegistryMission {
 	id: string;
+	campaignId: string;
 	chapterId: string;
 	prerequisiteIds: string[];
 	allowedDifficulties: CampaignDifficulty[];
@@ -278,17 +279,19 @@ export interface CampaignRegistryMission {
 
 export interface CampaignRegistryProvider {
 	getRegistryHash(): string;
+	getCampaignId(): string;
 	getMission(missionId: string): CampaignRegistryMission | null;
 }
 
-export interface CampaignResultRecord {
-	resultKey: string;
+export interface CampaignSubmissionRecord {
+	submissionKey: string;
 	account: string;
+	campaignId: string;
 	missionId: string;
 	difficulty: CampaignDifficulty;
 	nonce: number;
-	startBlock: number;
-	startBlockId: string;
+	localRunId: string;
+	localStartedAt: number;
 	rulesetHash: string;
 	seed: string;
 	turnCount: number;
@@ -296,7 +299,7 @@ export interface CampaignResultRecord {
 	transcriptRoot: string;
 	transcriptCid?: string;
 	finalStateHash: string;
-	status: CampaignResultStatus;
+	status: CampaignSubmissionStatus;
 	rejectionReason?: string;
 	trxId: string;
 	blockNum: number;
@@ -305,6 +308,7 @@ export interface CampaignResultRecord {
 
 export interface CampaignProgressRecord {
 	account: string;
+	campaignId: string;
 	missionId: string;
 	bestDifficulty: CampaignDifficulty;
 	bestTurns: number;
@@ -362,9 +366,9 @@ export interface StateAdapter {
 
 	// Campaign progress
 	advanceCampaignNonce(account: string, nonce: number): Promise<boolean>;
-	getCampaignResult(resultKey: string): Promise<CampaignResultRecord | null>;
-	putCampaignResult(result: CampaignResultRecord): Promise<void>;
-	getCampaignProgress(account: string, missionId: string): Promise<CampaignProgressRecord | null>;
+	getCampaignSubmission(submissionKey: string): Promise<CampaignSubmissionRecord | null>;
+	putCampaignSubmission(submission: CampaignSubmissionRecord): Promise<void>;
+	getCampaignProgress(account: string, campaignId: string, missionId: string): Promise<CampaignProgressRecord | null>;
 	putCampaignProgress(progress: CampaignProgressRecord): Promise<void>;
 
 	// Slash state

@@ -42,10 +42,12 @@ export interface HiveBroadcastResult {
 
 export interface HiveCampaignResultPayload {
   v: 1;
+  cid: string;
   m: string;
   d: "normal" | "heroic" | "mythic";
   n: number;
-  sb: number;
+  rid: string;
+  lst: number;
   rh: string;
   tr: string;
   tc?: string;

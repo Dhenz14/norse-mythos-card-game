@@ -1,4 +1,5 @@
 {
+  "campaignId": "war-of-pantheons",
   "chapters": [
     {
       "faction": "norse",
@@ -154,6 +155,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-thryma"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-1",
       "missionNumber": 1,
@@ -253,6 +255,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-thorgrim"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-2",
       "missionNumber": 2,
@@ -349,6 +352,7 @@
         "queen": "hero-hel",
         "rook": "hero-valthrud"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-3",
       "missionNumber": 3,
@@ -417,6 +421,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-logi"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-4",
       "missionNumber": 4,
@@ -502,6 +507,7 @@
         "queen": "hero-hel",
         "rook": "hero-valthrud"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-5",
       "missionNumber": 5,
@@ -597,6 +603,7 @@
         "queen": "hero-odin",
         "rook": "hero-heimdall"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-6",
       "missionNumber": 6,
@@ -699,6 +706,7 @@
         "queen": "hero-sol",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-7",
       "missionNumber": 7,
@@ -815,6 +823,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-thorgrim"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-8",
       "missionNumber": 8,
@@ -928,6 +937,7 @@
         "queen": "hero-hel",
         "rook": "hero-thryma"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "norse",
       "id": "norse-9",
       "missionNumber": 9,
@@ -1014,6 +1024,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-thorgrim"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-1",
       "missionNumber": 1,
@@ -1115,6 +1126,7 @@
         "queen": "hero-hel",
         "rook": "hero-valthrud"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-2",
       "missionNumber": 2,
@@ -1216,6 +1228,7 @@
         "queen": "hero-ran",
         "rook": "hero-aegir"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-3",
       "missionNumber": 3,
@@ -1312,6 +1325,7 @@
         "queen": "hero-freya",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-4",
       "missionNumber": 4,
@@ -1423,6 +1437,7 @@
         "queen": "hero-frigg",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-5",
       "missionNumber": 5,
@@ -1524,6 +1539,7 @@
         "queen": "hero-hel",
         "rook": "hero-thryma"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-6",
       "missionNumber": 6,
@@ -1635,6 +1651,7 @@
         "queen": "hero-sigyn",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-7",
       "missionNumber": 7,
@@ -1751,6 +1768,7 @@
         "queen": "hero-freya",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-8",
       "missionNumber": 8,
@@ -1882,6 +1900,7 @@
         "queen": "hero-freya",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "twilight",
       "id": "twilight-9",
       "missionNumber": 9,
@@ -1950,6 +1969,7 @@
         "queen": "hero-nyx",
         "rook": "hero-hades"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-1",
       "missionNumber": 1,
@@ -2045,6 +2065,7 @@
         "queen": "hero-hyperion",
         "rook": "hero-ares"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-2",
       "missionNumber": 2,
@@ -2141,6 +2162,7 @@
         "queen": "hero-chronos",
         "rook": "hero-hephaestus"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-3",
       "missionNumber": 3,
@@ -2226,6 +2248,7 @@
         "queen": "hero-hephaestus",
         "rook": "hero-ares"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-4",
       "missionNumber": 4,
@@ -2327,6 +2350,7 @@
         "queen": "hero-ares",
         "rook": "hero-hephaestus"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-5",
       "missionNumber": 5,
@@ -2417,6 +2441,7 @@
         "queen": "hero-zeus",
         "rook": "hero-ares"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-6",
       "missionNumber": 6,
@@ -2518,6 +2543,7 @@
         "queen": "hero-hades",
         "rook": "hero-ares"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-7",
       "missionNumber": 7,
@@ -2624,6 +2650,7 @@
         "queen": "hero-ares",
         "rook": "hero-hephaestus"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-8",
       "missionNumber": 8,
@@ -2716,6 +2743,7 @@
         "queen": "hero-athena",
         "rook": "hero-heimdall"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-9",
       "missionNumber": 9,
@@ -2833,6 +2861,7 @@
         "queen": "hero-demeter",
         "rook": "hero-poseidon"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "greek",
       "id": "greek-10",
       "missionNumber": 10,
@@ -2901,6 +2930,7 @@
         "queen": "hero-ammit",
         "rook": "hero-baldur"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-1",
       "missionNumber": 1,
@@ -2978,6 +3008,7 @@
         "queen": "hero-ammit",
         "rook": "hero-hephaestus"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-2",
       "missionNumber": 2,
@@ -3064,6 +3095,7 @@
         "queen": "hero-ammit",
         "rook": "hero-heimdall"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-3",
       "missionNumber": 3,
@@ -3150,6 +3182,7 @@
         "queen": "hero-ammit",
         "rook": "hero-ares"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-4",
       "missionNumber": 4,
@@ -3251,6 +3284,7 @@
         "queen": "hero-ammit",
         "rook": "hero-logi"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-5",
       "missionNumber": 5,
@@ -3353,6 +3387,7 @@
         "queen": "hero-fujin",
         "rook": "hero-baldur"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-6",
       "missionNumber": 6,
@@ -3445,6 +3480,7 @@
         "queen": "hero-sol",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-7",
       "missionNumber": 7,
@@ -3547,6 +3583,7 @@
         "queen": "hero-hel",
         "rook": "hero-vidar"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-8",
       "missionNumber": 8,
@@ -3648,6 +3685,7 @@
         "queen": "hero-hades",
         "rook": "hero-logi"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-9",
       "missionNumber": 9,
@@ -3765,6 +3803,7 @@
         "queen": "hero-hel",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "egyptian",
       "id": "egyptian-10",
       "missionNumber": 10,
@@ -3844,6 +3883,7 @@
         "queen": "hero-kvasir",
         "rook": "hero-baldur"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-1",
       "missionNumber": 1,
@@ -3922,6 +3962,7 @@
         "queen": "hero-hel",
         "rook": "hero-vidar"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-2",
       "missionNumber": 2,
@@ -4008,6 +4049,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-3",
       "missionNumber": 3,
@@ -4093,6 +4135,7 @@
         "queen": "hero-odin",
         "rook": "hero-heimdall"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-4",
       "missionNumber": 4,
@@ -4185,6 +4228,7 @@
         "queen": "hero-hades",
         "rook": "hero-logi"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-5",
       "missionNumber": 5,
@@ -4277,6 +4321,7 @@
         "queen": "hero-odin",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-6",
       "missionNumber": 6,
@@ -4367,6 +4412,7 @@
         "queen": "hero-sol",
         "rook": "hero-baldur"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-7",
       "missionNumber": 7,
@@ -4458,6 +4504,7 @@
         "queen": "hero-sinmara",
         "rook": "hero-magni"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-8",
       "missionNumber": 8,
@@ -4560,6 +4607,7 @@
         "queen": "hero-sol",
         "rook": "hero-tyr"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-9",
       "missionNumber": 9,
@@ -4677,6 +4725,7 @@
         "queen": "hero-odin",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "celtic",
       "id": "celtic-10",
       "missionNumber": 10,
@@ -4751,6 +4800,7 @@
         "queen": "hero-fujin",
         "rook": "hero-sarutahiko"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-1",
       "missionNumber": 1,
@@ -4841,6 +4891,7 @@
         "queen": "hero-sol",
         "rook": "hero-baldur"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-2",
       "missionNumber": 2,
@@ -4933,6 +4984,7 @@
         "queen": "hero-odin",
         "rook": "hero-heimdall"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-3",
       "missionNumber": 3,
@@ -5024,6 +5076,7 @@
         "queen": "hero-fujin",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-4",
       "missionNumber": 4,
@@ -5115,6 +5168,7 @@
         "queen": "hero-loki",
         "rook": "hero-sarutahiko"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-5",
       "missionNumber": 5,
@@ -5207,6 +5261,7 @@
         "queen": "hero-izanami",
         "rook": "hero-vidar"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-6",
       "missionNumber": 6,
@@ -5299,6 +5354,7 @@
         "queen": "hero-odin",
         "rook": "hero-sarutahiko"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-7",
       "missionNumber": 7,
@@ -5404,6 +5460,7 @@
         "queen": "hero-fujin",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-8",
       "missionNumber": 8,
@@ -5511,6 +5568,7 @@
         "queen": "hero-izanami",
         "rook": "hero-logi"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-9",
       "missionNumber": 9,
@@ -5651,6 +5709,7 @@
         "queen": "hero-zeus",
         "rook": "hero-thor"
       },
+      "campaignId": "war-of-pantheons",
       "chapterId": "eastern",
       "id": "eastern-10",
       "missionNumber": 10,

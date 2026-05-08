@@ -26,6 +26,7 @@ export interface CampaignResolveArgs {
 	identity: MatchIdentity;
 	missionId: string;
 	difficulty: Difficulty;
+	localRunId: string | null;
 }
 
 export type CampaignResolveResult =
@@ -47,6 +48,7 @@ export function resolveCampaign(args: CampaignResolveArgs): CampaignResolveResul
 					mission: found.mission,
 					chapter: found.chapter,
 					difficulty: args.difficulty,
+					localRunId: args.localRunId,
 				},
 			},
 			reward: modeEconomyToReward(MATCH_ECONOMY.campaign),

@@ -20,12 +20,13 @@
  *   elo_ratings      keyed by account          — chain-derived ELO (K=32), wins, losses
  *   pending_slashes  keyed by evidenceKey      — queued slash evidence awaiting RPC verification
  *   reward_claims    keyed by claimKey          — tracks which milestone rewards each account claimed
+ *   campaign_runs    keyed by localRunId        — local campaign run drafts/results awaiting publication
  *   campaign_nonces  keyed by account           — monotonic anti-replay nonces for campaign_result
- *   campaign_results keyed by resultKey         — submitted campaign clears pending replay verification
- *   campaign_progress keyed by progressKey      — verified campaign mission progress
+ *   campaign_submissions keyed by submissionKey — verifier inbox; not final campaign state
+ *   campaign_progress keyed by progressKey      — verified final campaign mission progress
  *
  * All writes are idempotent — safe to re-apply the same op.
- * DB version 6 — upgrade handler creates any missing stores.
+ * DB version 11 — upgrade handler creates any missing stores.
  */
 
 import type { HiveCardAsset, HiveMatchResult, HiveTokenBalance } from '../schemas/HiveTypes';
@@ -33,11 +34,12 @@ import { DEFAULT_TOKEN_BALANCE } from '../schemas/HiveTypes';
 import { DEFAULT_ELO_RATING } from './hiveConfig';
 import type {
 	CampaignProgressRecord,
-	CampaignResultRecord,
+	CampaignSubmissionRecord,
+	CampaignDifficulty,
 } from '../../../../shared/protocol-core/types';
 
 const DB_NAME = 'ragnarok-chain-v1';
-const DB_VERSION = 10;
+const DB_VERSION = 12;
 
 let _db: IDBDatabase | null = null;
 
@@ -126,10 +128,16 @@ function openDB(): Promise<IDBDatabase> {
 			if (!db.objectStoreNames.contains('campaign_nonces')) {
 				db.createObjectStore('campaign_nonces', { keyPath: 'account' });
 			}
-			if (!db.objectStoreNames.contains('campaign_results')) {
-				const results = db.createObjectStore('campaign_results', { keyPath: 'resultKey' });
-				results.createIndex('by_account', 'account', { unique: false });
-				results.createIndex('by_mission', 'missionId', { unique: false });
+			if (!db.objectStoreNames.contains('campaign_runs')) {
+				const runs = db.createObjectStore('campaign_runs', { keyPath: 'localRunId' });
+				runs.createIndex('by_account', 'account', { unique: false });
+				runs.createIndex('by_mission', 'missionId', { unique: false });
+				runs.createIndex('by_status', 'status', { unique: false });
+			}
+			if (!db.objectStoreNames.contains('campaign_submissions')) {
+				const submissions = db.createObjectStore('campaign_submissions', { keyPath: 'submissionKey' });
+				submissions.createIndex('by_account', 'account', { unique: false });
+				submissions.createIndex('by_mission', 'missionId', { unique: false });
 			}
 			if (!db.objectStoreNames.contains('campaign_progress')) {
 				const progress = db.createObjectStore('campaign_progress', { keyPath: 'progressKey' });
@@ -568,8 +576,37 @@ export const putRewardClaim = (claim: RewardClaim): Promise<void> =>
 	idbPut('reward_claims', claim);
 
 // ---------------------------------------------------------------------------
-// Campaign Result API — pending replay verification until verifier ships
+// Campaign Run + Submission API — local drafts, verifier inbox, final progress
 // ---------------------------------------------------------------------------
+
+export type CampaignRunStatus =
+	| 'started'
+	| 'won'
+	| 'published'
+	| 'rejected';
+
+export interface CampaignRunRecord {
+	localRunId: string;
+	account: string;
+	campaignId: string;
+	missionId: string;
+	difficulty: CampaignDifficulty;
+	registryHash: string;
+	nonce: number;
+	localStartedAt: number;
+	status: CampaignRunStatus;
+	createdAt: number;
+	updatedAt: number;
+	matchId?: string;
+	matchSeed?: string;
+	turnCount?: number;
+	transcriptRoot?: string;
+	finalStateHash?: string;
+	publishedTrxId?: string;
+	publishedBlockNum?: number;
+	publishedAt?: number;
+	lastError?: string;
+}
 
 export interface CampaignNonce {
 	account: string;
@@ -604,22 +641,32 @@ export async function advanceCampaignNonce(account: string, nonce: number): Prom
 	});
 }
 
-export const getCampaignResult = (resultKey: string): Promise<CampaignResultRecord | undefined> =>
-	idbGet<CampaignResultRecord>('campaign_results', resultKey);
+export const getCampaignRun = (localRunId: string): Promise<CampaignRunRecord | undefined> =>
+	idbGet<CampaignRunRecord>('campaign_runs', localRunId);
 
-export const putCampaignResult = (result: CampaignResultRecord): Promise<void> =>
-	idbPut('campaign_results', result);
+export const putCampaignRun = (run: CampaignRunRecord): Promise<void> =>
+	idbPut('campaign_runs', run);
+
+export const getCampaignRunsByAccount = (account: string): Promise<CampaignRunRecord[]> =>
+	idbGetByIndex<CampaignRunRecord>('campaign_runs', 'by_account', account);
+
+export const getCampaignSubmission = (submissionKey: string): Promise<CampaignSubmissionRecord | undefined> =>
+	idbGet<CampaignSubmissionRecord>('campaign_submissions', submissionKey);
+
+export const putCampaignSubmission = (submission: CampaignSubmissionRecord): Promise<void> =>
+	idbPut('campaign_submissions', submission);
 
 export const getCampaignProgress = (
 	account: string,
+	campaignId: string,
 	missionId: string,
 ): Promise<CampaignProgressRecord | undefined> =>
-	idbGet<StoredCampaignProgress>('campaign_progress', `${account}:${missionId}`);
+	idbGet<StoredCampaignProgress>('campaign_progress', `${account}:${campaignId}:${missionId}`);
 
 export const putCampaignProgress = (progress: CampaignProgressRecord): Promise<void> =>
 	idbPut('campaign_progress', {
 		...progress,
-		progressKey: `${progress.account}:${progress.missionId}`,
+		progressKey: `${progress.account}:${progress.campaignId}:${progress.missionId}`,
 	});
 
 // ---------------------------------------------------------------------------

@@ -76,6 +76,7 @@ export type ScriptPayload =
 			mission: CampaignMission;
 			chapter: CampaignChapter;
 			difficulty: Difficulty;
+			localRunId: string | null;
 	  };
 	// future: | { kind: 'tutorial'; lessonId: string }
 	// future: | { kind: 'puzzle'; puzzleId: string }

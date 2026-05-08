@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 import { celticChapter } from '../client/src/game/campaign/chapters/celticChapter';
 import { easternChapter } from '../client/src/game/campaign/chapters/easternChapter';
@@ -14,9 +15,11 @@ import type {
 	CampaignArmy,
 	Difficulty,
 } from '../client/src/game/campaign/campaignTypes';
+import { CAMPAIGN_ID, CAMPAIGN_REGISTRY_VERSION } from '../shared/campaign/constants';
 
 interface CampaignRegistryMission {
 	id: string;
+	campaignId: string;
 	chapterId: string;
 	missionNumber: number;
 	prerequisiteIds: string[];
@@ -38,7 +41,8 @@ interface CampaignRegistryChapter {
 }
 
 interface CampaignRegistry {
-	version: 1;
+	version: typeof CAMPAIGN_REGISTRY_VERSION;
+	campaignId: string;
 	generatedFrom: 'client-campaign-chapters';
 	chapters: CampaignRegistryChapter[];
 	missions: CampaignRegistryMission[];
@@ -69,7 +73,8 @@ function sortKeys(value: unknown): unknown {
 }
 
 const registry: CampaignRegistry = {
-	version: 1,
+	version: CAMPAIGN_REGISTRY_VERSION,
+	campaignId: CAMPAIGN_ID,
 	generatedFrom: 'client-campaign-chapters',
 	chapters: ALL_CHAPTERS.map(chapter => ({
 		id: chapter.id,
@@ -79,6 +84,7 @@ const registry: CampaignRegistry = {
 	missions: ALL_CHAPTERS.flatMap(chapter =>
 		chapter.missions.map(mission => ({
 			id: mission.id,
+			campaignId: CAMPAIGN_ID,
 			chapterId: mission.chapterId,
 			missionNumber: mission.missionNumber,
 			prerequisiteIds: [...mission.prerequisiteIds],
@@ -95,6 +101,9 @@ const registry: CampaignRegistry = {
 	),
 };
 
+const sortedRegistry = sortKeys(registry);
+const canonicalRegistry = JSON.stringify(sortedRegistry);
+const registryHash = crypto.createHash('sha256').update(canonicalRegistry).digest('hex');
 const outPath = path.join(process.cwd(), 'shared/campaign/campaign-registry.v1.json');
-fs.writeFileSync(outPath, `${JSON.stringify(sortKeys(registry), null, 2)}\n`, 'utf8');
-console.log(`Wrote ${outPath}`);
+fs.writeFileSync(outPath, `${JSON.stringify(sortedRegistry, null, 2)}\n`, 'utf8');
+console.log(`Wrote ${outPath}\nCanonical hash ${registryHash}`);

@@ -23,7 +23,7 @@ import {
 	getEloRating, putEloRating,
 	getRewardClaim, putRewardClaim,
 	advanceCampaignNonce as idbAdvanceCampaignNonce,
-	getCampaignResult as idbGetCampaignResult, putCampaignResult as idbPutCampaignResult,
+	getCampaignSubmission as idbGetCampaignSubmission, putCampaignSubmission as idbPutCampaignSubmission,
 	getCampaignProgress as idbGetCampaignProgress, putCampaignProgress as idbPutCampaignProgress,
 	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
 	getPacksByOwner as idbGetPacksByOwner,
@@ -170,14 +170,14 @@ export const clientStateAdapter: StateAdapter = {
 	async advanceCampaignNonce(account, nonce) {
 		return idbAdvanceCampaignNonce(account, nonce);
 	},
-	async getCampaignResult(resultKey) {
-		return await idbGetCampaignResult(resultKey) ?? null;
+	async getCampaignSubmission(submissionKey) {
+		return await idbGetCampaignSubmission(submissionKey) ?? null;
 	},
-	async putCampaignResult(result) {
-		await idbPutCampaignResult(result);
+	async putCampaignSubmission(submission) {
+		await idbPutCampaignSubmission(submission);
 	},
-	async getCampaignProgress(account, missionId) {
-		return await idbGetCampaignProgress(account, missionId) ?? null;
+	async getCampaignProgress(account, campaignId, missionId) {
+		return await idbGetCampaignProgress(account, campaignId, missionId) ?? null;
 	},
 	async putCampaignProgress(progress) {
 		await idbPutCampaignProgress(progress);

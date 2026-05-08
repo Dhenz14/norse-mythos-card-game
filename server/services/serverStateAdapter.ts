@@ -22,7 +22,7 @@ import {
 	getPackCommit as csGetPackCommit, setPackCommit as csSetPackCommit,
 	hasRewardClaim as csHasRewardClaim, addRewardClaim as csAddRewardClaim,
 	advanceCampaignNonce as csAdvanceCampaignNonce,
-	getCampaignResult as csGetCampaignResult, setCampaignResult as csSetCampaignResult,
+	getCampaignSubmission as csGetCampaignSubmission, setCampaignSubmission as csSetCampaignSubmission,
 	getCampaignProgress as csGetCampaignProgress, setCampaignProgress as csSetCampaignProgress,
 	isSlashed as csIsSlashed, addSlashed as csAddSlashed,
 	getQueueEntry as csGetQueueEntry, setQueueEntry as csSetQueueEntry,
@@ -171,10 +171,12 @@ export const serverStateAdapter: StateAdapter = {
 	async putRewardClaim(account, rewardId) { csAddRewardClaim(`${account}:${rewardId}`); },
 
 	async advanceCampaignNonce(account, nonce) { return csAdvanceCampaignNonce(account, nonce); },
-	async getCampaignResult(resultKey) { return csGetCampaignResult(resultKey) ?? null; },
-	async putCampaignResult(result) { csSetCampaignResult(result); },
-	async getCampaignProgress(account, missionId) {
-		return csGetCampaignProgress(account, missionId) ?? null;
+	async getCampaignSubmission(submissionKey) {
+		return csGetCampaignSubmission(submissionKey) ?? null;
+	},
+	async putCampaignSubmission(submission) { csSetCampaignSubmission(submission); },
+	async getCampaignProgress(account, campaignId, missionId) {
+		return csGetCampaignProgress(account, campaignId, missionId) ?? null;
 	},
 	async putCampaignProgress(progress) { csSetCampaignProgress(progress); },
 

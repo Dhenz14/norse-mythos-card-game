@@ -14,7 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import type {
 	CampaignProgressRecord,
-	CampaignResultRecord,
+	CampaignSubmissionRecord,
 } from '../../shared/protocol-core/types';
 
 const DEFAULT_ELO_RATING = 1000;
@@ -126,7 +126,7 @@ interface SerializedState {
 	packCommits?: [string, PackCommitStateRecord][];
 	rewardClaims?: string[];
 	campaignNonces?: [string, number][];
-	campaignResults?: [string, CampaignResultRecord][];
+	campaignSubmissions?: [string, CampaignSubmissionRecord][];
 	campaignProgress?: [string, CampaignProgressRecord][];
 	slashedAccounts?: string[];
 }
@@ -152,7 +152,7 @@ const matchAnchors = new Map<string, MatchAnchorStateRecord>();
 const packCommits = new Map<string, PackCommitStateRecord>();
 const rewardClaims = new Set<string>();
 const campaignNonces = new Map<string, number>();
-const campaignResults = new Map<string, CampaignResultRecord>();
+const campaignSubmissions = new Map<string, CampaignSubmissionRecord>();
 const campaignProgress = new Map<string, CampaignProgressRecord>();
 const slashedAccounts = new Set<string>();
 const queueEntries = new Map<string, QueueStateRecord>();
@@ -248,8 +248,8 @@ export function loadState(): void {
 		campaignNonces.clear();
 		for (const [k, v] of data.campaignNonces ?? []) campaignNonces.set(k, v);
 
-		campaignResults.clear();
-		for (const [k, v] of data.campaignResults ?? []) campaignResults.set(k, v);
+		campaignSubmissions.clear();
+		for (const [k, v] of data.campaignSubmissions ?? []) campaignSubmissions.set(k, v);
 
 		campaignProgress.clear();
 		for (const [k, v] of data.campaignProgress ?? []) campaignProgress.set(k, v);
@@ -284,7 +284,7 @@ export function saveState(): void {
 			packCommits: [...packCommits.entries()],
 			rewardClaims: [...rewardClaims],
 			campaignNonces: [...campaignNonces.entries()],
-			campaignResults: [...campaignResults.entries()],
+			campaignSubmissions: [...campaignSubmissions.entries()],
 			campaignProgress: [...campaignProgress.entries()],
 			slashedAccounts: [...slashedAccounts],
 		};
@@ -549,21 +549,25 @@ export function advanceCampaignNonce(account: string, nonce: number): boolean {
 	return true;
 }
 
-export function getCampaignResult(resultKey: string): CampaignResultRecord | undefined {
-	return campaignResults.get(resultKey);
+export function getCampaignSubmission(submissionKey: string): CampaignSubmissionRecord | undefined {
+	return campaignSubmissions.get(submissionKey);
 }
 
-export function setCampaignResult(result: CampaignResultRecord): void {
-	campaignResults.set(result.resultKey, result);
+export function setCampaignSubmission(submission: CampaignSubmissionRecord): void {
+	campaignSubmissions.set(submission.submissionKey, submission);
 	markDirty();
 }
 
-export function getCampaignProgress(account: string, missionId: string): CampaignProgressRecord | undefined {
-	return campaignProgress.get(`${account}:${missionId}`);
+export function getCampaignProgress(
+	account: string,
+	campaignId: string,
+	missionId: string,
+): CampaignProgressRecord | undefined {
+	return campaignProgress.get(`${account}:${campaignId}:${missionId}`);
 }
 
 export function setCampaignProgress(progress: CampaignProgressRecord): void {
-	campaignProgress.set(`${progress.account}:${progress.missionId}`, progress);
+	campaignProgress.set(`${progress.account}:${progress.campaignId}:${progress.missionId}`, progress);
 	markDirty();
 }
 

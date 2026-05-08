@@ -4,6 +4,8 @@ import type { Difficulty } from './campaignTypes';
 import { getNFTBridge } from '../nft';
 import { debug } from '../config/debugConfig';
 import { triggerAutoSave } from '../stores/saveStateManager';
+import { CAMPAIGN_ID } from '@shared/campaign/constants';
+import { createCampaignRunDraft, saveCampaignRunDraft } from './campaignResultAdapter';
 
 interface MissionCompletion {
 	difficulty: Difficulty;
@@ -15,6 +17,7 @@ interface MissionCompletion {
 interface CampaignState {
 	completedMissions: Record<string, MissionCompletion>;
 	currentMission: string | null;
+	currentRunId: string | null;
 	currentDifficulty: Difficulty;
 	rewardsClaimed: string[];
 	seenCinematics: string[];
@@ -44,14 +47,20 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 		(set, get) => ({
 			completedMissions: {},
 			currentMission: null,
+			currentRunId: null,
 			currentDifficulty: 'normal',
 			rewardsClaimed: [],
 			seenCinematics: [],
 			bossRulesApplied: false,
 
 			startMission: (missionId, difficulty) => {
+				const account = getNFTBridge().getUsername();
+				const run = createCampaignRunDraft({ account, missionId, difficulty });
+				saveCampaignRunDraft(run)
+					.catch(err => debug.warn('[campaignStore] Failed to record campaign run:', err));
 				set({
 					currentMission: missionId,
+					currentRunId: run.localRunId,
 					currentDifficulty: difficulty,
 					bossRulesApplied: false,
 				});
@@ -74,6 +83,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 						},
 					},
 					currentMission: null,
+					currentRunId: null,
 				}));
 				triggerAutoSave();
 			},
@@ -84,7 +94,7 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 					rewardsClaimed: [...state.rewardsClaimed, missionId],
 				}));
 				if (getNFTBridge().isHiveMode()) {
-					getNFTBridge().claimReward(`campaign:${missionId}`)
+					getNFTBridge().claimReward(`campaign:${CAMPAIGN_ID}:${missionId}`)
 					.then(r => { if (r.success && r.trxId) getNFTBridge().emitTransactionConfirmed(r.trxId); })
 					.catch(err => debug.warn('[campaignStore] Reward claim failed:', err));
 				}
@@ -123,12 +133,14 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 
 			clearCurrent: () => set({
 				currentMission: null,
+				currentRunId: null,
 				bossRulesApplied: false,
 			}),
 
 			reset: () => set({
 				completedMissions: {},
 				currentMission: null,
+				currentRunId: null,
 				currentDifficulty: 'normal',
 				rewardsClaimed: [],
 				seenCinematics: [],

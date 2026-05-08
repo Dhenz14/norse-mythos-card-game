@@ -15,10 +15,12 @@ Payload:
 ```json
 {
   "v": 1,
+  "cid": "war-of-pantheons",
   "m": "norse-1",
   "d": "normal",
   "n": 12,
-  "sb": 12345678,
+  "rid": "local_run_id",
+  "lst": 1736200000000,
   "rh": "ruleset_hash",
   "tr": "transcript_root",
   "tc": "ipfs://optional-transcript-cid",
@@ -29,10 +31,12 @@ Payload:
 
 Field notes:
 
+- `cid`: campaign id. V1 uses `war-of-pantheons`.
 - `m`: mission id.
 - `d`: `normal`, `heroic`, or `mythic`.
 - `n`: campaign-specific monotonic nonce for the broadcaster.
-- `sb`: start block used for seed derivation.
+- `rid`: local run id created when the mission starts in IndexedDB.
+- `lst`: local run start timestamp in unix milliseconds.
 - `rh`: campaign registry hash.
 - `tr`: transcript Merkle root.
 - `tc`: optional transcript CID.
@@ -50,16 +54,20 @@ The campaign seed is derived by the indexer:
 sha256(canonical({
   domain: "ragnarok:campaign:v1",
   account: op.broadcaster,
+  campaignId,
+  localRunId,
+  localStartedAt,
   missionId,
   difficulty,
   nonce,
-  startBlockId,
   rulesetHash
 }))
 ```
 
-This binds a result to the signing Hive account, mission, difficulty, nonce,
-start block, and campaign ruleset.
+This binds a result to the signing Hive account, campaign, mission,
+difficulty, nonce, declared local run metadata, and campaign ruleset. `rid` and
+`lst` are not proof that the run started at that time; they bind the published
+result to a specific local run draft.
 
 ## V1 State
 
@@ -67,17 +75,40 @@ The testnet server persists derived campaign state in `data/chain-state.json`
 through the existing `StateAdapter` path:
 
 - `campaignNonces`
-- `campaignResults`
+- `campaignSubmissions`
 - `campaignProgress`
 
-`campaignResults` are stored as `pending_verification` until deterministic
-campaign replay is implemented. `campaignProgress` is only written by a verifier
-that can replay and confirm the result.
+`campaignSubmissions` is a verifier inbox. It records accepted
+`rp_campaign_result` envelopes as `queued`, `consumed`, or `rejected`, but it is
+not the player's campaign state and can be rebuilt from chain history.
+
+`campaignProgress` is the only final campaign state. A verifier writes it only
+after replaying the transcript/final state and confirming the result against the
+campaign registry. Rewards and unlock checks must read `campaignProgress`, not
+submission status.
+
+## Local Run Ledger
+
+The browser stores local run drafts in IndexedDB `campaign_runs`:
+
+- `localRunId`
+- `account`
+- `campaignId`
+- `missionId`
+- `difficulty`
+- `registryHash`
+- `nonce`
+- `localStartedAt`
+- `status`: `started`, `won`, `published`, or `rejected`
+- publication data such as `transcriptRoot`, `finalStateHash`, and `publishedTrxId`
+
+This is a player-side journal. It is useful for retries, diagnostics, and
+building `rp_campaign_result`, but it is not authoritative campaign progress.
 
 ## Rewards
 
-`reward_claim campaign:{missionId}` is gated by verified campaign progress.
-Pending results do not unlock economic rewards.
+`reward_claim campaign:{campaignId}:{missionId}` is gated by verified campaign
+progress. Queued submissions do not unlock economic rewards.
 
 ## Registry
 

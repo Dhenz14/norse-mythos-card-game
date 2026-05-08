@@ -2,14 +2,14 @@
  * Campaign match lifecycle handlers.
  *
  * Owns:
- *   - Mark the mission completed in `useCampaignStore`.
- *   - One-shot reward distribution (eitr from `mission.rewards`,
- *     plus difficulty-locked bonus eitr — heroic 50, mythic 150).
- *   - `claimReward(missionId)` flag flip so subsequent wins are no-ops.
+ *   - Mark optimistic local completion in `useCampaignStore`.
+ *   - Publish the winning campaign run as `rp_campaign_result`.
+ *   - Local-mode reward distribution. Hive-mode rewards wait for
+ *     campaignProgress from the indexer/verifier.
  *
  * Idempotency:
- *   - `claimReward` is gated by `useCampaignStore.rewardsClaimed`,
- *     so replaying a mission already-claimed does not double-pay.
+ *   - Local-mode `claimReward` is gated by `useCampaignStore.rewardsClaimed`,
+ *     so replaying a mission already-claimed does not double-pay locally.
  *   - `completeMission` updates personal-best stats every win and is
  *     intentionally NOT idempotent — replay should refresh bests.
  *
@@ -27,23 +27,20 @@
 
 import { debug } from '../../../config/debugConfig';
 import { useCraftingStore } from '../../../crafting/craftingStore';
-import { useCampaignStore } from '../../../campaign';
+import { publishCampaignVictoryResult, useCampaignStore } from '../../../campaign';
+import { getNFTBridge } from '../../../nft';
 import type { MatchEndContext } from '../../onWinDispatch';
 import type { MatchContext } from '../../types';
 
 const HEROIC_BONUS_EITR = 50;
 const MYTHIC_BONUS_EITR = 150;
 
-export function onCampaignMatchEnd(ctx: MatchContext, end: MatchEndContext): void {
+function awardLocalCampaignRewards(ctx: MatchContext, end: MatchEndContext): void {
 	if (ctx.opponent.kind !== 'scripted') return;
 	if (ctx.opponent.script.kind !== 'campaign-mission') return;
-	if (!end.iWon) return;
 
 	const { mission, difficulty } = ctx.opponent.script;
 	const campaign = useCampaignStore.getState();
-
-	campaign.completeMission(mission.id, difficulty, end.turnCount);
-
 	if (campaign.rewardsClaimed.includes(mission.id)) return;
 
 	const crafting = useCraftingStore.getState();
@@ -60,5 +57,27 @@ export function onCampaignMatchEnd(ctx: MatchContext, end: MatchEndContext): voi
 	}
 
 	campaign.claimReward(mission.id);
-	debug.chess(`[Campaign] Rewards distributed for ${mission.id} (${difficulty})`);
+	debug.chess(`[Campaign] Local rewards distributed for ${mission.id} (${difficulty}, turns=${end.turnCount})`);
+}
+
+export function onCampaignMatchEnd(ctx: MatchContext, end: MatchEndContext): void {
+	if (ctx.opponent.kind !== 'scripted') return;
+	if (ctx.opponent.script.kind !== 'campaign-mission') return;
+	if (!end.iWon) return;
+
+	const { mission, difficulty } = ctx.opponent.script;
+	const campaign = useCampaignStore.getState();
+
+	campaign.completeMission(mission.id, difficulty, end.turnCount);
+
+	void publishCampaignVictoryResult(ctx, end)
+		.then(result => {
+			if (result.success && result.trxId) getNFTBridge().emitTransactionConfirmed(result.trxId);
+			if (!result.success) debug.warn('[Campaign] Result publication failed:', result.error);
+		})
+		.catch(err => debug.warn('[Campaign] Result publication error:', err));
+
+	if (!getNFTBridge().isHiveMode()) {
+		awardLocalCampaignRewards(ctx, end);
+	}
 }

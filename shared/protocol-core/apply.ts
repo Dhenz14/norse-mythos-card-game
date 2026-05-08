@@ -12,7 +12,7 @@ import type {
 	CardDataProvider, RewardProvider, SignatureVerifier,
 	CardAsset, GenesisRecord, EloRecord, PackAsset,
 	MarketListing, MarketOffer, ProtocolAction, RewardDefinition,
-	CampaignDifficulty, CampaignResultRecord, CampaignRegistryProvider,
+	CampaignDifficulty, CampaignRegistryProvider, CampaignSubmissionRecord,
 } from './types';
 import {
 	RAGNAROK_ADMIN_ACCOUNT, TRANSFER_COOLDOWN_BLOCKS, MAX_CARD_LEVEL,
@@ -96,7 +96,7 @@ const OP_HANDLERS: Record<ProtocolAction, OpHandler> = {
 	level_up: (op, _ctx, deps) => applyLevelUp(op, deps),
 	match_anchor: (op, _ctx, deps) => applyMatchAnchor(op, deps),
 	match_result: (op, ctx, deps) => applyMatchResult(op, ctx, deps),
-	campaign_result: (op, ctx, deps) => applyCampaignResult(op, ctx, deps),
+	campaign_result: (op, _ctx, deps) => applyCampaignResult(op, deps),
 	queue_join: (op, _ctx, deps) => applyQueueJoin(op, deps),
 	queue_leave: (op, _ctx, deps) => applyQueueLeave(op, deps),
 	reward_claim: (op, _ctx, deps) => applyRewardClaim(op, deps),
@@ -730,10 +730,12 @@ async function applyWinnerCardXp(
 // ============================================================
 
 interface CampaignResultPayloadFields {
+	campaignId: string;
 	missionId: string;
 	difficulty: CampaignDifficulty;
 	nonce: number;
-	startBlock: number;
+	localRunId: string;
+	localStartedAt: number;
 	rulesetHash: string;
 	transcriptRoot: string;
 	transcriptCid?: string;
@@ -769,6 +771,9 @@ function readCampaignDifficulty(value: string): CampaignDifficulty | OpResult {
 }
 
 function parseCampaignResultPayload(op: ProtocolOp): CampaignResultPayloadFields | OpResult {
+	const campaignId = readStringField(op.payload, 'cid');
+	if (isOpResult(campaignId)) return campaignId;
+
 	const missionId = readStringField(op.payload, 'm');
 	if (isOpResult(missionId)) return missionId;
 
@@ -781,8 +786,11 @@ function parseCampaignResultPayload(op: ProtocolOp): CampaignResultPayloadFields
 	const nonce = readPositiveIntegerField(op.payload, 'n');
 	if (isOpResult(nonce)) return nonce;
 
-	const startBlock = readPositiveIntegerField(op.payload, 'sb');
-	if (isOpResult(startBlock)) return startBlock;
+	const localRunId = readStringField(op.payload, 'rid');
+	if (isOpResult(localRunId)) return localRunId;
+
+	const localStartedAt = readPositiveIntegerField(op.payload, 'lst');
+	if (isOpResult(localStartedAt)) return localStartedAt;
 
 	const rulesetHash = readStringField(op.payload, 'rh');
 	if (isOpResult(rulesetHash)) return rulesetHash;
@@ -802,10 +810,12 @@ function parseCampaignResultPayload(op: ProtocolOp): CampaignResultPayloadFields
 		: undefined;
 
 	return {
+		campaignId,
 		missionId,
 		difficulty,
 		nonce,
-		startBlock,
+		localRunId,
+		localStartedAt,
 		rulesetHash,
 		transcriptRoot,
 		transcriptCid,
@@ -814,13 +824,14 @@ function parseCampaignResultPayload(op: ProtocolOp): CampaignResultPayloadFields
 	};
 }
 
-function getCampaignResultKey(
+function getCampaignSubmissionKey(
 	account: string,
+	campaignId: string,
 	missionId: string,
 	difficulty: CampaignDifficulty,
 	nonce: number,
 ): string {
-	return `${account}:${missionId}:${difficulty}:${nonce}`;
+	return `${account}:${campaignId}:${missionId}:${difficulty}:${nonce}`;
 }
 
 function calculateCampaignStars(
@@ -834,60 +845,68 @@ function calculateCampaignStars(
 
 async function deriveCampaignSeed(args: {
 	account: string;
+	campaignId: string;
 	missionId: string;
 	difficulty: CampaignDifficulty;
 	nonce: number;
-	startBlockId: string;
+	localRunId: string;
+	localStartedAt: number;
 	rulesetHash: string;
 }): Promise<string> {
 	return sha256Hash(canonicalStringify({
 		account: args.account,
+		campaignId: args.campaignId,
 		difficulty: args.difficulty,
 		domain: 'ragnarok:campaign:v1',
+		localRunId: args.localRunId,
+		localStartedAt: args.localStartedAt,
 		missionId: args.missionId,
 		nonce: args.nonce,
 		rulesetHash: args.rulesetHash,
-		startBlockId: args.startBlockId,
 	}));
 }
 
 async function applyCampaignResult(
 	op: ProtocolOp,
-	ctx: ReplayContext,
 	deps: ProtocolCoreDeps,
 ): Promise<OpResult> {
 	const parsed = parseCampaignResultPayload(op);
 	if (isOpResult(parsed)) return parsed;
 
-	if (parsed.startBlock >= op.blockNum) {
-		return reject('start block must be before result block');
+	const registryHash = deps.campaigns.getRegistryHash();
+	const registryCampaignId = deps.campaigns.getCampaignId();
+	if (parsed.campaignId !== registryCampaignId) {
+		return reject(`campaign id mismatch: expected=${registryCampaignId}`);
 	}
 
-	const registryHash = deps.campaigns.getRegistryHash();
 	if (parsed.rulesetHash !== registryHash) {
 		return reject(`campaign ruleset hash mismatch: expected=${registryHash}`);
 	}
 
 	const mission = deps.campaigns.getMission(parsed.missionId);
 	if (!mission) return reject(`unknown campaign mission: ${parsed.missionId}`);
+	if (mission.campaignId !== parsed.campaignId) {
+		return reject(`mission ${parsed.missionId} does not belong to campaign ${parsed.campaignId}`);
+	}
 	if (!mission.allowedDifficulties.includes(parsed.difficulty)) {
 		return reject(`difficulty not allowed for ${parsed.missionId}: ${parsed.difficulty}`);
 	}
 
 	for (const prerequisiteId of mission.prerequisiteIds) {
-		const progress = await deps.state.getCampaignProgress(op.broadcaster, prerequisiteId);
+		const progress = await deps.state.getCampaignProgress(op.broadcaster, parsed.campaignId, prerequisiteId);
 		if (!progress) {
 			return reject(`campaign prerequisite not met: ${prerequisiteId}`);
 		}
 	}
 
-	const resultKey = getCampaignResultKey(
+	const submissionKey = getCampaignSubmissionKey(
 		op.broadcaster,
+		parsed.campaignId,
 		parsed.missionId,
 		parsed.difficulty,
 		parsed.nonce,
 	);
-	if (await deps.state.getCampaignResult(resultKey)) {
+	if (await deps.state.getCampaignSubmission(submissionKey)) {
 		return { status: 'ignored' };
 	}
 
@@ -896,29 +915,27 @@ async function applyCampaignResult(
 		return reject(`campaign nonce ${parsed.nonce} not higher than last seen`);
 	}
 
-	const startBlockId = await ctx.getBlockId(parsed.startBlock);
-	if (!startBlockId) {
-		return reject(`missing campaign start block id: ${parsed.startBlock}`);
-	}
-
 	const seed = await deriveCampaignSeed({
 		account: op.broadcaster,
+		campaignId: parsed.campaignId,
 		missionId: parsed.missionId,
 		difficulty: parsed.difficulty,
 		nonce: parsed.nonce,
-		startBlockId,
+		localRunId: parsed.localRunId,
+		localStartedAt: parsed.localStartedAt,
 		rulesetHash: parsed.rulesetHash,
 	});
 
 	const stars = calculateCampaignStars(parsed.turnCount, mission.starThresholds);
-	const record: CampaignResultRecord = {
-		resultKey,
+	const submission: CampaignSubmissionRecord = {
+		submissionKey,
 		account: op.broadcaster,
+		campaignId: parsed.campaignId,
 		missionId: parsed.missionId,
 		difficulty: parsed.difficulty,
 		nonce: parsed.nonce,
-		startBlock: parsed.startBlock,
-		startBlockId,
+		localRunId: parsed.localRunId,
+		localStartedAt: parsed.localStartedAt,
 		rulesetHash: parsed.rulesetHash,
 		seed,
 		turnCount: parsed.turnCount,
@@ -926,13 +943,13 @@ async function applyCampaignResult(
 		transcriptRoot: parsed.transcriptRoot,
 		transcriptCid: parsed.transcriptCid,
 		finalStateHash: parsed.finalStateHash,
-		status: 'pending_verification',
+		status: 'queued',
 		trxId: op.trxId,
 		blockNum: op.blockNum,
 		timestamp: op.timestamp,
 	};
 
-	await deps.state.putCampaignResult(record);
+	await deps.state.putCampaignSubmission(submission);
 	return { status: 'applied' };
 }
 
@@ -1023,16 +1040,18 @@ async function applyCampaignRewardClaim(
 	rewardId: string,
 	deps: ProtocolCoreDeps,
 ): Promise<OpResult> {
-	const missionId = rewardId.slice('campaign:'.length);
-	if (!missionId) return reject('missing campaign mission id');
+	const [, campaignId, missionId] = rewardId.split(':');
+	if (!campaignId || !missionId) {
+		return reject('campaign reward id must be campaign:{campaignId}:{missionId}');
+	}
 
 	if (await deps.state.hasRewardClaim(op.broadcaster, rewardId)) {
 		return { status: 'ignored' };
 	}
 
-	const progress = await deps.state.getCampaignProgress(op.broadcaster, missionId);
+	const progress = await deps.state.getCampaignProgress(op.broadcaster, campaignId, missionId);
 	if (!progress) {
-		return reject(`campaign reward condition not met for ${missionId}`);
+		return reject(`campaign reward condition not met for ${campaignId}:${missionId}`);
 	}
 
 	await deps.state.putRewardClaim(op.broadcaster, rewardId, op.blockNum);

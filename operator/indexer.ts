@@ -183,10 +183,17 @@ function applyTransferOp(payload: Record<string, unknown>): DerivedState | undef
 	return uid ? { cardUid: uid, cardId } : undefined;
 }
 
+function isCampaignDifficulty(value: unknown): value is NonNullable<DerivedState['campaignDifficulty']> {
+	return value === 'normal' || value === 'heroic' || value === 'mythic';
+}
+
 function applyCampaignResult(payload: Record<string, unknown>): DerivedState | undefined {
+	const campaignId = payload.cid as string | undefined;
 	const missionId = payload.m as string | undefined;
-	const difficulty = payload.d as string | undefined;
-	if (!missionId || !difficulty) return undefined;
+	const difficulty = payload.d;
+	const localRunId = payload.rid as string | undefined;
+	const localStartedAt = payload.lst as number | undefined;
+	if (!campaignId || !missionId || !isCampaignDifficulty(difficulty)) return undefined;
 
 	const transcriptCID = payload.tc as string | undefined;
 	if (transcriptCID) {
@@ -194,9 +201,12 @@ function applyCampaignResult(payload: Record<string, unknown>): DerivedState | u
 	}
 
 	return {
+		campaignId,
 		campaignMissionId: missionId,
 		campaignDifficulty: difficulty,
-		campaignStatus: 'pending_verification',
+		campaignLocalRunId: localRunId,
+		campaignLocalStartedAt: localStartedAt,
+		campaignSubmissionStatus: 'queued',
 		transcriptCID,
 	};
 }

@@ -27,6 +27,7 @@ function getStagedCampaignArgs(identityFactory: MatchIdentityFactory): CampaignR
 		identity: identityFactory.create(),
 		missionId: campaign.currentMission,
 		difficulty: campaign.currentDifficulty,
+		localRunId: campaign.currentRunId,
 	};
 }
 

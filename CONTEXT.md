@@ -27,6 +27,15 @@ _Avoid_: Full catalog audit, every card validated, final balance
 - **Testnet** state is reset before mainnet and does not create permanent ownership or rewards.
 - The **Playable Beta Flow** must be stable before **Closed Testnet Beta** opens.
 
+## Campaign Protocol
+
+- Campaign completion is declared with Hive `custom_json` id `rp_campaign_result`.
+- The Hive broadcaster is the authoritative player identity; payload usernames are ignored.
+- Local starts are stored as IndexedDB `campaign_runs`; `localRunId` and `localStartedAt` bind a result to a local draft but are not proof of start.
+- `campaignSubmissions` is only a verifier inbox for accepted result envelopes.
+- `campaignProgress` is the only final campaign state and the only state that unlocks campaign rewards.
+- Testnet persistence can use local JSON or IndexedDB adapters; the protocol must stay rebuildable from chain history.
+
 ## Example Dialogue
 
 > **Dev:** "Are we trying to finish the whole testnet before inviting players?"

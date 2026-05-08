@@ -450,7 +450,7 @@ After each match, `BlockchainSubscriber.ts`:
 ### 5.8 Reward Claiming on Chain
 
 Campaign mission rewards and daily quest rewards broadcast `reward_claim` via `hiveSync.claimReward()`:
-- `campaignStore.claimReward()` → `hiveSync.claimReward('campaign:{missionId}')`
+- `campaignStore.claimReward()` → `hiveSync.claimReward('campaign:{campaignId}:{missionId}')`
 - `dailyQuestStore.claimReward()` → `hiveSync.claimReward('daily_quest:{questId}')`
 
 All chain broadcasts are gated behind `isHiveMode()` — zero impact in local/test mode.

@@ -186,10 +186,12 @@ export const RewardClaimPayload = z.object({
 
 export const CampaignResultPayload = z.object({
 	v: z.literal(1).optional(),
+	cid: z.string().min(1),
 	m: z.string().min(1),
 	d: z.enum(['normal', 'heroic', 'mythic']),
 	n: PositiveInt,
-	sb: PositiveInt,
+	rid: z.string().min(1),
+	lst: PositiveInt,
 	rh: z.string().min(1),
 	tr: z.string().min(1),
 	tc: z.string().min(1).optional(),
