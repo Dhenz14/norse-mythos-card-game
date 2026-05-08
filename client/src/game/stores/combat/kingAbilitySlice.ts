@@ -23,11 +23,12 @@ import {
   createMine,
   MineDirection
 } from '../../utils/chess/kingAbilityUtils';
-import { 
+import {
   KingAbilitySlice,
   UnifiedCombatStore
 } from './types';
 import { debug } from '../../config/debugConfig';
+import { cryptoRng, cryptoIdGen } from '../../utils/seededRng';
 
 const createInitialKingState = (kingId: string): KingDivineCommandState => {
   const config = getKingAbilityConfig(kingId);
@@ -52,7 +53,6 @@ export const createKingAbilitySlice: StateCreator<
   allActiveMines: [],
   minePlacementMode: false,
   selectedMineDirection: null,
-  lastMineTriggered: null,
   pendingManaBoost: { player: 0, opponent: 0 },
   lastClearedTurn: null,
 
@@ -66,9 +66,9 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null,
       lastClearedTurn: null
     });
+    get().clearMineTriggered();
 
     debug.chess('[KingAbility] Initialized:', { playerKingId, opponentKingId });
   },
@@ -107,6 +107,7 @@ export const createKingAbilitySlice: StateCreator<
       kingState.kingId,
       state.allActiveMines,
       ownPieces,
+      owner,
       direction
     );
 
@@ -117,13 +118,21 @@ export const createKingAbilitySlice: StateCreator<
 
     const currentTurn = state.boardState.moveCount;
     const enemySide = owner === 'player' ? 'opponent' : 'player';
+    // P2P: both peers seeded the chess slice via `initChessWithSeed(matchSeed)`,
+    // so `_chessIdGen` and `_chessRng` are non-null and produce identical
+    // sequences. SP: nulls fall back to crypto-grade ambient sources, which
+    // are non-deterministic (acceptable, no convergence requirement).
+    const idGen = state._chessIdGen ?? cryptoIdGen;
+    const rng = state._chessRng ?? cryptoRng;
     const newMine = createMine(
       kingState.kingId,
       owner,
       centerPosition,
       currentTurn,
+      idGen,
       direction,
-      enemySide
+      enemySide,
+      rng
     );
 
     if (!newMine) {
@@ -153,9 +162,10 @@ export const createKingAbilitySlice: StateCreator<
       remaining: updatedKingState.minesRemaining
     });
 
+    const placedTick = get()._nextLogTick();
     state.addLogEntry({
-      id: `mine_placed_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `mine_placed_${placedTick}`,
+      timestamp: placedTick,
       type: 'ability',
       message: `${owner === 'player' ? 'Player' : 'Opponent'} king placed a Divine Command trap`
     });
@@ -214,9 +224,9 @@ export const createKingAbilitySlice: StateCreator<
     const updatedPendingManaBoost = { ...state.pendingManaBoost };
     updatedPendingManaBoost[triggeredMine.owner] += manaBoost;
 
+    state.recordMineTriggered(triggeredMine, movingPieceId);
     set({
       allActiveMines: updatedMines,
-      lastMineTriggered: { mine: triggeredMine, targetPieceId: movingPieceId },
       pendingManaBoost: updatedPendingManaBoost
     });
 
@@ -228,9 +238,10 @@ export const createKingAbilitySlice: StateCreator<
       position: landingPosition
     });
 
+    const triggeredTick = get()._nextLogTick();
     state.addLogEntry({
-      id: `mine_triggered_${Date.now()}`,
-      timestamp: Date.now(),
+      id: `mine_triggered_${triggeredTick}`,
+      timestamp: triggeredTick,
       type: 'ability',
       message: `Divine Command trap triggered! ${movingPieceOwner === 'player' ? 'Player' : 'Opponent'} loses ${staPenalty} STA. ${triggeredMine.owner === 'player' ? 'Player' : 'Opponent'} gains +${manaBoost} mana next PvP!`
     });
@@ -289,10 +300,10 @@ export const createKingAbilitySlice: StateCreator<
       allActiveMines: [],
       minePlacementMode: false,
       selectedMineDirection: null,
-      lastMineTriggered: null,
       pendingManaBoost: { player: 0, opponent: 0 },
       lastClearedTurn: null
     });
+    get().clearMineTriggered();
   },
 
   canPlaceMine: (owner: 'player' | 'opponent'): boolean => {
@@ -317,10 +328,6 @@ export const createKingAbilitySlice: StateCreator<
   getVisibleMines: (viewerSide: 'player' | 'opponent'): ActiveMine[] => {
     const state = get();
     return state.allActiveMines.filter(m => m.owner === viewerSide && !m.triggered);
-  },
-
-  clearMineTriggered: () => {
-    set({ lastMineTriggered: null });
   },
 
   consumePendingManaBoost: (side: 'player' | 'opponent'): number => {

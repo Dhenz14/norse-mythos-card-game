@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a grant_persistent_effect battlecry effect
@@ -51,7 +52,7 @@ export default function executeGrantPersistentEffect(
     }
     
     const newPersistentEffect = {
-      id: `persistent-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `persistent-${cryptoIdGen()}`,
       sourceCardId: sourceCard.id,
       sourceCardName: sourceCard.name,
       effect: persistentEffect,

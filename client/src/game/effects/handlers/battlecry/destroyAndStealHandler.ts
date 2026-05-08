@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a destroy_and_steal battlecry effect
@@ -67,7 +68,7 @@ export default function executeDestroyAndSteal(
     context.logGameEvent(`${sourceCard.name} destroyed ${targetMinion.card.name}`);
     
     const cardCopy: CardInstance = {
-      instanceId: 'stolen-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9),
+      instanceId: cryptoIdGen(),
       card: { ...targetMinion.card },
       canAttack: false,
       isPlayed: false,

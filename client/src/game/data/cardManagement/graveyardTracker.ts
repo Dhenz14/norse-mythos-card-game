@@ -32,6 +32,7 @@ export interface GraveyardMinion {
 
 // Initialize the graveyard as an empty array
 import { debug } from '../../config/debugConfig';
+import { cryptoRng } from '../../utils/seededRng';
 
 let graveyard: GraveyardMinion[] = [];
 
@@ -99,7 +100,7 @@ export function getRandomGraveyardMinion(): GraveyardMinion | undefined {
     return undefined;
   }
   
-  const randomIndex = Math.floor(Math.random() * graveyard.length);
+  const randomIndex = Math.floor(cryptoRng() * graveyard.length);
   return graveyard[randomIndex];
 }
 

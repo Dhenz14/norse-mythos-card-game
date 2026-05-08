@@ -10,6 +10,7 @@ import { BattlecryEffect } from '../../../types/CardTypes';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
 import { hasKeyword } from '../../../utils/cards/keywordUtils';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a return battlecry effect
@@ -62,7 +63,7 @@ export function executeReturnReturn(
     // Log the effect for debugging
     newState.gameLog = newState.gameLog || [];
     newState.gameLog.push({
-      id: Math.random().toString(36).substring(2, 15),
+      id: cryptoIdGen(),
       type: 'effect',
       player: currentPlayerId,
       text: `${sourceCard.card.name} tried to return ${targetMinion.card.name} to hand, but hand is full`,
@@ -77,7 +78,7 @@ export function executeReturnReturn(
   // Create a new version of the minion for hand with reset properties
   const handMinion: CardInstance = {
     ...targetMinion,
-    instanceId: `hand-${Date.now()}-${Math.random().toString(36).substring(2,9)}`, // Assign new ID
+    instanceId: `hand-${cryptoIdGen()}-${cryptoRng().toString(36).substring(2,9)}`, // Assign new ID
     attacksPerformed: 0,
     canAttack: false,
     isPlayed: false,
@@ -114,7 +115,7 @@ export function executeReturnReturn(
   // Log the effect for debugging
   newState.gameLog = newState.gameLog || [];
   newState.gameLog.push({
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'effect',
     player: currentPlayerId,
     text: `${sourceCard.card.name} returned ${targetMinion.card.name} to hand`,

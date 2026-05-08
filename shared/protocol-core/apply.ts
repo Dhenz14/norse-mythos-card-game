@@ -12,6 +12,7 @@ import type {
 	CardDataProvider, RewardProvider, SignatureVerifier,
 	CardAsset, GenesisRecord, EloRecord, PackAsset,
 	MarketListing, MarketOffer, ProtocolAction, RewardDefinition,
+	CampaignDifficulty, CampaignRegistryProvider, CampaignSubmissionRecord,
 } from './types';
 import {
 	RAGNAROK_ADMIN_ACCOUNT, TRANSFER_COOLDOWN_BLOCKS, MAX_CARD_LEVEL,
@@ -24,6 +25,7 @@ import {
 import { verifyPoW, POW_CONFIG } from './pow';
 import { canonicalStringify, sha256Hash } from './hash';
 import { fnv1a } from './broadcast-utils';
+import { getEconomicLevelForXP, getEconomicXPPerWin } from './cardProgression';
 
 // ============================================================
 // Dependencies injected at init, not imported
@@ -33,6 +35,7 @@ export interface ProtocolCoreDeps {
 	state: StateAdapter;
 	cards: CardDataProvider;
 	rewards: RewardProvider;
+	campaigns: CampaignRegistryProvider;
 	sigs: SignatureVerifier;
 }
 
@@ -74,7 +77,9 @@ type MarketNftAsset =
 	| { nftType: 'pack'; asset: PackAsset };
 
 const IGNORE_RESULT: OpResult = { status: 'ignored' };
-const GAME_ACTIONS_REQUIRING_SLASH_CHECK = new Set<ProtocolAction>(['match_anchor', 'match_result', 'queue_join']);
+const GAME_ACTIONS_REQUIRING_SLASH_CHECK = new Set<ProtocolAction>([
+	'match_anchor', 'match_result', 'campaign_result', 'queue_join',
+]);
 const RARITY_CARD_CAPS: Record<string, number> = {
 	common: 2000,
 	rare: 1000,
@@ -91,6 +96,7 @@ const OP_HANDLERS: Record<ProtocolAction, OpHandler> = {
 	level_up: (op, _ctx, deps) => applyLevelUp(op, deps),
 	match_anchor: (op, _ctx, deps) => applyMatchAnchor(op, deps),
 	match_result: (op, ctx, deps) => applyMatchResult(op, ctx, deps),
+	campaign_result: (op, _ctx, deps) => applyCampaignResult(op, deps),
 	queue_join: (op, _ctx, deps) => applyQueueJoin(op, deps),
 	queue_leave: (op, _ctx, deps) => applyQueueLeave(op, deps),
 	reward_claim: (op, _ctx, deps) => applyRewardClaim(op, deps),
@@ -416,7 +422,7 @@ async function applyLevelUp(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpR
 	if (newLevel <= card.level) return { status: 'ignored' }; // idempotent
 
 	// Validate against chain-derived XP
-	const derivedLevel = getLevelForXP(card.rarity, card.xp);
+	const derivedLevel = getEconomicLevelForXP(card.rarity, card.xp);
 	if (newLevel > derivedLevel) {
 		return reject(`level overclaim: ${newLevel} > derived ${derivedLevel} (xp=${card.xp})`);
 	}
@@ -424,30 +430,6 @@ async function applyLevelUp(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<OpR
 	await deps.state.putCard({ ...card, level: newLevel });
 	return { status: 'applied' };
 }
-
-// XP thresholds by rarity (from cardXPSystem.ts)
-const XP_THRESHOLDS: Record<string, number[]> = {
-	free: [0, 20, 50],
-	basic: [0, 20, 50],
-	common: [0, 50, 150],
-	rare: [0, 100, 300],
-	epic: [0, 160, 480],
-	mythic: [0, 200, 500],
-};
-
-function getLevelForXP(rarity: string, xp: number): number {
-	const thresholds = XP_THRESHOLDS[rarity] ?? XP_THRESHOLDS.common;
-	let level = 1;
-	for (let i = 1; i < thresholds.length; i++) {
-		if (xp >= thresholds[i]) level = i + 1;
-	}
-	return Math.min(level, MAX_CARD_LEVEL);
-}
-
-// XP gain per win by rarity
-const XP_PER_WIN: Record<string, number> = {
-	free: 5, basic: 5, common: 10, rare: 15, epic: 20, mythic: 25,
-};
 
 // ============================================================
 // match_anchor
@@ -737,10 +719,238 @@ async function applyWinnerCardXp(
 	const winnerNFTs = await deps.state.getCardsByOwner(details.winner);
 	for (const nft of winnerNFTs) {
 		if (!winnerCardIds.has(nft.cardId)) continue;
-		const xpGain = XP_PER_WIN[nft.rarity] ?? XP_PER_WIN.common;
+		const xpGain = getEconomicXPPerWin(nft.rarity);
 		if (xpGain <= 0) continue;
 		await deps.state.putCard({ ...nft, xp: nft.xp + xpGain });
 	}
+}
+
+// ============================================================
+// campaign_result
+// ============================================================
+
+interface CampaignResultPayloadFields {
+	campaignId: string;
+	missionId: string;
+	difficulty: CampaignDifficulty;
+	nonce: number;
+	localRunId: string;
+	localStartedAt: number;
+	rulesetHash: string;
+	transcriptRoot: string;
+	transcriptCid?: string;
+	finalStateHash: string;
+	turnCount: number;
+}
+
+function readStringField(
+	payload: Record<string, unknown>,
+	key: string,
+): string | OpResult {
+	const value = payload[key];
+	if (typeof value !== 'string' || value.length === 0) {
+		return reject(`missing ${key}`);
+	}
+	return value;
+}
+
+function readPositiveIntegerField(
+	payload: Record<string, unknown>,
+	key: string,
+): number | OpResult {
+	const value = payload[key];
+	if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+		return reject(`invalid ${key}`);
+	}
+	return value;
+}
+
+function readCampaignDifficulty(value: string): CampaignDifficulty | OpResult {
+	if (value === 'normal' || value === 'heroic' || value === 'mythic') return value;
+	return reject(`invalid difficulty: ${value}`);
+}
+
+function parseCampaignResultPayload(op: ProtocolOp): CampaignResultPayloadFields | OpResult {
+	const campaignId = readStringField(op.payload, 'cid');
+	if (isOpResult(campaignId)) return campaignId;
+
+	const missionId = readStringField(op.payload, 'm');
+	if (isOpResult(missionId)) return missionId;
+
+	const difficultyRaw = readStringField(op.payload, 'd');
+	if (isOpResult(difficultyRaw)) return difficultyRaw;
+
+	const difficulty = readCampaignDifficulty(difficultyRaw);
+	if (isOpResult(difficulty)) return difficulty;
+
+	const nonce = readPositiveIntegerField(op.payload, 'n');
+	if (isOpResult(nonce)) return nonce;
+
+	const localRunId = readStringField(op.payload, 'rid');
+	if (isOpResult(localRunId)) return localRunId;
+
+	const localStartedAt = readPositiveIntegerField(op.payload, 'lst');
+	if (isOpResult(localStartedAt)) return localStartedAt;
+
+	const rulesetHash = readStringField(op.payload, 'rh');
+	if (isOpResult(rulesetHash)) return rulesetHash;
+
+	const transcriptRoot = readStringField(op.payload, 'tr');
+	if (isOpResult(transcriptRoot)) return transcriptRoot;
+
+	const finalStateHash = readStringField(op.payload, 'fh');
+	if (isOpResult(finalStateHash)) return finalStateHash;
+
+	const turnCount = readPositiveIntegerField(op.payload, 't');
+	if (isOpResult(turnCount)) return turnCount;
+
+	const transcriptCidValue = op.payload.tc;
+	const transcriptCid = typeof transcriptCidValue === 'string' && transcriptCidValue.length > 0
+		? transcriptCidValue
+		: undefined;
+
+	return {
+		campaignId,
+		missionId,
+		difficulty,
+		nonce,
+		localRunId,
+		localStartedAt,
+		rulesetHash,
+		transcriptRoot,
+		transcriptCid,
+		finalStateHash,
+		turnCount,
+	};
+}
+
+function getCampaignSubmissionKey(
+	account: string,
+	campaignId: string,
+	missionId: string,
+	difficulty: CampaignDifficulty,
+	nonce: number,
+): string {
+	return `${account}:${campaignId}:${missionId}:${difficulty}:${nonce}`;
+}
+
+function calculateCampaignStars(
+	turnCount: number,
+	thresholds: { threeStar: number; twoStar: number },
+): number {
+	if (turnCount <= thresholds.threeStar) return 3;
+	if (turnCount <= thresholds.twoStar) return 2;
+	return 1;
+}
+
+async function deriveCampaignSeed(args: {
+	account: string;
+	campaignId: string;
+	missionId: string;
+	difficulty: CampaignDifficulty;
+	nonce: number;
+	localRunId: string;
+	localStartedAt: number;
+	rulesetHash: string;
+}): Promise<string> {
+	return sha256Hash(canonicalStringify({
+		account: args.account,
+		campaignId: args.campaignId,
+		difficulty: args.difficulty,
+		domain: 'ragnarok:campaign:v1',
+		localRunId: args.localRunId,
+		localStartedAt: args.localStartedAt,
+		missionId: args.missionId,
+		nonce: args.nonce,
+		rulesetHash: args.rulesetHash,
+	}));
+}
+
+async function applyCampaignResult(
+	op: ProtocolOp,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult> {
+	const parsed = parseCampaignResultPayload(op);
+	if (isOpResult(parsed)) return parsed;
+
+	const registryHash = deps.campaigns.getRegistryHash();
+	const registryCampaignId = deps.campaigns.getCampaignId();
+	if (parsed.campaignId !== registryCampaignId) {
+		return reject(`campaign id mismatch: expected=${registryCampaignId}`);
+	}
+
+	if (parsed.rulesetHash !== registryHash) {
+		return reject(`campaign ruleset hash mismatch: expected=${registryHash}`);
+	}
+
+	const mission = deps.campaigns.getMission(parsed.missionId);
+	if (!mission) return reject(`unknown campaign mission: ${parsed.missionId}`);
+	if (mission.campaignId !== parsed.campaignId) {
+		return reject(`mission ${parsed.missionId} does not belong to campaign ${parsed.campaignId}`);
+	}
+	if (!mission.allowedDifficulties.includes(parsed.difficulty)) {
+		return reject(`difficulty not allowed for ${parsed.missionId}: ${parsed.difficulty}`);
+	}
+
+	for (const prerequisiteId of mission.prerequisiteIds) {
+		const progress = await deps.state.getCampaignProgress(op.broadcaster, parsed.campaignId, prerequisiteId);
+		if (!progress) {
+			return reject(`campaign prerequisite not met: ${prerequisiteId}`);
+		}
+	}
+
+	const submissionKey = getCampaignSubmissionKey(
+		op.broadcaster,
+		parsed.campaignId,
+		parsed.missionId,
+		parsed.difficulty,
+		parsed.nonce,
+	);
+	if (await deps.state.getCampaignSubmission(submissionKey)) {
+		return { status: 'ignored' };
+	}
+
+	const nonceOk = await deps.state.advanceCampaignNonce(op.broadcaster, parsed.nonce);
+	if (!nonceOk) {
+		return reject(`campaign nonce ${parsed.nonce} not higher than last seen`);
+	}
+
+	const seed = await deriveCampaignSeed({
+		account: op.broadcaster,
+		campaignId: parsed.campaignId,
+		missionId: parsed.missionId,
+		difficulty: parsed.difficulty,
+		nonce: parsed.nonce,
+		localRunId: parsed.localRunId,
+		localStartedAt: parsed.localStartedAt,
+		rulesetHash: parsed.rulesetHash,
+	});
+
+	const stars = calculateCampaignStars(parsed.turnCount, mission.starThresholds);
+	const submission: CampaignSubmissionRecord = {
+		submissionKey,
+		account: op.broadcaster,
+		campaignId: parsed.campaignId,
+		missionId: parsed.missionId,
+		difficulty: parsed.difficulty,
+		nonce: parsed.nonce,
+		localRunId: parsed.localRunId,
+		localStartedAt: parsed.localStartedAt,
+		rulesetHash: parsed.rulesetHash,
+		seed,
+		turnCount: parsed.turnCount,
+		stars,
+		transcriptRoot: parsed.transcriptRoot,
+		transcriptCid: parsed.transcriptCid,
+		finalStateHash: parsed.finalStateHash,
+		status: 'queued',
+		trxId: op.trxId,
+		blockNum: op.blockNum,
+		timestamp: op.timestamp,
+	};
+
+	await deps.state.putCampaignSubmission(submission);
+	return { status: 'applied' };
 }
 
 function decodeCardIds(hex: string): number[] {
@@ -773,6 +983,8 @@ async function applyQueueJoin(op: ProtocolOp, deps: ProtocolCoreDeps): Promise<O
 	await deps.state.putQueueEntry(op.broadcaster, {
 		mode: (op.payload.mode as string) ?? 'ranked',
 		elo: chainElo.elo,
+		peerId: (op.payload.peer_id as string) ?? '',
+		deckHash: (op.payload.deck_hash as string) ?? '',
 		timestamp: op.timestamp,
 		blockNum: op.blockNum,
 	});
@@ -800,6 +1012,10 @@ async function applyRewardClaim(op: ProtocolOp, deps: ProtocolCoreDeps): Promise
 	const genesis = await deps.state.getGenesis();
 	if (!genesis) return reject('no genesis');
 
+	if (rewardId.startsWith('campaign:')) {
+		return applyCampaignRewardClaim(op, rewardId, deps);
+	}
+
 	const reward = deps.rewards.getRewardById(rewardId);
 	if (!reward) return reject(`unknown reward: ${rewardId}`);
 
@@ -814,6 +1030,29 @@ async function applyRewardClaim(op: ProtocolOp, deps: ProtocolCoreDeps): Promise
 
 	await mintRewardCards(op, rewardId, reward, deps);
 	await applyRewardRuneBonus(op.broadcaster, reward.runeBonus, deps);
+
+	await deps.state.putRewardClaim(op.broadcaster, rewardId, op.blockNum);
+	return { status: 'applied' };
+}
+
+async function applyCampaignRewardClaim(
+	op: ProtocolOp,
+	rewardId: string,
+	deps: ProtocolCoreDeps,
+): Promise<OpResult> {
+	const [, campaignId, missionId] = rewardId.split(':');
+	if (!campaignId || !missionId) {
+		return reject('campaign reward id must be campaign:{campaignId}:{missionId}');
+	}
+
+	if (await deps.state.hasRewardClaim(op.broadcaster, rewardId)) {
+		return { status: 'ignored' };
+	}
+
+	const progress = await deps.state.getCampaignProgress(op.broadcaster, campaignId, missionId);
+	if (!progress) {
+		return reject(`campaign reward condition not met for ${campaignId}:${missionId}`);
+	}
 
 	await deps.state.putRewardClaim(op.broadcaster, rewardId, op.blockNum);
 	return { status: 'applied' };

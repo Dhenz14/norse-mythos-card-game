@@ -67,6 +67,7 @@ mcp-server/src/sqlite/*.db
 
 /*.cjs
 /*.js
+scripts/temp/
 !vite.config.js
 !postcss.config.js
 !tailwind.config.js
@@ -79,6 +80,21 @@ __tests__/
 *.test.js
 *.test.ts
 !**/protocolConformance.test.ts
+!client/src/data/blockchain/cardXPRewards.test.ts
+!client/src/data/blockchain/deckVerification.test.ts
+!client/src/data/blockchain/matchResultPackager.test.ts
+!client/src/game/stores/starterStore.test.ts
+!client/src/game/deck/heroDeckRules.test.ts
+!client/src/game/utils/cards/cardLevelScaling.test.ts
+!shared/protocol-core/cardProgression.test.ts
+!shared/protocol-core/campaignResult.test.ts
+!client/src/game/match/economy.test.ts
+!client/src/game/match/derived.test.ts
+!client/src/game/match/legacyBridge.test.ts
+!client/src/game/match/identityFactory.test.ts
+!client/src/game/match/modes/single/resolver.test.ts
+!client/src/game/match/modes/campaign/resolver.test.ts
+!client/src/game/match/modes/p2p/resolver.test.ts
 *.spec.js
 *.spec.ts
 *.test.tsx
@@ -106,6 +122,39 @@ attached_assets/*Replit*
 *.swo
 .DS_Store
 Thumbs.db
+
+# ========================================
+# AI AGENT / IDE TOOL DIRECTORIES
+# ========================================
+# Each AI-coding tool drops its own state/config directory.
+# These should never be committed — they're per-developer environment.
+.agents/
+.codebuddy/
+.commandcode/
+.continue/
+.crush/
+.factory/
+.goose/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.windsurf/
+.zencoder/
+
+# Project-local skill installations (skills should be global, not per-project)
+skills/
+skills-lock.json
 
 # ========================================
 # STALE COMPILED FILES - BUILD ARTIFACTS
@@ -137,3 +186,10 @@ data/chain-state.json
 
 # Claude Code local settings
 .claude/
+
+# Superpowers brainstorm specs + implementation plans
+# (per-developer design artefacts, not pushed)
+docs/superpowers/
+docs/BETA_TESTNET_ROADMAP.md
+a.out
+.playwright-mcp/

@@ -11,6 +11,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getRandomCardsFromPool } from '../../../data/discoverPools';
 import { getDiscoveryOptions, filterCards } from '../../../utils/discoveryUtils';
 import allCards from '../../../data/allCards';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a Discover effect
@@ -61,7 +62,7 @@ export default function executeDiscover(
       });
       
       if (filteredCards.length > 0) {
-        const shuffled = [...filteredCards].sort(() => Math.random() - 0.5);
+        const shuffled = [...filteredCards].sort(() => cryptoRng() - 0.5);
         discoveryOptions = shuffled.slice(0, discoveryCount);
       }
     }

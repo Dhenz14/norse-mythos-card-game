@@ -40,6 +40,33 @@ export function getBurstContainer(): Container | null { return burstContainer; }
 export function getFilterContainer(): Container | null { return filterContainer; }
 export function getEmitterContainer(): Container | null { return emitterContainer; }
 
+function clearAmbientTimers() {
+	currentRealm = undefined;
+	ambientTimers.forEach(timer => clearTimeout(timer));
+	ambientTimers = [];
+}
+
+function killContainerTweens(container: Container | null) {
+	if (!container) return;
+
+	for (const child of container.children) {
+		gsap.killTweensOf(child);
+		if (typeof child === 'object' && child !== null && 'scale' in child) {
+			const scaleTarget = (child as { scale?: object }).scale;
+			if (scaleTarget) gsap.killTweensOf(scaleTarget);
+		}
+	}
+}
+
+function resetPixiGlobals(app: Application) {
+	if (pixiApp === app) pixiApp = null;
+	trailContainer = null;
+	burstContainer = null;
+	ambientContainer = null;
+	filterContainer = null;
+	emitterContainer = null;
+}
+
 interface RealmParticleConfig {
 	colors: number[];
 	count: number;
@@ -138,11 +165,13 @@ export function startAmbientParticles(realm: string) {
 }
 
 export function stopAmbientParticles() {
-	currentRealm = undefined;
-	ambientTimers.forEach(t => clearTimeout(t));
-	ambientTimers = [];
+	clearAmbientTimers();
 	if (ambientContainer) {
-		ambientContainer.removeChildren();
+		killContainerTweens(ambientContainer);
+		const children = ambientContainer.removeChildren();
+		for (const child of children) {
+			child.destroy();
+		}
 	}
 }
 
@@ -306,6 +335,30 @@ export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 
 		const app = new Application();
 		let mounted = true;
+		let initialized = false;
+		let destroyed = false;
+
+		const destroyApp = () => {
+			if (destroyed) return;
+			destroyed = true;
+			clearAmbientTimers();
+			[
+				ambientContainer,
+				trailContainer,
+				filterContainer,
+				emitterContainer,
+				burstContainer,
+			].forEach(killContainerTweens);
+			resetPixiGlobals(app);
+
+			const runtimeApp = app as Application & {
+				stage?: Container | null;
+				renderer?: unknown;
+			};
+			if (!initialized || !runtimeApp.stage || !runtimeApp.renderer) return;
+
+			app.destroy(false, { children: true });
+		};
 
 		app.init({
 			backgroundAlpha: 0,
@@ -314,8 +367,9 @@ export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 			resolution: window.devicePixelRatio || 1,
 			autoDensity: true,
 		}).then(() => {
+			initialized = true;
 			if (!mounted || !containerRef.current) {
-				app.destroy(true);
+				destroyApp();
 				return;
 			}
 
@@ -332,18 +386,16 @@ export const PixiParticleCanvas: React.FC<{ realm?: string }> = ({ realm }) => {
 			app.stage.addChild(filterContainer);
 			app.stage.addChild(emitterContainer);
 			app.stage.addChild(burstContainer);
+		}).catch((error: unknown) => {
+			if (mounted) {
+				console.warn('[PixiParticleCanvas] Particle renderer disabled:', error);
+			}
+			destroyApp();
 		});
 
 		return () => {
 			mounted = false;
-			stopAmbientParticles();
-			if (ambientContainer) { ambientContainer.destroy({ children: true }); ambientContainer = null; }
-			if (trailContainer) { trailContainer.destroy({ children: true }); trailContainer = null; }
-			if (filterContainer) { filterContainer.destroy({ children: true }); filterContainer = null; }
-			if (emitterContainer) { emitterContainer.destroy({ children: true }); emitterContainer = null; }
-			if (burstContainer) { burstContainer.destroy({ children: true }); burstContainer = null; }
-			if (pixiApp === app) pixiApp = null;
-			app.destroy(true);
+			destroyApp();
 		};
 	}, []);
 

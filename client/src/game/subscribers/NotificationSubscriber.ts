@@ -20,6 +20,7 @@ import type {
   NotificationEvent,
 } from '@/core/events/GameEvents';
 import { toast } from 'sonner';
+import { useBannerStore } from '@/game/components/ui/GameStatusBanner';
 
 type UnsubscribeFn = () => void;
 
@@ -157,24 +158,16 @@ export function initializeNotificationSubscriber(
   // Showdown Result — poker celebration animation handles this
   // Pet Evolution — ascension/apotheosis VFX handles this
 
-  // Direct Notification Events
+  // Direct Notification Events — route to the centered GameStatusBanner so
+  // the layer-contract rule in `eslint.config.js` is honest: stores can't
+  // import the banner directly, but they can emit a NOTIFICATION event and
+  // this subscriber pushes it into the banner store. Keeps presentation
+  // swappable (a future controller could switch to toast or a different
+  // widget without touching emission sites).
   unsubscribes.push(
     GameEventBus.subscribe<NotificationEvent>('NOTIFICATION', (event) => {
-      const options = { duration: event.duration ?? 3000 };
-
-      switch (event.level) {
-        case 'success':
-          toast.success(event.message, options);
-          break;
-        case 'warning':
-          toast.warning(event.message, options);
-          break;
-        case 'error':
-          toast.error(event.message, options);
-          break;
-        default:
-          toast.info(event.message, options);
-      }
+      const duration = event.duration ?? 2800;
+      useBannerStore.getState().push(event.message, event.level, duration);
     })
   );
 

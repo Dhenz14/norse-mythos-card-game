@@ -362,7 +362,7 @@ export const DeathAnimation: React.FC<DeathAnimationProps> = ({
         >
           {/* Skull icon */}
           <motion.div 
-            className="absolute flex items-center justify-center w-12 h-12 bg-black bg-opacity-60 rounded-full"
+            className="absolute flex items-center justify-center w-12 h-12 bg-black/60 rounded-full"
             style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
             animate={{ scale: [0, 1.2, 1] }}
             transition={{ duration: 0.5, times: [0, 0.7, 1] }}
@@ -440,7 +440,7 @@ export const SummonAnimation: React.FC<SummonAnimationProps> = ({
         >
           {/* Main summon light ray */}
           <motion.div 
-            className="absolute inset-0 bg-gradient-to-b from-yellow-200 to-transparent"
+            className="absolute inset-0 bg-linear-to-b from-yellow-200 to-transparent"
             style={{ transformOrigin: 'center top' }}
             initial={{ scaleY: 0, opacity: 0 }}
             animate={{ scaleY: 1, opacity: [0, 0.7, 0] }}
@@ -513,7 +513,7 @@ export const DrawCardAnimation: React.FC<DrawCardAnimationProps> = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="absolute pointer-events-none z-30 bg-gradient-to-b from-blue-400 to-transparent rounded-lg"
+          className="absolute pointer-events-none z-30 bg-linear-to-b from-blue-400 to-transparent rounded-lg"
           style={{
             width: '60px',
             height: '90px',
@@ -567,11 +567,11 @@ export const MessageAnimation: React.FC<MessageAnimationProps> = ({
   // Different colors based on message type
   const getBgColor = () => {
     switch(type) {
-      case 'info': return 'bg-blue-500 bg-opacity-90';
-      case 'success': return 'bg-green-500 bg-opacity-90';
-      case 'warning': return 'bg-yellow-500 bg-opacity-90';
-      case 'error': return 'bg-red-500 bg-opacity-90';
-      default: return 'bg-gray-700 bg-opacity-90';
+      case 'info': return 'bg-blue-500/90';
+      case 'success': return 'bg-green-500/90';
+      case 'warning': return 'bg-yellow-500/90';
+      case 'error': return 'bg-red-500/90';
+      default: return 'bg-gray-700/90';
     }
   };
   

@@ -1,7 +1,8 @@
-import type { HiveCardAsset } from '../schemas/HiveTypes';
+import type { CardOwnershipSource, HiveCardAsset } from '../schemas/HiveTypes';
 
 export type BlockchainActionType =
 	| 'match_result'
+	| 'campaign_result'
 	| 'level_up'
 	| 'card_transfer'
 	| 'nft_mint';
@@ -95,16 +96,6 @@ export interface CardXPReward {
 	didLevelUp: boolean;
 }
 
-export interface CardXPConfig {
-	rarity: string;
-	xpPerWin: number;
-	xpPerMvp: number;
-	maxLevel: number;
-	thresholds: number[];
-}
-
-export type XPConfigMap = Record<string, CardXPConfig>;
-
 export interface CardLevelBonus {
 	level: number;
 	attackBonus: number;
@@ -172,6 +163,7 @@ export interface MutableCardState {
 export interface CardUidMapping {
 	uid: string;
 	cardId: number;
+	source: CardOwnershipSource;
 }
 
 export interface MintInfo {
@@ -203,4 +195,4 @@ export const MAX_QUEUE_SIZE = 200;
 export const DEFAULT_MAX_RETRIES = 3;
 export const MATCH_RESULT_VERSION = 1;
 
-export type { HiveCardAsset };
+export type { CardOwnershipSource, HiveCardAsset };

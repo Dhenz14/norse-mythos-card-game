@@ -17,7 +17,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12102,
@@ -34,7 +34,7 @@ export const rogueCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12103,
@@ -52,7 +52,7 @@ export const rogueCards: CardData[] = [
       value: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12104,
@@ -70,25 +70,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: false
     },
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 12105,
-    name: "Shadow Strike",
-    manaCost: 1,
-    description: "Deal 3 damage to the enemy hero.",
-    flavorText: "You never see the blade. You only see the blood.",
-    type: "spell",
-    rarity: "common",
-    class: "Rogue",
-    spellEffect: {
-      type: "damage",
-      value: 3,
-      targetType: "enemy_hero",
-      requiresTarget: false
-    },
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12106,
@@ -105,7 +87,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12107,
@@ -124,7 +106,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12108,
@@ -142,7 +124,7 @@ export const rogueCards: CardData[] = [
       drawCards: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12109,
@@ -158,7 +140,7 @@ export const rogueCards: CardData[] = [
       targetType: "enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12110,
@@ -175,7 +157,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12201,
@@ -190,7 +172,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     keywords: ["combo"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12202,
@@ -205,7 +187,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     keywords: ["combo"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12203,
@@ -225,7 +207,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12204,
@@ -240,22 +222,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     keywords: ["combo"],
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 12404,
-    name: "Erik the Shadow Lord",
-    manaCost: 3,
-    attack: 2,
-    health: 2,
-    description: "Combo: Gain +2/+2 for each card played earlier this turn.",
-    flavorText: "Bound by chains of shadow, he grows stronger with each broken link.",
-    type: "minion",
-    rarity: 'rare',
-    class: "Rogue",
-    keywords: ["combo"],
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12303,
@@ -269,7 +236,7 @@ export const rogueCards: CardData[] = [
     rarity: "common",
     class: "Rogue",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12304,
@@ -284,7 +251,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     keywords: ["battlecry", "combo"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12301,
@@ -298,7 +265,7 @@ export const rogueCards: CardData[] = [
     rarity: "common",
     class: "Rogue",
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12501,
@@ -312,7 +279,7 @@ export const rogueCards: CardData[] = [
     rarity: "common",
     class: "Rogue",
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20033,
@@ -326,7 +293,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     armor: 5,
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "buff",
       requiresTarget: false,
@@ -346,7 +313,7 @@ export const rogueCards: CardData[] = [
     keywords: ["deathrattle"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     deathrattle: {
       type: "summon",
       summonCardId: 9070,
@@ -366,7 +333,7 @@ export const rogueCards: CardData[] = [
     keywords: ["battlecry"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "replace_spells",
       requiresTarget: false,
@@ -387,7 +354,7 @@ export const rogueCards: CardData[] = [
     keywords: ["echo", "battlecry"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "add_card",
       requiresTarget: false,
@@ -410,7 +377,7 @@ export const rogueCards: CardData[] = [
     race: "Beast",
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "give_cards",
       requiresTarget: false,
@@ -438,7 +405,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     combo: {
       type: "buff_conditional",
       condition: "control_pirate",
@@ -457,7 +424,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     spellEffect: {
       type: "buff_attack",
       value: 2,
@@ -484,7 +451,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     combo: {
       type: "gain_stealth",
       duration: "next_turn"
@@ -501,7 +468,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     spellEffect: {
       type: "destroy_random",
       targetType: "enemy_minion"
@@ -524,7 +491,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     combo: {
       type: "damage",
       value: 1,
@@ -543,7 +510,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     spellEffect: {
       type: "damage",
       value: 4,
@@ -568,7 +535,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     combo: {
       type: "add_card_to_hand",
       cardId: 9050,
@@ -586,7 +553,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     spellEffect: {
       type: "give_stealth",
       targetType: "friendly_minions",
@@ -610,7 +577,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     combo: {
       type: "buff_weapon",
       attack: 1,
@@ -628,7 +595,7 @@ export const rogueCards: CardData[] = [
     keywords: ["battlecry"],
     class: "Rogue",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "gain_stealth_and_armor",
       armor: 5
@@ -654,7 +621,7 @@ export const rogueCards: CardData[] = [
     keywords: [],
     class: "Neutral",
     collectible: false,
-    set: "core",
+    set: "genesis",
     spellEffect: {
       type: "gain_temp_mana",
       value: 1
@@ -679,9 +646,8 @@ export const rogueCards: CardData[] = [
       consumed: false
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
-  // === Migrated from legacy rogueCards.ts ===
   {
     id: 12302,
     name: "Poisoned Blade",
@@ -698,7 +664,7 @@ export const rogueCards: CardData[] = [
       interactsWithHeroPower: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12401,
@@ -721,7 +687,7 @@ export const rogueCards: CardData[] = [
       targetType: "self"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12402,
@@ -739,7 +705,7 @@ export const rogueCards: CardData[] = [
       type: "gain_stealth"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12403,
@@ -764,7 +730,7 @@ export const rogueCards: CardData[] = [
       health: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 12405,
@@ -783,7 +749,7 @@ export const rogueCards: CardData[] = [
       effect: "poisonous"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Quest Cards ===
   {
@@ -803,7 +769,7 @@ export const rogueCards: CardData[] = [
       rewardCardId: 70013
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 70013,
@@ -821,7 +787,7 @@ export const rogueCards: CardData[] = [
       setHealth: 4
     },
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   // === Yggdrasil Golem Card ===
   {
@@ -840,7 +806,7 @@ export const rogueCards: CardData[] = [
       type: "summon_yggdrasil_golem"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === New Shadow Spell ===
   {
@@ -862,7 +828,7 @@ export const rogueCards: CardData[] = [
       duration: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Rogue Expansion — Combo keyword depth ===
   {
@@ -882,7 +848,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31802,
@@ -897,7 +863,7 @@ export const rogueCards: CardData[] = [
     keywords: ["combo"],
     class: "Rogue",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31803,
@@ -917,7 +883,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31804,
@@ -935,7 +901,7 @@ export const rogueCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31805,
@@ -952,7 +918,7 @@ export const rogueCards: CardData[] = [
       value: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31806,
@@ -973,7 +939,7 @@ export const rogueCards: CardData[] = [
       maxTargets: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
 
   // ═══════════════════════════════════════════════════════════════
@@ -998,7 +964,7 @@ export const rogueCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36302,
@@ -1015,7 +981,7 @@ export const rogueCards: CardData[] = [
       targetType: "all_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36303,
@@ -1031,7 +997,7 @@ export const rogueCards: CardData[] = [
     keywords: ["stealth", "combo", "deathrattle"],
     deathrattle: { type: "add_copy_to_hand" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Burgle & Draw Expansion ===
   {
@@ -1049,7 +1015,7 @@ export const rogueCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39002,
@@ -1069,7 +1035,7 @@ export const rogueCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39003,
@@ -1087,7 +1053,7 @@ export const rogueCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39004,
@@ -1104,7 +1070,7 @@ export const rogueCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
 
   // ── v1.1: Stealth Archetype Expansion (8 cards) ──
@@ -1124,7 +1090,7 @@ export const rogueCards: CardData[] = [
     keywords: ["stealth", "battlecry"],
     battlecry: { type: "grant_stealth_next_play", targetType: "none" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39006,
@@ -1139,7 +1105,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     keywords: ["stealth"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39007,
@@ -1152,7 +1118,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     spellEffect: { type: "buff_and_stealth", value: 2, targetType: "friendly_minion", requiresTarget: true },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39008,
@@ -1168,7 +1134,7 @@ export const rogueCards: CardData[] = [
     race: "Beast",
     keywords: ["stealth"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39009,
@@ -1181,7 +1147,7 @@ export const rogueCards: CardData[] = [
     class: "Rogue",
     spellEffect: { type: "mass_stealth_and_draw", targetType: "friendly_minions" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39010,
@@ -1197,7 +1163,7 @@ export const rogueCards: CardData[] = [
     keywords: ["stealth", "combo"],
     comboEffect: { type: "deal_damage", value: 3, targetType: "enemy_minion", requiresTarget: true },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39011,
@@ -1214,7 +1180,7 @@ export const rogueCards: CardData[] = [
     keywords: ["stealth", "deathrattle"],
     deathrattle: { type: "add_random_class_spell_free", class: "Rogue" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39012,
@@ -1228,6 +1194,6 @@ export const rogueCards: CardData[] = [
     keywords: ["secret"],
     spellEffect: { type: "secret", targetType: "none" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   }
 ];

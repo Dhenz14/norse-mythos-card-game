@@ -206,6 +206,10 @@ function getCombatElement(element?: ElementType | string): ElementType {
 	return (element as ElementType | undefined) ?? 'neutral';
 }
 
+// Stable reference for the face-down placeholder rendered before community
+// cards are dealt. Hoisted so the JSX prop is a constant ref across renders.
+const FACEDOWN_PLACEHOLDER_CARD: PokerCard = { suit: 'spades', value: 'A', numericValue: 14 };
+
 interface RagnarokCombatArenaProps {
   onCombatEnd?: (winner: 'player' | 'opponent' | 'draw') => void;
 }
@@ -501,20 +505,59 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
     [combatState]
   );
 
+  const combatPhase = combatState?.phase;
+  const isMulligan = combatPhase === CombatPhase.MULLIGAN;
+  const isBettingRound = combatPhase ? isBettingPhase(combatPhase) : false;
+  const showBettingControls = combatState
+    ? !isMulligan && isBettingRound && !combatState.isAllInShowdown
+    : false;
+  const showBettingInteraction = showBettingControls && Boolean(basePermissions?.isMyTurnToAct);
+  const showCombatDirector = combatState
+    ? !isMulligan && !combatState.isAllInShowdown && combatPhase !== CombatPhase.RESOLUTION
+    : false;
+  const phaseAllowsFaith = Boolean(combatPhase) && !isMulligan && combatPhase !== CombatPhase.SPELL_PET && combatPhase !== CombatPhase.PRE_FLOP;
+  const showFaith = phaseAllowsFaith && communityCardsRevealed;
+  const showForesight = communityCardsRevealed && !isMulligan && (combatPhase === CombatPhase.FORESIGHT || combatPhase === CombatPhase.DESTINY || combatPhase === CombatPhase.RESOLUTION);
+  const showDestiny = communityCardsRevealed && !isMulligan && (combatPhase === CombatPhase.DESTINY || combatPhase === CombatPhase.RESOLUTION);
+  const playerHoleCards = combatState?.player.holeCards;
+  const communityCards = combatState?.communityCards;
+  const playerHandEval = useMemo(() => {
+    if (!playerHoleCards || playerHoleCards.length === 0 || !communityCards || isMulligan) return null;
+    const visibleCommunityCards: PokerCard[] = [
+      ...(showFaith ? (communityCards.faith || []) : []),
+      ...(showForesight && communityCards.foresight ? [communityCards.foresight] : []),
+      ...(showDestiny && communityCards.destiny ? [communityCards.destiny] : []),
+    ];
+    if (visibleCommunityCards.length === 0 && playerHoleCards.length < 5) return null;
+    return evaluatePokerHand(playerHoleCards, visibleCommunityCards);
+  }, [
+    playerHoleCards,
+    communityCards,
+    showFaith,
+    showForesight,
+    showDestiny,
+    isMulligan,
+  ]);
+  const handStrengthClass = !playerHandEval
+    ? 'weak'
+    : playerHandEval.rank >= PokerHandRank.DIVINE_ALIGNMENT
+      ? 'royal'
+      : playerHandEval.rank >= PokerHandRank.VALHALLAS_BLESSING
+        ? 'very-strong'
+        : playerHandEval.rank >= PokerHandRank.ODINS_EYE
+          ? 'strong'
+          : playerHandEval.rank >= PokerHandRank.THORS_HAMMER
+            ? 'medium'
+            : 'weak';
+  const handStrengthPercent = playerHandEval
+    ? Math.min(100, (playerHandEval.rank / PokerHandRank.RAGNAROK) * 100)
+    : 0;
+
   // Early return if no combat state
   if (!combatState) {
     return <div className="unified-combat-arena">Loading...</div>;
   }
 
-  const isMulligan = combatState.phase === CombatPhase.MULLIGAN;
-  const isBettingRound = isBettingPhase(combatState.phase);
-  const showBettingControls = !isMulligan && isBettingRound && !combatState.isAllInShowdown;
-  const showBettingInteraction = showBettingControls && Boolean(basePermissions?.isMyTurnToAct);
-  const showCombatDirector = !isMulligan && !combatState.isAllInShowdown && combatState.phase !== CombatPhase.RESOLUTION;
-  const phaseAllowsFaith = !isMulligan && combatState.phase !== CombatPhase.SPELL_PET && combatState.phase !== CombatPhase.PRE_FLOP;
-  const showFaith = phaseAllowsFaith && communityCardsRevealed;
-  const showForesight = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.FORESIGHT || combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
-  const showDestiny = communityCardsRevealed && !isMulligan && (combatState.phase === CombatPhase.DESTINY || combatState.phase === CombatPhase.RESOLUTION);
   const currentPhaseLabel = PHASE_LABELS[combatState.phase] || combatState.phase.replace(/_/g, ' ');
   const phaseDirectorMode = isBettingRound ? 'wager' : 'setup';
   const phaseDirectorCue = isBettingRound
@@ -560,34 +603,6 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
         `${playerBattlefield.length} allies on board`,
         `${playerMana}/${playerMaxMana} mana`,
       ];
-
-  const playerHandEval = useMemo(() => {
-    if (!combatState || isMulligan) return null;
-    const holeCards = combatState.player.holeCards;
-    if (!holeCards || holeCards.length === 0) return null;
-    const community: PokerCard[] = [
-      ...(showFaith ? (combatState.communityCards.faith || []) : []),
-      ...(showForesight && combatState.communityCards.foresight ? [combatState.communityCards.foresight] : []),
-      ...(showDestiny && combatState.communityCards.destiny ? [combatState.communityCards.destiny] : [])
-    ];
-    if (community.length === 0 && holeCards.length < 5) return null;
-    return evaluatePokerHand(holeCards, community);
-  }, [combatState?.player?.holeCards, combatState?.communityCards, showFaith, showForesight, showDestiny, isMulligan]);
-
-  const handStrengthClass = useMemo(() => {
-    if (!playerHandEval) return 'weak';
-    const r = playerHandEval.rank;
-    if (r >= PokerHandRank.DIVINE_ALIGNMENT) return 'royal';
-    if (r >= PokerHandRank.VALHALLAS_BLESSING) return 'very-strong';
-    if (r >= PokerHandRank.ODINS_EYE) return 'strong';
-    if (r >= PokerHandRank.THORS_HAMMER) return 'medium';
-    return 'weak';
-  }, [playerHandEval]);
-
-  const handStrengthPercent = useMemo(() => {
-    if (!playerHandEval) return 0;
-    return Math.min(100, (playerHandEval.rank / PokerHandRank.RAGNAROK) * 100);
-  }, [playerHandEval]);
 
   return (
     <div className="unified-combat-arena" ref={battlefieldRef as React.RefObject<HTMLDivElement>}>
@@ -680,7 +695,7 @@ const UnifiedCombatArena: React.FC<UnifiedCombatArenaProps> = ({
           ) : (
             [0, 1, 2].map(idx => (
               <div key={`faith-placeholder-${idx}`} className="community-slot">
-                <PlayingCard card={{ suit: 'spades', value: 'A', numericValue: 14 }} faceDown />
+                <PlayingCard card={FACEDOWN_PLACEHOLDER_CARD} faceDown />
               </div>
             ))
           )}

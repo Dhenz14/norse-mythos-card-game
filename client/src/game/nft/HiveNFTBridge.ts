@@ -9,10 +9,15 @@
 import type { HiveCardAsset, HivePlayerStats, HiveTokenBalance } from '@/data/schemas/HiveTypes';
 import { DEFAULT_PLAYER_STATS } from '@/data/schemas/HiveTypes';
 import type { PackAsset } from '../../../../shared/protocol-core/types';
-import { hiveSync, buildHiveAuthBody } from '@/data/HiveSync';
+import { buildHiveAuthBody, loginWithHiveWallet } from '@/data/HiveAuth';
+import { hiveSync } from '@/data/HiveSync';
 import { hiveEvents } from '@/data/HiveEvents';
 import { useHiveDataStore } from '@/data/HiveDataLayer';
 import { isBlockchainPackagingEnabled as checkPackaging } from '@/game/config/featureFlags';
+import {
+	STARTER_ENTITLEMENT_COPIES_PER_DECK,
+	isStarterEntitlementCardId,
+} from '@shared/schemas/starterEntitlement';
 import type {
 	INFTBridge,
 	DataLayerMode,
@@ -20,6 +25,7 @@ import type {
 	AuthBody,
 	NFTEventType,
 	NFTEventCallback,
+	CampaignResultBroadcastPayload,
 } from './INFTBridge';
 
 export class HiveNFTBridge implements INFTBridge {
@@ -51,7 +57,9 @@ export class HiveNFTBridge implements INFTBridge {
 
 	getOwnedCopies(cardId: number): number {
 		const collection = useHiveDataStore.getState().cardCollection;
-		return collection.filter(c => c.cardId === cardId).length;
+		const chainCopies = collection.filter(c => c.cardId === cardId).length;
+		if (!isStarterEntitlementCardId(cardId)) return chainCopies;
+		return Math.max(chainCopies, STARTER_ENTITLEMENT_COPIES_PER_DECK);
 	}
 
 	addCard(card: HiveCardAsset): void {
@@ -117,6 +125,10 @@ export class HiveNFTBridge implements INFTBridge {
 		return hiveSync.claimReward(rewardId);
 	}
 
+	async submitCampaignResult(payload: CampaignResultBroadcastPayload): Promise<BroadcastResult> {
+		return hiveSync.submitCampaignResult(payload);
+	}
+
 	async transferCard(cardUid: string, toUser: string, memo?: string): Promise<BroadcastResult> {
 		return hiveSync.transferCard(cardUid, toUser, memo);
 	}
@@ -155,11 +167,10 @@ export class HiveNFTBridge implements INFTBridge {
 
 	// ── Events ──
 
-	onEvent(type: NFTEventType | '*', callback: NFTEventCallback): () => void {
-		const hiveType = type as string;
-		return hiveEvents.on(hiveType as any, (event) => {
+	onEvent(type: NFTEventType, callback: NFTEventCallback): () => void {
+		return hiveEvents.on(type, (event) => {
 			callback({
-				type: event.type as NFTEventType,
+				type,
 				payload: event.payload,
 				timestamp: event.timestamp,
 			});
@@ -175,17 +186,17 @@ export class HiveNFTBridge implements INFTBridge {
 	}
 
 	emitTransactionConfirmed(trxId: string): void {
-		hiveEvents.emitTransactionConfirmed({ trxId, status: 'confirmed' });
+		hiveEvents.emitTransactionConfirmed({ trxId });
 	}
 
 	emitTransactionFailed(errorMessage: string): void {
-		hiveEvents.emitTransactionFailed({ status: 'failed', errorMessage });
+		hiveEvents.emitTransactionFailed({ errorMessage });
 	}
 
 	// ── Lifecycle ──
 
 	async login(username: string): Promise<BroadcastResult> {
-		return hiveSync.login(username);
+		return loginWithHiveWallet(username);
 	}
 
 	logout(): void {

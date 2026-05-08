@@ -7,9 +7,8 @@
  */
 
 import type {
-	StateAdapter, CardAsset, GenesisRecord, EloRecord,
-	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
-	PackAsset, PackSupplyRecord, CompanionTransfer,
+	StateAdapter, CardAsset,
+	PackAsset, PackSupplyRecord,
 	MarketListing, MarketOffer, DuatClaimRecord,
 } from '../../../../shared/protocol-core/types';
 import {
@@ -23,6 +22,9 @@ import {
 	advancePlayerNonce,
 	getEloRating, putEloRating,
 	getRewardClaim, putRewardClaim,
+	advanceCampaignNonce as idbAdvanceCampaignNonce,
+	getCampaignSubmission as idbGetCampaignSubmission, putCampaignSubmission as idbPutCampaignSubmission,
+	getCampaignProgress as idbGetCampaignProgress, putCampaignProgress as idbPutCampaignProgress,
 	getPack as idbGetPack, putPack as idbPutPack, deletePack as idbDeletePack,
 	getPacksByOwner as idbGetPacksByOwner,
 	getPackSupply as idbGetPackSupply, putPackSupply as idbPutPackSupply,
@@ -50,6 +52,7 @@ function hiveCardToAsset(c: HiveCardAsset): CardAsset {
 function assetToHiveCard(a: CardAsset): HiveCardAsset {
 	return {
 		uid: a.uid, cardId: a.cardId, ownerId: a.owner, rarity: a.rarity,
+		ownershipSource: 'nft',
 		level: a.level, xp: a.xp, edition: a.edition as HiveCardAsset['edition'],
 		foil: 'standard', lastTransferBlock: a.lastTransferBlock,
 		lastTransferTrxId: '', mintBlockNum: a.mintBlockNum, mintTrxId: a.mintTrxId,
@@ -164,6 +167,22 @@ export const clientStateAdapter: StateAdapter = {
 		});
 	},
 
+	async advanceCampaignNonce(account, nonce) {
+		return idbAdvanceCampaignNonce(account, nonce);
+	},
+	async getCampaignSubmission(submissionKey) {
+		return await idbGetCampaignSubmission(submissionKey) ?? null;
+	},
+	async putCampaignSubmission(submission) {
+		await idbPutCampaignSubmission(submission);
+	},
+	async getCampaignProgress(account, campaignId, missionId) {
+		return await idbGetCampaignProgress(account, campaignId, missionId) ?? null;
+	},
+	async putCampaignProgress(progress) {
+		await idbPutCampaignProgress(progress);
+	},
+
 	async isSlashed(account) { return isAccountSlashed(account); },
 	async slash(account, reason, blockNum) {
 		await putSlashedAccount({
@@ -179,7 +198,7 @@ export const clientStateAdapter: StateAdapter = {
 	async putQueueEntry(account, data) {
 		await putQueueEntry({
 			account, mode: data.mode, elo: data.elo,
-			peerId: '', deckHash: '', timestamp: data.timestamp, blockNum: data.blockNum,
+			peerId: data.peerId, deckHash: data.deckHash, timestamp: data.timestamp, blockNum: data.blockNum,
 		});
 	},
 	async deleteQueueEntry(account) { await deleteQueueEntry(account); },

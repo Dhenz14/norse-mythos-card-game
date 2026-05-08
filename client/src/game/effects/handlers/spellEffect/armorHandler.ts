@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { SpellEffect } from '../../../types/CardTypes';
 import { drawCardFromDeck } from '../../../utils/zoneUtils';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute an armor spellEffect effect
@@ -44,7 +45,7 @@ export function executeArmorArmor(
   
   // Create the log entry with correct type
   const logEntry: GameLogEvent = {
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'spell_cast',
     player: currentPlayerId,
     text: armorValue > 0 ? `${sourceCard.card.name} grants ${armorValue} Armor` : '',

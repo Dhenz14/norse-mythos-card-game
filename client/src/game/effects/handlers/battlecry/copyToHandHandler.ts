@@ -9,6 +9,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeCopyToHand(
   context: GameContext,
@@ -45,7 +46,7 @@ export default function executeCopyToHand(
     }
     
     const copiedCard: CardInstance = {
-      instanceId: `copy-${target.card.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `copy-${target.card.id}-${cryptoIdGen()}`,
       card: { ...target.card },
       currentHealth: target.card.health,
       currentAttack: target.card.attack,

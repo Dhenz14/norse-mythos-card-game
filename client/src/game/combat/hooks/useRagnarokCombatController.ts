@@ -25,6 +25,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePokerCombatAdapter, getActionPermissions, getPokerCombatAdapterState } from '../../hooks/usePokerCombatAdapter';
 import { useGameStore } from '../../stores/gameStore';
+import { GAME_COMMAND_TYPES } from '../../core/commands';
+import { useP2PActions } from '../../context/useP2PActions';
 import { CombatPhase, CombatAction } from '../../types/PokerCombatTypes';
 import { fireAnnouncement } from '../../stores/unifiedUIStore';
 import { ALL_NORSE_HEROES } from '../../data/norseHeroes';
@@ -40,6 +42,7 @@ import { COMBAT_DEBUG } from '../debugConfig';
 import { hasKeyword } from '../../utils/cards/keywordUtils';
 import { debug } from '../../config/debugConfig';
 import type { HeroBattlePopupData, BattlePopupAction, BattlePopupTarget } from '../components/HeroBattlePopup';
+import type { WireMessage } from '../../p2p/messages';
 import { getPokerDramaCallbacks } from './usePokerDrama';
 
 /**
@@ -178,6 +181,7 @@ export function useRagnarokCombatController(
   }, []);
 
   const aiResponseInProgressRef = useRef(false);
+  const p2pActions = useP2PActions();
 
   usePokerAI({ combatState, isActive, aiResponseInProgressRef, addHeroBattlePopup });
 
@@ -233,7 +237,6 @@ export function useRagnarokCombatController(
   const playerHand = useGameStore(state => state.gameState?.players?.player?.hand ?? []);
   const attackingCard = useGameStore(state => state.attackingCard);
   const selectedCard = useGameStore(state => state.selectedCard);
-  const attackWithCard = useGameStore(state => state.attackWithCard);
   const selectAttacker = useGameStore(state => state.selectAttacker);
   const heroTargetMode = useGameStore(state => state.heroTargetMode);
   const playerMana = useGameStore(state => state.gameState?.players?.player?.mana?.current ?? 0);
@@ -250,7 +253,34 @@ export function useRagnarokCombatController(
       (selectedCard.card.type === 'minion' && hasKeyword(selectedCard, 'battlecry')))));
   
   const selectCard = useGameStore(state => state.selectCard);
-  const playCard = useGameStore(state => state.playCard);
+  const dispatchPlayCardCommand = useCallback((
+    cardId: string,
+    targetId?: string,
+    targetType?: 'minion' | 'hero',
+    insertionIndex?: number,
+    payWithBlood?: boolean
+  ) => {
+    p2pActions.dispatchGameCommand({
+      type: GAME_COMMAND_TYPES.playCard,
+      cardId,
+      targetId,
+      targetType,
+      insertionIndex,
+      payWithBlood,
+    });
+  }, [p2pActions]);
+
+  const dispatchAttackCommand = useCallback((attackerId: string, defenderId?: string) => {
+    p2pActions.dispatchGameCommand({
+      type: GAME_COMMAND_TYPES.attack,
+      attackerId,
+      defenderId,
+    });
+  }, [p2pActions]);
+
+  const endTurn = useCallback(() => {
+    p2pActions.dispatchGameCommand({ type: GAME_COMMAND_TYPES.endTurn });
+  }, [p2pActions]);
   
   const sharedHandleCardPlay = useCallback((card: any, position?: { row?: number; col?: number; insertionIndex?: number }) => {
     if (!isPlayerTurn) {
@@ -260,8 +290,8 @@ export function useRagnarokCombatController(
     if (!cardId) {
       return;
     }
-    playCard(cardId, undefined, undefined, position?.insertionIndex);
-  }, [isPlayerTurn, playCard]);
+    dispatchPlayCardCommand(cardId, undefined, undefined, position?.insertionIndex);
+  }, [isPlayerTurn, dispatchPlayCardCommand]);
   
   const [heroPowerUsedThisTurn, setHeroPowerUsedThisTurn] = useState(false);
   
@@ -664,7 +694,7 @@ export function useRagnarokCombatController(
         targetType.includes('any_character') ||
         !targetType.includes('minion');
       if (allowsEnemyHero) {
-        playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
+        dispatchPlayCardCommand(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
       }
@@ -684,17 +714,17 @@ export function useRagnarokCombatController(
         !targetType.includes('minion');
       if (allowsEnemyHero) {
         debug.combat('[Battlecry Debug] Playing minion with battlecry targeting opponent hero');
-        playCard(selectedCard.instanceId, 'opponent-hero', 'hero');
+        dispatchPlayCardCommand(selectedCard.instanceId, 'opponent-hero', 'hero');
         selectCard(null);
         return;
       }
     }
     
     if (attackingCard) {
-      attackWithCard(attackingCard.instanceId, 'opponent-hero');
+      dispatchAttackCommand(attackingCard.instanceId, 'opponent-hero');
       selectAttacker(null);
     }
-  }, [isOpponentTargetable, attackingCard, attackWithCard, selectAttacker, selectedCard, playCard, selectCard, heroPowerTargeting, executeHeroPowerEffect]);
+  }, [isOpponentTargetable, attackingCard, dispatchAttackCommand, selectAttacker, selectedCard, dispatchPlayCardCommand, selectCard, heroPowerTargeting, executeHeroPowerEffect]);
   
   const handlePlayerHeroClick = useCallback(() => {
     if (heroPowerTargeting?.active) {
@@ -721,7 +751,7 @@ export function useRagnarokCombatController(
         targetType.includes('any_character') ||
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
-        playCard(selectedCard.instanceId, 'player-hero', 'hero');
+        dispatchPlayCardCommand(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
       }
@@ -741,12 +771,12 @@ export function useRagnarokCombatController(
         !targetType.includes('minion') && !targetType.includes('enemy');
       if (allowsFriendlyHero) {
         debug.combat('[Battlecry Debug] Playing minion with battlecry targeting player hero');
-        playCard(selectedCard.instanceId, 'player-hero', 'hero');
+        dispatchPlayCardCommand(selectedCard.instanceId, 'player-hero', 'hero');
         selectCard(null);
         return;
       }
     }
-  }, [isPlayerTargetable, selectedCard, playCard, selectCard, heroPowerTargeting, executeHeroPowerEffect]);
+  }, [isPlayerTargetable, selectedCard, dispatchPlayCardCommand, selectCard, heroPowerTargeting, executeHeroPowerEffect]);
   
   useEffect(() => {
     if (!selectedCard) return;
@@ -812,7 +842,6 @@ export function useRagnarokCombatController(
     }
   }, [mulliganActive, combatState?.phase, completeMulligan, mulliganProcessed, mulliganArmed, mulliganComplete]);
   
-  const endTurn = useGameStore(state => state.endTurn);
   const grantPokerHandRewards = useGameStore(state => state.grantPokerHandRewards);
   
   const handleAction = useCallback((action: CombatAction, hp?: number) => {
@@ -833,7 +862,7 @@ export function useRagnarokCombatController(
 
     // In P2P multiplayer (non-host), send poker action via P2P instead of executing locally
     const peer = (globalThis as Record<string, unknown>).__ragnarokPeerStore as
-      { getState: () => { isHost: boolean; connectionState: string; send: (data: unknown) => void } } | undefined;
+      { getState: () => { isHost: boolean; connectionState: string; send: (data: WireMessage) => void } } | undefined;
     const peerState = peer?.getState();
     if (peerState && peerState.connectionState === 'connected' && !peerState.isHost) {
       peerState.send({ type: 'poker_action', playerId: freshState.player.playerId, action: action as string, hpCommitment: hp });

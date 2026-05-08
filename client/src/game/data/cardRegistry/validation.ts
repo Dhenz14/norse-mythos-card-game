@@ -1,5 +1,21 @@
 import { CardData, CardType } from '../../types';
 import { debug } from '../../config/debugConfig';
+import { SetSchema, type Set } from '../schemas/primitives/set';
+import { classifyCard, type CardCategory } from '@shared/schemas/cardCategory';
+
+/**
+ * Cards exiting the registry boundary carry a stamped `category`
+ * discriminator. Consumers MUST branch on `category`, not on the
+ * combination of `set` + `collectible`.
+ */
+export type ClassifiedCard = CardData & { readonly category: CardCategory };
+
+/**
+ * Project a stamped `category` back to the `set` field shape that legacy
+ * consumers expect (`'starter' | 'genesis' | undefined`). Tokens have no set.
+ */
+const setFromCategory = (c: CardCategory): Set | undefined =>
+	c === 'token' ? undefined : c;
 
 const IS_DEV = import.meta.env?.DEV ?? process.env.NODE_ENV === 'development';
 
@@ -22,6 +38,17 @@ interface RawCardInput {
 function isValidCardType(type: unknown): type is CardType {
   return typeof type === 'string' &&
     ['minion', 'spell', 'weapon', 'hero', 'secret', 'location', 'poker_spell', 'artifact', 'armor'].includes(type);
+}
+
+/**
+ * Parse the authoring `set` field if present. Returns `null` for invalid or
+ * missing input — `classifyCard` handles the fallback (token vs genesis
+ * default) so this stays a one-liner.
+ */
+function parseAuthoringSet(input: Readonly<Record<string, unknown>>): Set | null {
+	if (typeof input.set !== 'string') return null;
+	const parsed = SetSchema.safeParse(input.set);
+	return parsed.success ? parsed.data : null;
 }
 
 export function validateCard(input: unknown): ValidationResult {
@@ -83,9 +110,9 @@ export function validateCard(input: unknown): ValidationResult {
   return { valid: errors.length === 0, errors, warnings };
 }
 
-export function validateCardRegistry(cards: unknown[]): CardData[] {
+export function validateCardRegistry(cards: unknown[]): ClassifiedCard[] {
   const seenIds = new Map<number | string, { name: string; index: number }>();
-  const validCards: CardData[] = [];
+  const validCards: ClassifiedCard[] = [];
   const errors: string[] = [];
   const duplicates: string[] = [];
   
@@ -113,7 +140,21 @@ export function validateCardRegistry(cards: unknown[]): CardData[] {
     }
     
     seenIds.set(idKey, { name: String(rawCard.name), index: i });
-    validCards.push(card as CardData);
+    // Single source of truth for bucket assignment: classifyCard reads the
+    // authoring fields and returns the canonical CardCategory. The output
+    // `set` field (legacy view) is derived from that category.
+    const category = classifyCard({
+      set: parseAuthoringSet(rawCard) ?? undefined,
+      collectible: typeof rawCard.collectible === 'boolean' ? rawCard.collectible : undefined,
+    });
+    const normalizedSet = setFromCategory(category);
+    if (normalizedSet === undefined) {
+      const { set: _set, ...rest } = card as CardData;
+      void _set;
+      validCards.push({ ...(rest as CardData), category });
+    } else {
+      validCards.push({ ...(card as CardData), set: normalizedSet, category });
+    }
   }
   
   if (duplicates.length > 0) {

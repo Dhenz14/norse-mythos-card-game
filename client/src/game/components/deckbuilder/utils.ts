@@ -4,11 +4,25 @@
  * No React, no side effects - just data transformations.
  */
 
-import { CardData } from '../../types';
+import type { CardData } from '../../types';
+import { cryptoRng } from '../../utils/seededRng';
+import {
+  HERO_DECK_MAX_COPIES,
+  HERO_DECK_MAX_MYTHIC_COPIES,
+  HERO_DECK_SIZE,
+  canAddCardToDeck as canAddHeroCardToDeck,
+  countCardIds,
+  filterCardsByHero,
+  generateAutoFillCards as generateHeroAutoFillCards,
+  getCardClass as getHeroCardClass,
+  getMaxCopies as getHeroMaxCopies,
+  isCardMythic as isHeroCardMythic,
+  isClassCard as isHeroClassCard,
+} from '../../deck/heroDeckRules';
 
-export const DECK_SIZE = 30;
-export const MAX_COPIES = 2;
-export const MAX_MYTHIC_COPIES = 1;
+export const DECK_SIZE = HERO_DECK_SIZE;
+export const MAX_COPIES = HERO_DECK_MAX_COPIES;
+export const MAX_MYTHIC_COPIES = HERO_DECK_MAX_MYTHIC_COPIES;
 
 export type SortOption = 'cost' | 'name' | 'type';
 export type FilterType = 'all' | 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor' | 'pet';
@@ -21,29 +35,27 @@ export interface CardFilters {
   maxCost: number | null;
 }
 
+export type CardCopyLimitProvider = (cardId: number) => number;
+
 /**
  * Count occurrences of each card ID in a deck
  */
 export function countCards(cardIds: number[]): Record<number, number> {
-  const counts: Record<number, number> = {};
-  for (const id of cardIds) {
-    counts[id] = (counts[id] || 0) + 1;
-  }
-  return counts;
+  return countCardIds(cardIds);
 }
 
 /**
  * Check if a card is mythic rarity (max 1 copy per deck)
  */
 export function isCardMythic(card: CardData): boolean {
-  return (card.rarity || '').toLowerCase() === 'mythic';
+  return isHeroCardMythic(card);
 }
 
 /**
  * Get max allowed copies for a card
  */
 export function getMaxCopies(card: CardData): number {
-  return isCardMythic(card) ? MAX_MYTHIC_COPIES : MAX_COPIES;
+  return getHeroMaxCopies(card);
 }
 
 /**
@@ -54,25 +66,21 @@ export function canAddCardToDeck(
   deckCardIds: number[],
   card: CardData
 ): boolean {
-  if (deckCardIds.length >= DECK_SIZE) return false;
-  
-  const currentCount = countCards(deckCardIds)[cardId] || 0;
-  const maxAllowed = getMaxCopies(card);
-  return currentCount < maxAllowed;
+  return canAddHeroCardToDeck(cardId, deckCardIds, card);
 }
 
 /**
  * Get the card's class (normalized to lowercase)
  */
 export function getCardClass(card: CardData): string {
-  return (card.class || (card as any).heroClass || 'neutral').toLowerCase();
+  return getHeroCardClass(card);
 }
 
 /**
  * Check if a card is a class card (not neutral)
  */
 export function isClassCard(card: CardData): boolean {
-  return getCardClass(card) !== 'neutral';
+  return isHeroClassCard(card);
 }
 
 /**
@@ -80,17 +88,7 @@ export function isClassCard(card: CardData): boolean {
  * Artifacts are further restricted to their specific heroId.
  */
 export function filterCardsByClass(cards: CardData[], heroClass: string, heroId?: string): CardData[] {
-  const normalizedHeroClass = heroClass.toLowerCase();
-  return cards.filter(card => {
-    if (card.collectible === false || card.type === 'hero') return false;
-    const cardClass = getCardClass(card);
-    const classMatch = cardClass === 'neutral' || cardClass === normalizedHeroClass;
-    if (!classMatch) return false;
-    if (card.type === 'artifact' && (card as any).heroId && heroId) {
-      return (card as any).heroId === heroId;
-    }
-    return true;
-  });
+  return filterCardsByHero(cards, heroClass, heroId);
 }
 
 /**
@@ -177,32 +175,8 @@ export function getDeckCardsWithCounts(
 export function generateAutoFillCards(
   currentDeckIds: number[],
   validCards: CardData[],
-  targetSize: number = DECK_SIZE
+  targetSize: number = DECK_SIZE,
+  getOwnedCopies?: CardCopyLimitProvider
 ): number[] {
-  const remaining = targetSize - currentDeckIds.length;
-  if (remaining <= 0) return [];
-
-  const currentCounts = countCards(currentDeckIds);
-  const newCards: number[] = [];
-  
-  // Shuffle cards for randomness
-  const shuffled = [...validCards].sort(() => Math.random() - 0.5);
-  
-  for (const card of shuffled) {
-    if (newCards.length >= remaining) break;
-    
-    const cardId = Number(card.id);
-    const currentCount = currentCounts[cardId] || 0;
-    const maxAllowed = getMaxCopies(card);
-    
-    if (currentCount < maxAllowed) {
-      const toAdd = Math.min(maxAllowed - currentCount, remaining - newCards.length);
-      for (let i = 0; i < toAdd; i++) {
-        newCards.push(cardId);
-        currentCounts[cardId] = (currentCounts[cardId] || 0) + 1;
-      }
-    }
-  }
-
-  return newCards;
+  return generateHeroAutoFillCards(currentDeckIds, validCards, targetSize, getOwnedCopies, cryptoRng);
 }

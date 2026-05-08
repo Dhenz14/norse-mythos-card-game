@@ -9,10 +9,11 @@
  */
 
 import { create } from 'zustand';
-import { 
-  createSharedCombatSlice, 
-  createPokerCombatSlice, 
-  createChessCombatSlice, 
+import {
+  createSharedCombatSlice,
+  createPokerCombatSlice,
+  createChessCombatSlice,
+  createChessAnimationSlice,
   createMinionBattleSlice,
   createKingAbilitySlice,
   createPokerSpellSlice,
@@ -45,6 +46,7 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
   ...createSharedCombatSlice(set, get, api),
   ...createPokerCombatSlice(set, get, api),
   ...createChessCombatSlice(set, get, api),
+  ...createChessAnimationSlice(set, get, api),
   ...createMinionBattleSlice(set, get, api),
   ...createKingAbilitySlice(set, get, api),
   ...createPokerSpellSlice(set, get, api),
@@ -67,6 +69,9 @@ export const useUnifiedCombatStore = create<UnifiedCombatStore>()((set, get, api
       playerArmy: null,
       opponentArmy: null,
       sharedDeckCardIds: [],
+      _chessRng: null,
+      _chessIdGen: null,
+      _logCounter: 0,
       pokerCombatState: null,
       pokerDeck: [],
       pokerIsActive: false,

@@ -14,7 +14,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'The first creature, whose milk nourished the world into being.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const primordialBeastsPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50211,
 		name: 'Fafnir Hatchling',
@@ -39,7 +39,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'Greed stirs within, even in the smallest form.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const primordialBeastsPets: CardData[] = [
 			trigger: 'on_destroy',
 			description: 'After destroying an enemy minion',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50212,
 		name: 'Heidrun Kid',
@@ -64,7 +64,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'Its milk is sweeter than the finest mead.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'basic',
@@ -75,7 +75,7 @@ export const primordialBeastsPets: CardData[] = [
 			trigger: 'on_survive_turn',
 			description: 'After surviving a turn',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -90,7 +90,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'The first being, whose nourishing lick freed Buri from the ice.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const primordialBeastsPets: CardData[] = [
 			description: 'After a friendly character is healed',
 		},
 		battlecry: { type: 'buff', targetType: 'all_other_friendly_minions', buffAttack: 1, buffHealth: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50214,
 		name: 'Fafnir, the Cursed Dragon',
@@ -117,7 +117,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'A dragon of greed — his death releases the hoard he guarded.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const primordialBeastsPets: CardData[] = [
 			description: 'After destroying an enemy minion',
 		},
 		deathrattle: { type: 'draw', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50215,
 		name: 'Heidrun, the Mead Goat',
@@ -144,7 +144,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'It grazes on Yggdrasil and gives endless mead in return.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'adept',
@@ -157,7 +157,7 @@ export const primordialBeastsPets: CardData[] = [
 			description: 'After surviving a turn',
 		},
 		battlecry: { type: 'gain_mana_crystal', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -172,7 +172,7 @@ export const primordialBeastsPets: CardData[] = [
 		flavorText: 'From the dawn of creation, the primordial guardian endures.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		petStage: 'master',
@@ -208,5 +208,5 @@ export const primordialBeastsPets: CardData[] = [
 				battlecry: { type: 'gain_mana_crystal_and_draw', value: 2, drawValue: 1 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

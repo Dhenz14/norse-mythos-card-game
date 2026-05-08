@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeTransform(
   context: GameContext,
@@ -47,7 +48,7 @@ export default function executeTransform(
     }
     
     const transformedMinion: CardInstance = {
-      instanceId: `transformed-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `transformed-${cryptoIdGen()}`,
       card: {
         id: typeof transformIntoId === 'number' ? transformIntoId : (transformIntoId ? parseInt(transformIntoId, 10) : 99996),
         name: transformIntoName,

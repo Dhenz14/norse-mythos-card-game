@@ -1,14 +1,10 @@
-import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChessCombatAdapter } from '../../hooks/useChessCombatAdapter';
 import { ChessBoardPosition, BOARD_ROWS, BOARD_COLS } from '../../types/ChessTypes';
-import ChessPieceComponent from './ChessPiece';
+import { useGameStore } from '../../stores/gameStore';
+import ChessPieceComponent, { type ChessPieceVisualState } from './ChessPiece';
 import MovePlate from './MovePlate';
 import ChessAttackAnimation from './ChessAttackAnimation';
-import { useAudio } from '../../../lib/stores/useAudio';
-import { useKingChessAbility } from '../../hooks/useKingChessAbility';
-import { debug } from '../../config/debugConfig';
-import { computeMatchupGlows } from '../../utils/chess/elementMatchupUtils';
 import './ChessBoardEnhanced.css';
 import {
   getActiveMineStyle,
@@ -21,65 +17,74 @@ import {
   getMineStateClasses,
   MINE_RUNE_SYMBOL
 } from '../../utils/chess/mineVisualUtils';
+import { useChessBoardInteractions } from './useChessBoardInteractions';
 
 interface ChessBoardProps {
   onCombatTriggered?: (attackerId: string, defenderId: string) => void;
   disabled?: boolean;
 }
 
-interface InstantKillFlash {
-  position: ChessBoardPosition;
-  attackerType: string;
-}
+const PIECE_VISUAL_STATES = {
+  idle: { tag: 'idle' },
+  selected: { tag: 'selected' },
+  attackable: { tag: 'attackable' },
+  locked: { tag: 'locked' },
+} satisfies Record<ChessPieceVisualState['tag'], ChessPieceVisualState>;
 
-interface MinePlacementEffect {
-  position: ChessBoardPosition;
-  tiles: ChessBoardPosition[];
-  timestamp: number;
-}
-
-interface MineTriggerEffect {
-  tiles: ChessBoardPosition[];
-  timestamp: number;
-}
+const getPieceVisualState = (input: {
+  readonly pieceId: string;
+  readonly selectedPieceId: string | null;
+  readonly isAttackTarget: boolean;
+  readonly isLocked: boolean;
+}): ChessPieceVisualState => {
+  if (input.isLocked) return PIECE_VISUAL_STATES.locked;
+  if (input.selectedPieceId === input.pieceId) return PIECE_VISUAL_STATES.selected;
+  if (input.isAttackTarget) return PIECE_VISUAL_STATES.attackable;
+  return PIECE_VISUAL_STATES.idle;
+};
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = false }) => {
-  const { playSoundEffect } = useAudio();
-  const [noMovesMessage, setNoMovesMessage] = useState<string | null>(null);
-  const [instantKillFlash, setInstantKillFlash] = useState<InstantKillFlash | null>(null);
-  const [hoverPosition, setHoverPosition] = useState<ChessBoardPosition | null>(null);
-  const [minePlacementEffect, setMinePlacementEffect] = useState<MinePlacementEffect | null>(null);
-  const [mineTriggerEffect, setMineTriggerEffect] = useState<MineTriggerEffect | null>(null);
-  const [screenShake, setScreenShake] = useState(false);
-  const [fallingKingId, setFallingKingId] = useState<string | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardRect, setBoardRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const {
     boardState,
-    selectPiece,
-    movePiece,
     getPieceAt,
-    getValidMoves,
-    lastInstantKill,
-    pendingAttackAnimation,
-    completeAttackAnimation
-  } = useChessCombatAdapter();
-  
-  const {
     isPlacementMode,
-    visibleMines,
-    getPreviewForPosition,
-    placeMineAtPosition,
-    isValidPlacement,
-    lastMineTriggered,
-    clearMineTriggered
-  } = useKingChessAbility('player');
+    noMovesMessage,
+    screenShake,
+    fallingKingId,
+    pendingAttackAnimation,
+    matchupGlowMap,
+    canPlaceAtHoveredPosition,
+    effectiveSelectedPieceId,
+    handleCellClick,
+    handleCellHover,
+    handleCellLeave,
+    handleAttackAnimationComplete,
+    isValidMovePosition,
+    isAttackPosition,
+    isMinePreviewTile,
+    isActiveMinePosition,
+    isPlacementBurstPosition,
+    isMineTriggerExplosionPosition,
+    isInstantKillFlashPosition,
+  } = useChessBoardInteractions({ disabled, onCombatTriggered });
   
   useEffect(() => {
     const updateBoardRect = () => {
       if (boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
-        setBoardRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height });
+        setBoardRect(previousRect => {
+          if (
+            previousRect.x === rect.left &&
+            previousRect.y === rect.top &&
+            previousRect.width === rect.width &&
+            previousRect.height === rect.height
+          ) {
+            return previousRect;
+          }
+          return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+        });
       }
     };
     updateBoardRect();
@@ -87,169 +92,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     return () => window.removeEventListener('resize', updateBoardRect);
   }, []);
   
-  useEffect(() => {
-    if (!lastMineTriggered) return;
-    
-    setMineTriggerEffect({
-      tiles: lastMineTriggered.mine.affectedTiles,
-      timestamp: Date.now()
-    });
-    setScreenShake(true);
-    playSoundEffect('attack');
-    
-    const timeoutId = setTimeout(() => {
-      setMineTriggerEffect(null);
-      setScreenShake(false);
-      clearMineTriggered();
-    }, 1500);
-    
-    return () => clearTimeout(timeoutId);
-  }, [lastMineTriggered, clearMineTriggered, playSoundEffect]);
-
-  useEffect(() => {
-    const { gameStatus: gs, pieces: ps } = boardState;
-    if (gs === 'player_wins' || gs === 'opponent_wins') {
-      const losingSide = gs === 'player_wins' ? 'opponent' : 'player';
-      const losingKing = ps.find(p => p.type === 'king' && p.owner === losingSide);
-      if (losingKing) {
-        setFallingKingId(losingKing.id);
-      }
-    } else {
-      setFallingKingId(null);
-    }
-  }, [boardState.gameStatus]);
-
-  const handleAnimationComplete = useCallback(() => {
-    const animation = pendingAttackAnimation;
-    if (!animation) return;
-    
-    playSoundEffect('attack');
-    
-    if (animation.isInstantKill) {
-      setInstantKillFlash({
-        position: animation.defenderPosition,
-        attackerType: animation.attacker.type
-      });
-      setTimeout(() => setInstantKillFlash(null), 600);
-    }
-    
-    completeAttackAnimation();
-    
-    if (!animation.isInstantKill && onCombatTriggered) {
-      onCombatTriggered(animation.attacker.id, animation.defender.id);
-    }
-  }, [pendingAttackAnimation, completeAttackAnimation, onCombatTriggered, playSoundEffect]);
-  
-  // Watch for AI instant-kills from store
-  useEffect(() => {
-    if (lastInstantKill) {
-      setInstantKillFlash({
-        position: lastInstantKill.position,
-        attackerType: lastInstantKill.attackerType
-      });
-      const timer = setTimeout(() => setInstantKillFlash(null), 600);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [lastInstantKill?.timestamp]);
-
-  const { pieces, currentTurn, selectedPiece, validMoves, attackMoves, gameStatus } = boardState;
-
-  const matchupGlowMap = useMemo(() => {
-    if (!selectedPiece || selectedPiece.owner !== 'player' || currentTurn !== 'player') {
-      return {};
-    }
-    return computeMatchupGlows(selectedPiece.element, pieces, selectedPiece.owner);
-  }, [selectedPiece?.id, selectedPiece?.element, selectedPiece?.owner, currentTurn, pieces]);
-
-  const playerPieceCount = pieces.filter(p => p.owner === 'player').length;
-  const opponentPieceCount = pieces.filter(p => p.owner === 'opponent').length;
-
-  const handleCellClick = useCallback((row: number, col: number) => {
-    if (disabled && !isPlacementMode) return;
-    
-    const position: ChessBoardPosition = { row, col };
-    setNoMovesMessage(null);
-    
-    if (isPlacementMode) {
-      if (isValidPlacement(position)) {
-        const previewTiles = getPreviewForPosition(position);
-        const success = placeMineAtPosition(position);
-        if (success) {
-          playSoundEffect('card_play');
-          debug.chess(`Mine placed at (${row}, ${col})`);
-          setMinePlacementEffect({
-            position,
-            tiles: previewTiles,
-            timestamp: Date.now()
-          });
-          setTimeout(() => setMinePlacementEffect(null), 1200);
-        }
-      }
-      return;
-    }
-    
-    const isValidMove = validMoves.some(m => m.row === row && m.col === col);
-    const isAttackMove = attackMoves.some(m => m.row === row && m.col === col);
-    
-    if (isValidMove || isAttackMove) {
-      const collision = movePiece(position);
-      
-      if (collision) {
-        debug.chess(`Attack initiated: ${collision.attacker.heroName} -> ${collision.defender.heroName}`);
-      } else {
-        playSoundEffect('card_play');
-      }
-      return;
-    }
-
-    const pieceAtPosition = getPieceAt(position);
-    
-    if (pieceAtPosition) {
-      if (pieceAtPosition.owner === currentTurn) {
-        const { moves, attacks } = getValidMoves(pieceAtPosition);
-        debug.chess(`Selected ${pieceAtPosition.type} at (${row}, ${col}). Valid moves: ${moves.length}, attacks: ${attacks.length}`);
-        
-        if (moves.length === 0 && attacks.length === 0) {
-          setNoMovesMessage(`${pieceAtPosition.heroName} is blocked and cannot move!`);
-          setTimeout(() => setNoMovesMessage(null), 2000);
-        }
-        
-        selectPiece(pieceAtPosition);
-        playSoundEffect('card_click');
-      }
-    } else {
-      selectPiece(null);
-    }
-  }, [disabled, isPlacementMode, isValidPlacement, placeMineAtPosition, validMoves, attackMoves, currentTurn, movePiece, getPieceAt, selectPiece, getValidMoves, playSoundEffect]);
-  
-  const handleCellHover = useCallback((row: number, col: number) => {
-    if (isPlacementMode) {
-      setHoverPosition({ row, col });
-    }
-  }, [isPlacementMode]);
-  
-  const handleCellLeave = useCallback(() => {
-    setHoverPosition(null);
-  }, []);
-
-  const isValidMovePosition = (row: number, col: number) => {
-    return validMoves.some(m => m.row === row && m.col === col);
-  };
-
-  const isAttackPosition = (row: number, col: number) => {
-    return attackMoves.some(m => m.row === row && m.col === col);
-  };
-
-  const previewTiles = hoverPosition ? getPreviewForPosition(hoverPosition) : [];
-  
-  const isMinePreviewTile = (row: number, col: number) => {
-    return previewTiles.some(t => t.row === row && t.col === col);
-  };
-  
-  const isActiveMinePosition = (row: number, col: number) => {
-    return visibleMines.some(t => t.row === row && t.col === col);
-  };
+  const { currentTurn, gameStatus } = boardState;
+  // Local viewer's canonical side. SP defaults to 'player' (human is first-mover);
+  // P2P sets via deriveCanonicalSide at handshake. Drives all viewer-relative
+  // presentation: "your turn" banner, victory/defeat text, board orientation.
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+  const isMyTurn = currentTurn === myCanonicalSide;
+  const myWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'player_wins' : 'opponent_wins';
+  const oppWinStatus: 'player_wins' | 'opponent_wins' = myCanonicalSide === 'player' ? 'opponent_wins' : 'player_wins';
   
   const renderCell = (row: number, col: number) => {
     const position: ChessBoardPosition = { row, col };
@@ -257,12 +107,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     const isLight = (row + col) % 2 === 0;
     const isValid = isValidMovePosition(row, col);
     const isAttack = isAttackPosition(row, col);
-    const isFlashCell = instantKillFlash?.position.row === row && instantKillFlash?.position.col === col;
+    const isFlashCell = isInstantKillFlashPosition(row, col);
     const isMinePreview = isPlacementMode && isMinePreviewTile(row, col);
     const isActiveMine = isActiveMinePosition(row, col);
-    const canPlaceHere = isPlacementMode && hoverPosition && isValidPlacement(hoverPosition);
-    const isPlacementBurst = minePlacementEffect?.tiles.some(t => t.row === row && t.col === col);
-    const isMineTriggerExplosion = mineTriggerEffect?.tiles.some(t => t.row === row && t.col === col);
+    const canPlaceHere = canPlaceAtHoveredPosition;
+    const isPlacementBurst = isPlacementBurstPosition(row, col);
+    const isMineTriggerExplosion = isMineTriggerExplosionPosition(row, col);
+    const isPieceLocked = gameStatus !== 'playing' || pendingAttackAnimation !== null;
     
     return (
       <div
@@ -438,9 +289,13 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
             >
               <ChessPieceComponent
                 piece={piece}
-                isSelected={selectedPiece?.id === piece.id}
-                isPlayerTurn={currentTurn === 'player'}
-                onClick={() => handleCellClick(row, col)}
+                visualState={getPieceVisualState({
+                  pieceId: piece.id,
+                  selectedPieceId: effectiveSelectedPieceId,
+                  isAttackTarget: isAttack,
+                  isLocked: isPieceLocked,
+                })}
+                isPlayerTurn={isMyTurn}
                 matchupGlow={matchupGlowMap[piece.id] || null}
               />
             </motion.div>
@@ -481,26 +336,62 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
     );
   };
 
+  // Board orientation: standard chess UX (lichess, chess.com) puts the
+  // local viewer's pieces at the bottom of the screen. Canonical state
+  // is unchanged — only the iteration order flips. Click handlers
+  // receive canonical (row, col) directly, so no coordinate translation
+  // is needed elsewhere.
+  //
+  // First-mover (canonical 'player'): default order — row 6→0 top-to-bottom,
+  // col 0→4 left-to-right. Their back rank (row 0) appears at bottom.
+  // Second-mover (canonical 'opponent'): flipped 180° — row 0→6,
+  // col 4→0. Their back rank (row 6) appears at bottom.
+  const isFlipped = myCanonicalSide === 'opponent';
   const cells = [];
-  for (let row = BOARD_ROWS - 1; row >= 0; row--) {
-    for (let col = 0; col < BOARD_COLS; col++) {
-      cells.push(renderCell(row, col));
+  if (isFlipped) {
+    for (let row = 0; row < BOARD_ROWS; row++) {
+      for (let col = BOARD_COLS - 1; col >= 0; col--) {
+        cells.push(renderCell(row, col));
+      }
+    }
+  } else {
+    for (let row = BOARD_ROWS - 1; row >= 0; row--) {
+      for (let col = 0; col < BOARD_COLS; col++) {
+        cells.push(renderCell(row, col));
+      }
     }
   }
 
+  // P2P diagnostic strip — only when canonical handshake has resolved.
+  // Shows mySide / current turn / connection so the user can see exactly
+  // why a move is or isn't allowed. Strictly debug; remove once Plan B
+  // smoke is stable.
+  const matchId = useGameStore(s => s.matchId);
+  const isP2P = !!matchId;
+
   return (
     <div className="chess-board-container flex flex-col items-center">
-      <div className={`chess-turn-banner chess-banner-enter ${currentTurn === 'player' ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
+      {isP2P && (
+        <div className="mb-2 px-3 py-1 rounded bg-slate-900/70 border border-slate-600 text-xs font-mono text-slate-200 flex gap-3 items-center">
+          <span>P2P</span>
+          <span>mySide=<b className="text-yellow-300">{myCanonicalSide}</b></span>
+          <span>turn=<b className={isMyTurn ? 'text-green-400' : 'text-red-400'}>{currentTurn}</b></span>
+          <span className={isMyTurn ? 'text-green-400 font-bold' : 'text-slate-400'}>
+            {isMyTurn ? 'TU TURNO — mueve una pieza' : 'ESPERANDO AL OPONENTE…'}
+          </span>
+        </div>
+      )}
+      <div className={`chess-turn-banner chess-banner-enter ${isMyTurn ? 'chess-turn-player' : 'chess-turn-opponent'}`}>
         <span className="chess-turn-text">
-          {currentTurn === 'player' ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
+          {isMyTurn ? 'ᚱ YOUR COMMAND ᚱ' : 'ᚱ FOE STIRS ᚱ'}
         </span>
         {gameStatus === 'combat' && (
           <span className="ml-2 text-yellow-400 animate-pulse">⚔ Combat!</span>
         )}
-        {gameStatus === 'player_wins' && (
+        {gameStatus === myWinStatus && (
           <span className="ml-2 text-green-400 font-bold">Victory!</span>
         )}
-        {gameStatus === 'opponent_wins' && (
+        {gameStatus === oppWinStatus && (
           <span className="ml-2 text-red-400 font-bold">Defeat</span>
         )}
       </div>
@@ -543,14 +434,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ onCombatTriggered, disabled = f
       
       {/* Attack Animation Overlay */}
       <ChessAttackAnimation
-        animation={pendingAttackAnimation ? {
-          attacker: pendingAttackAnimation.attacker,
-          defender: pendingAttackAnimation.defender,
-          attackerPosition: pendingAttackAnimation.attackerPosition,
-          defenderPosition: pendingAttackAnimation.defenderPosition,
-          isInstantKill: pendingAttackAnimation.isInstantKill
-        } : null}
-        onAnimationComplete={handleAnimationComplete}
+        animation={pendingAttackAnimation}
+        onAnimationComplete={handleAttackAnimationComplete}
         cellSize={boardRect.width / BOARD_COLS}
         boardOffset={{ x: boardRect.x, y: boardRect.y }}
       />

@@ -9,6 +9,7 @@ import { Card, BattlecryEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeSummonCopyIfBlood(
 	context: GameContext,
@@ -35,7 +36,7 @@ export default function executeSummonCopyIfBlood(
 
 		const minionHealth = getHealth(sourceCard);
 		const copy: any = {
-			instanceId: `blood-copy-${Date.now()}`,
+			instanceId: `blood-copy-${cryptoIdGen()}`,
 			card: { ...sourceCard },
 			currentHealth: minionHealth,
 			maxHealth: minionHealth,

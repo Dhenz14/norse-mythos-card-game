@@ -1,8 +1,5 @@
 /**
  * Spell Cards - Core Set
- * Migrated from multiple source files on 2026-02-02:
- * - client/src/game/data/spellCards.ts
- * - client/src/game/data/additionalSpellCards.ts
  * 
  * Various spell cards organized by class.
  * ID Range: 6000-6999, 31000-32999
@@ -27,7 +24,7 @@ export const priestSpells: CardData[] = [
     keywords: [],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "summon_copies",
@@ -46,7 +43,7 @@ export const priestSpells: CardData[] = [
     keywords: [],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "attack_modifier",
@@ -66,7 +63,7 @@ export const priestSpells: CardData[] = [
     keywords: [],
     heroClass: "necromancer",
     class: "Necromancer",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "damage_hero",
@@ -88,7 +85,7 @@ export const priestSpells: CardData[] = [
     keywords: [],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff_and_copy",
@@ -109,7 +106,7 @@ export const priestSpells: CardData[] = [
     keywords: [],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff",
@@ -130,7 +127,7 @@ export const priestSpells: CardData[] = [
     keywords: ["discover"],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "heal",
@@ -154,7 +151,7 @@ export const priestSpells: CardData[] = [
     keywords: ["lifesteal"],
     heroClass: "priest",
     class: "Priest",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff",
@@ -182,7 +179,7 @@ export const paladinSpells: CardData[] = [
     keywords: ["divine_shield"],
     heroClass: "paladin",
     class: "Paladin",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff_and_copy",
@@ -206,7 +203,7 @@ export const paladinSpells: CardData[] = [
     keywords: [],
     heroClass: "paladin",
     class: "Paladin",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff",
@@ -228,7 +225,7 @@ export const paladinSpells: CardData[] = [
     keywords: ["deathrattle"],
     heroClass: "paladin",
     class: "Paladin",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "buff",
@@ -245,26 +242,6 @@ export const paladinSpells: CardData[] = [
 // MAGE SPELLS (32001-32030)
 // ============================================
 export const mageSpells: CardData[] = [
-  {
-    id: 32007,
-    name: "Loki's Shapecraft",
-    manaCost: 4,
-    type: "spell",
-    rarity: "common",
-    description: "Transform a minion into a 1/1 Sheep.",
-    flavorText: 'Loki once became a mare to distract Svaðilfari — and bore Sleipnir. A sheep is mercy by comparison. (Gylfaginning 42)',
-    keywords: ["transform"],
-    heroClass: "mage",
-    class: "Mage",
-    set: "core",
-    collectible: true,
-    spellEffect: {
-      type: "transform",
-      requiresTarget: true,
-      targetType: "any_minion",
-      transformInto: 31025
-    }
-  }
 ];
 
 // ============================================
@@ -282,7 +259,7 @@ export const secretCards: CardData[] = [
     keywords: ["secret"],
     heroClass: "mage",
     class: "Mage",
-    set: "core",
+    set: "genesis",
     collectible: true,
     secretEffect: {
       triggerType: "on_spell_cast",
@@ -305,7 +282,7 @@ export const secretCards: CardData[] = [
     keywords: ["secret"],
     heroClass: "mage",
     class: "Mage",
-    set: "core",
+    set: "genesis",
     collectible: true,
     secretEffect: {
       triggerType: "on_hero_attack",
@@ -338,7 +315,7 @@ export const warriorSpells: CardData[] = [
     keywords: [],
     heroClass: "warrior",
     class: "Warrior",
-    set: "core",
+    set: "genesis",
     collectible: true,
     spellEffect: {
       type: "armor",
@@ -354,26 +331,6 @@ export const warriorSpells: CardData[] = [
 // OTHER CLASS SPELLS
 // ============================================
 export const otherClassSpells: CardData[] = [
-  {
-    id: 31017,
-    name: "Skadi's Mark",
-    manaCost: 1,
-    type: "spell",
-    rarity: "common",
-    description: "Change a minion's Health to 1.",
-    flavorText: 'Skadi marks her prey. The hunt is already over.',
-    keywords: [],
-    heroClass: "hunter",
-    class: "Hunter",
-    set: "core",
-    collectible: true,
-    spellEffect: {
-      type: "set_health",
-      value: 1,
-      requiresTarget: true,
-      targetType: "any_minion"
-    }
-  }
 ];
 
 // ============================================
@@ -391,7 +348,7 @@ export const spellTokens: CardData[] = [
     keywords: [],
     heroClass: "mage",
     class: "Mage",
-    set: "core",
+    set: "genesis",
     collectible: false,
     spellEffect: {
       type: "damage",

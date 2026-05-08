@@ -27,7 +27,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'common',
 		class: 'Warlock',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -47,7 +47,7 @@ export const bloodPricePayoffCards: CardData[] = [
 			targetType: 'all_enemies',
 			requiresTarget: false
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -68,7 +68,7 @@ export const bloodPricePayoffCards: CardData[] = [
 				value: 1
 			}
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -82,7 +82,7 @@ export const bloodPricePayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'rare',
 		class: 'Priest',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -104,7 +104,7 @@ export const prophecyPayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'epic',
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -118,7 +118,7 @@ export const prophecyPayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'rare',
 		class: 'Warlock',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -133,7 +133,7 @@ export const prophecyPayoffCards: CardData[] = [
 		rarity: 'common',
 		class: 'Warrior',
 		keywords: ['taunt'],
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -150,7 +150,7 @@ export const prophecyPayoffCards: CardData[] = [
 			targetType: 'friendly_prophecy',
 			requiresTarget: true
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -172,7 +172,7 @@ export const realmShiftPayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'common',
 		class: 'Shaman',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -194,7 +194,7 @@ export const realmShiftPayoffCards: CardData[] = [
 			requiresTarget: false,
 			targetType: 'none'
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -210,11 +210,11 @@ export const realmShiftPayoffCards: CardData[] = [
 			type: 'conditional_damage',
 			value: 3,
 			condition: 'realm_active',
-			bonusValue: 5,
+			enhancedValue: 5,
 			targetType: 'any',
 			requiresTarget: true
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -236,7 +236,33 @@ export const realmShiftPayoffCards: CardData[] = [
 			buffHealth: 3,
 			grantKeywords: ['divine_shield']
 		},
-		set: 'core',
+		set: 'genesis',
+		collectible: true
+	},
+	{
+		// Realm Aligned exemplar: rewards mono-realm decks that synergize with
+		// Realm Shift spells. See docs/RULEBOOK.md "Realm Aligned" section.
+		// ID 31958 is the first free slot after the contiguous 31908–31957 range
+		// (the spec's suggested 31918 was already taken by Valkyrja).
+		id: 31958,
+		name: 'Realmbound Acolyte',
+		manaCost: 2,
+		attack: 2,
+		health: 2,
+		realm: 'asgard',
+		description: 'Battlecry: If the active realm matches this minion\'s realm, gain +2/+2.',
+		flavorText: 'Where one realm rises, its faithful answer the call.',
+		type: 'minion',
+		rarity: 'common',
+		class: 'Neutral',
+		keywords: ['battlecry'],
+		battlecry: {
+			type: 'realm_aligned_buff',
+			buffAttack: 2,
+			buffHealth: 2,
+			targetType: 'self'
+		},
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -258,12 +284,12 @@ export const einherjarPayoffCards: CardData[] = [
 		type: 'minion',
 		rarity: 'common',
 		class: 'Warrior',
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
 		id: 31919,
-		name: 'Gjallarhorn',
+		name: 'Gjallarhorn\'s Call',
 		manaCost: 2,
 		description: 'Give an Einherjar +2/+2 and "Deathrattle: Draw a card."',
 		flavorText: 'Its blast carries across all Nine Realms, heralding glory.',
@@ -281,7 +307,7 @@ export const einherjarPayoffCards: CardData[] = [
 				value: 1
 			}
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -303,7 +329,7 @@ export const einherjarPayoffCards: CardData[] = [
 			grantKeywords: ['rush'],
 			requiresTarget: false
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -324,7 +350,7 @@ export const einherjarPayoffCards: CardData[] = [
 				value: 1
 			}
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -354,7 +380,7 @@ export const sacrificeCards: CardData[] = [
 			targetType: 'all',
 			requiresTarget: false
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -382,7 +408,7 @@ export const norseTechCards: CardData[] = [
 			targetType: 'enemy',
 			requiresTarget: false
 		},
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -407,7 +433,7 @@ export const bloodEchoCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['blood_echo'],
 		bloodPrice: 3,
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -423,7 +449,7 @@ export const bloodEchoCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['blood_echo', 'divine_shield'],
 		bloodPrice: 5,
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -436,7 +462,7 @@ export const bloodEchoCards: CardData[] = [
 		rarity: 'rare',
 		class: 'Neutral',
 		spellEffect: { type: 'grant_blood_echo', buffAttack: 2, buffHealth: 1, targetType: 'friendly_minion' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -460,7 +486,7 @@ export const ragnarokThresholdCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: { type: 'conditional_buff_self', condition: 'hero_hp_30_or_below', buffAttack: 2, buffHealth: 2 },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -476,7 +502,7 @@ export const ragnarokThresholdCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: { type: 'conditional_aoe', condition: 'hero_hp_30_or_below', damage: 3, targetType: 'all_enemy_minions' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -492,7 +518,7 @@ export const ragnarokThresholdCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['taunt', 'battlecry'],
 		battlecry: { type: 'conditional_buff_self', condition: 'hero_hp_30_or_below', buffAttack: 4, grantKeywords: ['rush'] },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -516,7 +542,7 @@ export const fateweaveCards: CardData[] = [
 		rarity: 'rare',
 		class: 'Neutral',
 		keywords: ['fateweave'],
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -531,7 +557,7 @@ export const fateweaveCards: CardData[] = [
 		rarity: 'rare',
 		class: 'Neutral',
 		keywords: ['fateweave'],
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -544,7 +570,7 @@ export const fateweaveCards: CardData[] = [
 		rarity: 'epic',
 		class: 'Neutral',
 		spellEffect: { type: 'conditional_aoe', baseValue: 2, fateweaveValue: 4, targetType: 'all_enemies' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -569,7 +595,7 @@ export const yggdrasilGiftCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: { type: 'buff_per_realm', buffAttack: 1, buffHealth: 1 },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -585,7 +611,7 @@ export const yggdrasilGiftCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['battlecry'],
 		battlecry: { type: 'buff_per_realm', buffAttack: 1, buffHealth: 1, bonusThreshold: 3, bonusKeyword: 'divine_shield' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -598,7 +624,7 @@ export const yggdrasilGiftCards: CardData[] = [
 		rarity: 'epic',
 		class: 'Neutral',
 		spellEffect: { type: 'buff_per_realm_aoe', buffAttack: 1, buffHealth: 1, targetType: 'all_friendly_minions' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -622,7 +648,7 @@ export const valhallasCallCards: CardData[] = [
 		rarity: 'rare',
 		class: 'Neutral',
 		keywords: ['einherjar'],
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -637,7 +663,7 @@ export const valhallasCallCards: CardData[] = [
 		rarity: 'epic',
 		class: 'Neutral',
 		keywords: ['einherjar', 'taunt'],
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -650,7 +676,7 @@ export const valhallasCallCards: CardData[] = [
 		rarity: 'rare',
 		class: 'Neutral',
 		spellEffect: { type: 'grant_valhalla_call', targetType: 'friendly_einherjar' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];
@@ -675,7 +701,7 @@ export const activeWagerCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['wager'],
 		wagerEffect: { type: 'betting_round_damage', value: 1 },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -691,7 +717,7 @@ export const activeWagerCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['wager'],
 		wagerEffect: { type: 'fold_penalty_to_healing' },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 	{
@@ -707,7 +733,7 @@ export const activeWagerCards: CardData[] = [
 		class: 'Neutral',
 		keywords: ['taunt', 'wager'],
 		wagerEffect: { type: 'showdown_win_draw_and_damage', drawCount: 1, damage: 2 },
-		set: 'core',
+		set: 'genesis',
 		collectible: true
 	},
 ];

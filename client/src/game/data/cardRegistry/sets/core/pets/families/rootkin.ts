@@ -14,7 +14,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'A tender shoot from the World Tree, yearning for the sun.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const rootkinPets: CardData[] = [
 			trigger: 'on_gain_health',
 			description: 'After a friendly minion gains health',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50121,
 		name: 'Fawn of Alfheim',
@@ -39,7 +39,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'Born under the eternal light of the elven realm.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const rootkinPets: CardData[] = [
 			trigger: 'on_buff',
 			description: 'After a friendly minion is buffed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50122,
 		name: "Idunn's Seed",
@@ -64,7 +64,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'Within this seed sleeps the promise of eternal youth.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'water',
 		weakness: { element: 'electric', bonusDamage: 2 },
@@ -76,7 +76,7 @@ export const rootkinPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -91,7 +91,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'A living branch of the World Tree, draining life through ancient roots.',
 		keywords: ['taunt', 'lifesteal'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const rootkinPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50124,
 		name: 'Elven Hart',
@@ -117,7 +117,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'The hart drains life from all it touches.',
 		keywords: ['lifesteal', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const rootkinPets: CardData[] = [
 			description: 'After a friendly minion is buffed',
 		},
 		battlecry: { type: 'damage', targetType: 'random_enemy_minion', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50125,
 		name: "Idunn's Apple",
@@ -144,7 +144,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'One bite siphons what a thousand winters gave.',
 		keywords: ['lifesteal', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'water',
 		weakness: { element: 'electric', bonusDamage: 2 },
@@ -158,7 +158,7 @@ export const rootkinPets: CardData[] = [
 			description: 'After a friendly character is healed',
 		},
 		battlecry: { type: 'steal_health', targetType: 'enemy_minion', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -173,7 +173,7 @@ export const rootkinPets: CardData[] = [
 		flavorText: 'The goddess of youth bestows her gift upon the worthy.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		petStage: 'master',
@@ -209,5 +209,5 @@ export const rootkinPets: CardData[] = [
 				battlecry: { type: 'steal_attack', targetType: 'enemy_minion', value: 3 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

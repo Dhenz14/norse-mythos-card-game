@@ -195,6 +195,7 @@ describe('Protocol Conformance: Pack Seed Derivation', () => {
 describe('Protocol Conformance: Authority Model', () => {
 	const POSTING_OPS = [
 		'queue_join', 'queue_leave', 'match_anchor', 'match_result',
+		'campaign_result',
 		'pack_commit', 'pack_reveal', 'reward_claim', 'level_up',
 	];
 
@@ -203,9 +204,10 @@ describe('Protocol Conformance: Authority Model', () => {
 	];
 
 	it('posting ops are the expected set', () => {
-		expect(POSTING_OPS).toHaveLength(8);
+		expect(POSTING_OPS).toHaveLength(9);
 		expect(POSTING_OPS).toContain('match_anchor');
 		expect(POSTING_OPS).toContain('match_result');
+		expect(POSTING_OPS).toContain('campaign_result');
 		expect(POSTING_OPS).not.toContain('card_transfer');
 		expect(POSTING_OPS).not.toContain('burn');
 	});
@@ -218,15 +220,15 @@ describe('Protocol Conformance: Authority Model', () => {
 		expect(ACTIVE_OPS).not.toContain('match_result');
 	});
 
-	it('total canonical op count is 14', () => {
+	it('total canonical op count is 15', () => {
 		const ALL_OPS = [
 			'genesis', 'seal', 'mint_batch',
 			'pack_commit', 'pack_reveal', 'reward_claim',
 			'card_transfer', 'burn', 'level_up',
 			'queue_join', 'queue_leave',
-			'match_anchor', 'match_result', 'slash_evidence',
+			'match_anchor', 'match_result', 'campaign_result', 'slash_evidence',
 		];
-		expect(ALL_OPS).toHaveLength(14);
+		expect(ALL_OPS).toHaveLength(15);
 		// Every op is either posting or active (slash_evidence is permissionless — any auth)
 		const classified = new Set([...POSTING_OPS, ...ACTIVE_OPS, 'genesis', 'slash_evidence']);
 		for (const op of ALL_OPS) {
@@ -251,6 +253,7 @@ describe('Protocol Conformance: Legacy Op Name Mapping', () => {
 		'rp_burn': 'burn',
 		'rp_match_start': 'match_anchor',
 		'rp_match_result': 'match_result',
+		'rp_campaign_result': 'campaign_result',
 		'rp_level_up': 'level_up',
 		'rp_queue_join': 'queue_join',
 		'rp_queue_leave': 'queue_leave',
@@ -266,12 +269,12 @@ describe('Protocol Conformance: Legacy Op Name Mapping', () => {
 		}
 	});
 
-	it('canonical actions cover all 14 ops (pack_reveal + pack_commit are new, rp_pack_open is legacy-only)', () => {
+	it('canonical actions cover all 15 ops (pack_reveal + pack_commit are new, rp_pack_open is legacy-only)', () => {
 		const canonicalSet = new Set(Object.values(LEGACY_TO_CANONICAL));
 		// These two have no legacy equivalent — they are new v1 ops
 		canonicalSet.add('pack_commit');
 		canonicalSet.add('pack_reveal');
-		expect(canonicalSet.size).toBe(14);
+		expect(canonicalSet.size).toBe(15);
 	});
 
 	it('rp_pack_open is NOT a canonical alias — it is a legacy terminal op', () => {

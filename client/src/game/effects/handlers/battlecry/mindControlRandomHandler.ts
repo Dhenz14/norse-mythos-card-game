@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeMindControlRandom(
   context: GameContext, 
@@ -41,7 +42,7 @@ export default function executeMindControlRandom(
       return { success: false, error: 'Board is full' };
     }
     
-    const randomIndex = Math.floor(Math.random() * enemyMinions.length);
+    const randomIndex = Math.floor(cryptoRng() * enemyMinions.length);
     const stolenMinion = enemyMinions[randomIndex];
     
     const opponentBoardIndex = context.opponentPlayer.board.findIndex(

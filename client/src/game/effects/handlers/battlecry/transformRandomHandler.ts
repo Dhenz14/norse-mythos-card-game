@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeTransformRandom(
   context: GameContext,
@@ -49,10 +50,10 @@ export default function executeTransformRandom(
       return { success: false, error: 'Target not found on board' };
     }
     
-    const randomOption = transformOptions[Math.floor(Math.random() * transformOptions.length)];
+    const randomOption = transformOptions[Math.floor(cryptoRng() * transformOptions.length)];
     
     const transformedMinion: CardInstance = {
-      instanceId: `transformed-random-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `transformed-random-${cryptoIdGen()}`,
       card: {
         id: randomOption.id || 99995,
         name: randomOption.name || 'Random Creature',

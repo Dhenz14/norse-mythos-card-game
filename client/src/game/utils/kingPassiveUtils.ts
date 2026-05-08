@@ -10,6 +10,7 @@ import { NorseKing, KingPassiveTrigger, KingPassiveEffect, PassiveExecutionConte
 import { NORSE_KINGS } from '../data/norseKings/kingDefinitions';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { emitKingPassiveEvent } from '../stores/kingPassiveEventStore';
+import { cryptoRng, cryptoIdGen } from './seededRng';
 
 const RANDOM_KEYWORDS = ['taunt', 'divine_shield', 'stealth', 'rush', 'charge', 'poisonous', 'lifesteal', 'windfury'];
 
@@ -150,7 +151,7 @@ export function executeKingPassive(
 
       case 'debuff_attack':
         if (trigger === 'start_of_turn' && opponent.battlefield.length > 0) {
-          const randomIndex = Math.floor(Math.random() * opponent.battlefield.length);
+          const randomIndex = Math.floor(cryptoRng() * opponent.battlefield.length);
           const targetMinion = opponent.battlefield[randomIndex];
           const newAttack = (targetMinion.currentAttack || getCardAttack(targetMinion.card)) - passive.value;
           targetMinion.currentAttack = Math.max(0, newAttack);
@@ -172,7 +173,7 @@ export function executeKingPassive(
 
       case 'freeze_random':
         if (opponent.battlefield.length > 0) {
-          const randomIndex = Math.floor(Math.random() * opponent.battlefield.length);
+          const randomIndex = Math.floor(cryptoRng() * opponent.battlefield.length);
           const targetMinion = opponent.battlefield[randomIndex];
           targetMinion.isFrozen = true;
           didActivate = true;
@@ -182,11 +183,11 @@ export function executeKingPassive(
       case 'summon_token':
         if (passive.summonData && owner.battlefield.length < MAX_BATTLEFIELD_SIZE) {
           const keywords = passive.summonData.randomKeyword
-            ? [RANDOM_KEYWORDS[Math.floor(Math.random() * RANDOM_KEYWORDS.length)]]
+            ? [RANDOM_KEYWORDS[Math.floor(cryptoRng() * RANDOM_KEYWORDS.length)]]
             : (passive.summonData.keywords || []);
 
           const token: CardInstance = {
-            instanceId: `${ownerType}_king_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            instanceId: `${ownerType}_king_token_${cryptoIdGen()}`,
             card: {
               id: 99999,
               name: passive.summonData.name,
@@ -194,7 +195,7 @@ export function executeKingPassive(
               attack: passive.summonData.attack,
               health: passive.summonData.health,
               description: keywords.join(', '),
-              rarity: 'token' as any,
+              rarity: 'common',
               type: 'minion',
               keywords: keywords
             },

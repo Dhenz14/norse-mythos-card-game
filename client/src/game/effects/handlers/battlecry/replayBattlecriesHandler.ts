@@ -12,6 +12,7 @@ import { EffectResult } from '../../../types/EffectTypes';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../../../constants/gameConstants';
+import { cryptoRng, cryptoIdGen } from '../../../utils/seededRng';
 
 function replayEffect(
 	context: GameContext,
@@ -25,7 +26,7 @@ function replayEffect(
 		case 'damage': {
 			const targets = context.getTargets(effect.targetType || 'random_enemy', sourceMinion);
 			if (targets.length > 0) {
-				const target = targets[Math.floor(Math.random() * targets.length)];
+				const target = targets[Math.floor(cryptoRng() * targets.length)];
 				context.dealDamage(target, effect.value || 1);
 			}
 			break;
@@ -33,7 +34,7 @@ function replayEffect(
 		case 'conditional_damage': {
 			const targets = context.getTargets('random_enemy', sourceMinion);
 			if (targets.length > 0) {
-				const target = targets[Math.floor(Math.random() * targets.length)];
+				const target = targets[Math.floor(cryptoRng() * targets.length)];
 				context.dealDamage(target, effect.value || effect.damage || 1);
 			}
 			break;
@@ -41,7 +42,7 @@ function replayEffect(
 		case 'heal': {
 			const targets = context.getTargets(effect.targetType || 'random_friendly', sourceMinion);
 			if (targets.length > 0) {
-				const target = targets[Math.floor(Math.random() * targets.length)];
+				const target = targets[Math.floor(cryptoRng() * targets.length)];
 				context.healTarget(target, effect.value || 1);
 			}
 			break;
@@ -49,7 +50,7 @@ function replayEffect(
 		case 'buff': {
 			const buffTargets = context.getFriendlyMinions();
 			if (buffTargets.length > 0) {
-				const target = buffTargets[Math.floor(Math.random() * buffTargets.length)];
+				const target = buffTargets[Math.floor(cryptoRng() * buffTargets.length)];
 				target.currentAttack = (target.currentAttack || target.card.attack || 0) + (effect.buffAttack || 0);
 				target.currentHealth = (target.currentHealth || target.card.health || 0) + (effect.buffHealth || 0);
 			}
@@ -89,7 +90,7 @@ function replayEffect(
 		case 'freeze': {
 			const enemies = context.getTargets('random_enemy_minion', sourceMinion);
 			if (enemies.length > 0) {
-				const target = enemies[Math.floor(Math.random() * enemies.length)];
+				const target = enemies[Math.floor(cryptoRng() * enemies.length)];
 				(target as any).isFrozen = true;
 			}
 			break;
@@ -101,7 +102,7 @@ function replayEffect(
 				if (cardToSummon && isMinion(cardToSummon)) {
 					const minionHealth = getHealth(cardToSummon);
 					const newMinion: any = {
-						instanceId: `replay-summon-${Date.now()}`,
+						instanceId: `replay-summon-${cryptoIdGen()}`,
 						card: cardToSummon,
 						currentHealth: minionHealth,
 						maxHealth: minionHealth,
@@ -179,7 +180,7 @@ export default function executeReplayBattlecries(
 
 		if (isRandom) {
 			for (let i = battlecriesToReplay.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
+				const j = Math.floor(cryptoRng() * (i + 1));
 				[battlecriesToReplay[i], battlecriesToReplay[j]] = [battlecriesToReplay[j], battlecriesToReplay[i]];
 			}
 		}

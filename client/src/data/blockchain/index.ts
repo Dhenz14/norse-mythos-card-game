@@ -6,8 +6,7 @@ export type {
 	MatchPlayerData,
 	EloChange,
 	CardXPReward,
-	CardXPConfig,
-	XPConfigMap,
+	CardOwnershipSource,
 	CardLevelBonus,
 	NFTMetadata,
 	NFTAttribute,
@@ -27,17 +26,6 @@ export {
 export { useTransactionQueueStore } from './transactionQueueStore';
 
 export { packageMatchResult } from './matchResultPackager';
-
-export {
-	XP_CONFIG,
-	getLevelForXP,
-	getXPForLevel,
-	getXPToNextLevel,
-	isMaxLevel,
-	calculateXPGain,
-	getLevelBonuses,
-	calculateXPRewards,
-} from './cardXPSystem';
 
 export { generateNFTMetadata } from './nftMetadataGenerator';
 

@@ -88,7 +88,7 @@ Five mythological pantheons clash for supremacy. Norse frost giants wage war aga
 - **On-chain marketplace** — 6 ops (list, unlist, buy, offer, accept, reject) with trustless payment verification
 - **DUAT holder airdrop** — 30% of supply (164,460 packs) to 3,511 DUAT token holders; 90-day claim window
 - **Dual-signature match results** with Merkle transcript anchoring and PoW
-- **Supply caps** — per-card limits: 2,000 common, 1,000 rare, 500 epic, 250 mythic
+- **Supply caps** — per-card limits canonized in [`docs/RULEBOOK.md`](docs/RULEBOOK.md) (Card Rarity table)
 - **Anti-cheat** — Mandatory WASM engine, PoW, slash evidence, nonce anti-replay, STUN/TURN NAT traversal
 - **6-tier decentralized indexer** — on-chain CID → IPFS → Hive fallback → HafSQL → bundled snapshot → P2P relay
 - **Cold multisig governance** — genesis → seal lifecycle permanently closes admin minting
@@ -352,12 +352,7 @@ Every status effect has full visual feedback — themed glows, overlays, and ico
 
 ### Rarities
 
-| Rarity | Deck Limit | NFT Supply (per card) |
-|--------|-----------|----------------------|
-| Common | 2 copies | 1,800 |
-| Rare | 2 copies | 1,250 |
-| Epic | 2 copies | 750 |
-| Mythic | 1 copy | 500 |
+Canon — `common | rare | epic | mythic`. Deck limits, NFT supply caps and eitr Forge/Dissolve costs are defined in [`docs/RULEBOOK.md`](docs/RULEBOOK.md) (Card Rarity table). The runtime canon lives in [`shared/schemas/rarity.ts`](shared/schemas/rarity.ts).
 
 ### Races
 
@@ -555,6 +550,7 @@ server/
 - [ ] Create @ragnarok-genesis Hive account (2-of-3 multisig, same signers)
 - [ ] Create @ragnarok-treasury Hive account (2-of-3 initial, expandable via WoT)
 - [ ] Tabletop rehearsal (signing flow, retry ledger, LIB verification, hash bundle)
+- [ ] Deterministic Game Worker boundary: `applyCommand(command, state)` validates legal moves, resolves chess/poker, emits `GameEvent[]`, and hashes canonical state
 - [ ] Multisig genesis → mint batches → seal → brick genesis authority
 - [ ] Post-seal validation (fresh replay, pack opening, cross-node consistency)
 - [ ] See [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) for full ceremony procedures
@@ -565,9 +561,8 @@ server/
 
 | Document | Description |
 |----------|-------------|
-| [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — 14 base ops, authority matrix, finality rules, launch gates |
-| [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) | **Protocol v1.1** — atomic transfers, pack NFTs, DNA lineage (6 new ops) |
-| [PROTOCOL_V1_2_DESIGN.md](docs/PROTOCOL_V1_2_DESIGN.md) | **Protocol v1.2** — marketplace, broadcast hardening, NFTLox integration, card visuals |
+| [RAGNAROK_PROTOCOL_V1.md](docs/RAGNAROK_PROTOCOL_V1.md) | **Frozen protocol spec** — base ops, authority matrix, finality rules, launch gates |
+| [ATOMIC_NFT_PACKS_DESIGN.md](docs/ATOMIC_NFT_PACKS_DESIGN.md) | Pack system — atomic transfers, pack NFTs, DNA lineage |
 | [DUAT_AIRDROP_DESIGN.md](docs/DUAT_AIRDROP_DESIGN.md) | **DUAT airdrop** — 30% supply to 3,511 holders, claim window, treasury absorption |
 | [DECENTRALIZED_INDEXER_DESIGN.md](docs/DECENTRALIZED_INDEXER_DESIGN.md) | **Light HAF** — 6-tier IPFS index, WoT operators, HafSQL fallback |
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |

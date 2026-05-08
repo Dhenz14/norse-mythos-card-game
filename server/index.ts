@@ -1,9 +1,21 @@
-import 'dotenv/config';
+import { config as loadDotenv } from 'dotenv';
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+function resolveCliMode(): string {
+  const modeIndex = process.argv.indexOf('--mode');
+  const mode = modeIndex >= 0 ? process.argv[modeIndex + 1] : undefined;
+  return mode && !mode.startsWith('-') ? mode : (process.env.NODE_ENV ?? 'development');
+}
+
+loadDotenv();
+const envMode = resolveCliMode();
+if (envMode !== 'development' && envMode !== 'production') {
+  loadDotenv({ path: `.env.${envMode}` });
+}
 
 const app = express();
 const isDev = process.env.NODE_ENV !== 'production';
@@ -22,14 +34,29 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
+// Sensitive endpoint limiter: queue/leave matchmaking + tournament register/result.
+//
+// Calibration rationale:
+// - Normal user with 2-3 retries hits ~6 req/min easily. Old 6/min cap caused
+//   false-positive 429s that surface as "Matchmaking service unavailable".
+// - Per-IP rate limiting CANNOT stop a distributed bot (multi-IP) anyway —
+//   that requires proof-of-work / captcha / Hive-auth tokens (see
+//   requireHiveBodyAuthIfUsernamePresent middleware on /queue).
+// - The endpoints are in-memory operations (no DB, no remote calls), cost
+//   per request is nanoseconds. Stale entries auto-purge every 60s.
+// - Prod 30/min: 5× normal usage headroom, still catches single-IP floods
+//   (>500 req/min would trip easily).
+// - Dev 120/min: smoke testing involves browser refresh + reconnect loops
+//   that legitimately exceed 30/min. `isDev` already declared at module scope.
 const sensitiveLimiter = rateLimit({
   windowMs: 60_000,
-  limit: 6,
+  limit: isDev ? 120 : 30,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: { success: false, error: 'Rate limit exceeded for this endpoint' },
 });
-app.use('/api/matchmaking', sensitiveLimiter);
+app.use('/api/matchmaking/queue', sensitiveLimiter);
+app.use('/api/matchmaking/leave', sensitiveLimiter);
 app.use('/api/tournaments/:id/register', sensitiveLimiter);
 app.use('/api/tournaments/:id/result', sensitiveLimiter);
 

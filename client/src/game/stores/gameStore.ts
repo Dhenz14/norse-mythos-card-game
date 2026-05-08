@@ -1,25 +1,20 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { showStatus } from '../components/ui/GameStatusBanner';
-import { createCardInstance, findCardInstance } from '../utils/cards/cardUtils';
+import { emitNotification } from '../actions/gameActions';
 import { hasKeyword } from '../utils/cards/keywordUtils';
 import {
   initializeGame,
-  playCard,
-  endTurn,
-  processAttack,
+  initializeGameSeeded,
   processAITurn,
   autoAttackWithAllCards
 } from '../utils/gameUtils';
-import { executeHeroPower } from '../utils/heroPowerUtils';
-import { processDiscovery } from '../utils/discoveryUtils';
-import { toggleCardSelection, confirmMulligan, skipMulligan } from '../utils/mulliganUtils';
+import { cryptoRng, cryptoIdGen, createSeededRng, createSeededIdGen } from '../utils/seededRng';
+import type { HiveCardAsset } from '../../data/schemas/HiveTypes';
 import { useMulliganStore } from './mulliganStore';
 import { useDiscoveryStore } from './discoveryStore';
 import { usePokerRewardStore } from './pokerRewardStore';
 import { CardInstance, GameState, CardData } from '../types';
 import { CardInstanceWithCardData } from '../types/interfaceExtensions';
-import { useAudio } from '../../lib/stores/useAudio';
 import useGame from '../../lib/stores/useGame';
 import { useUnifiedUIStore as useAnnouncementStore } from './unifiedUIStore';
 import { GameEventBus } from '../../core/events/GameEventBus';
@@ -27,13 +22,14 @@ import { isAISimulationMode, debug, getDebugConfig } from '../config/debugConfig
 import { getPokerCombatAdapterState } from '../hooks/usePokerCombatAdapter';
 import { CombatAction, CombatPhase } from '../types/PokerCombatTypes';
 import { useUnifiedCombatStore } from './unifiedCombatStore';
-import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants';
 import { useTargetingStore } from './targetingStore';
 import { logActivity } from './activityLogStore';
 import { CombatEventBus } from '../services/CombatEventBus';
 import { getAttack } from '../utils/cards/typeGuards';
 import { usePeerStore } from './peerStore';
 import { computeStateHash } from '../engine/engineBridge';
+import { GAME_COMMAND_TYPES, applyGameCommand, applyOpponentCommand, type GameCommand } from '../core/commands';
+import { applyGameCommandToStore } from './gameCommandStoreAdapter';
 
 // ============== BATTLEFIELD DEBUG MONITOR ==============
 // Track battlefield changes with stack traces to identify root cause of minion disappearance
@@ -80,6 +76,26 @@ interface GameStore {
   // Game state
   gameState: GameState;
   matchSeed: string | null;
+  /**
+   * Canonical chess side for the local peer — decided at handshake from
+   * `matchSeed` parity (see `deriveCanonicalSide` in `shared/p2p-wire/chess.ts`).
+   * `'player'` means this peer plays the first-mover side globally;
+   * `'opponent'` means second-mover side. SP defaults to `'player'` (human
+   * always goes first vs AI). Null until a chess match initializes.
+   *
+   * UI uses this to translate canonical board state into viewer-relative
+   * presentation ("your turn" / "your pieces at bottom"). Game logic
+   * (slice, applyChessCommand, hash) does NOT branch on this — it operates
+   * on canonical state only.
+   */
+  myCanonicalSide: 'player' | 'opponent' | null;
+  /**
+   * P2P session matchId — derived as sha256(matchSeed + myPeerId + remotePeerId)
+   * truncated to 16 chars. Set by `useWireSync` after seed_reveal so any other
+   * subsystem (e.g. chess wire sender) can read it without depending on
+   * useWireSync internals. Null in non-P2P modes.
+   */
+  matchId: string | null;
   lastStateHash: string | null;
   selectedCard: CardInstance | null;
   // For tracking attack selection
@@ -89,11 +105,24 @@ interface GameStore {
   
   // Game actions
   initGame: () => void;
+  /**
+   * Initialize gameState deterministically from a P2P matchSeed (commit-reveal
+   * output). Host-only entry point: the host calls this after seed exchange
+   * resolves, then sends the resulting gameState to the client via the `init`
+   * envelope. The client adopts via `setState` directly and never calls this.
+   */
+  initGameWithSeed: (matchSeed: string) => void;
   playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean) => void;
+  /**
+   * Apply a command issued by the opponent (P2P host receiving remote peer's envelope).
+   * Goes through the canonical pipeline via state swap so the host's state correctly
+   * reflects the opponent's action. Effects are translated to host perspective.
+   */
+  applyOpponentCommand: (command: GameCommand) => void;
   attackWithCard: (attackerId: string, defenderId?: string) => void; // If defenderId is undefined, attack hero
   autoAttackAll: (mode?: 'minion' | 'hero') => void; // Auto-attack with all minions
   selectAttacker: (card: CardInstance | CardInstanceWithCardData | null) => void; // Select card to attack with
-  useHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => void; // Use hero power
+  performHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => void; // Renamed to avoid hook errors
   toggleHeroTargetMode: () => void; // Toggle hero power targeting mode
   endTurn: () => void;
   selectCard: (card: CardInstance | CardInstanceWithCardData | null) => void;
@@ -129,10 +158,30 @@ let isAITurnProcessing = false;
 
 // Guard: poker reward retries moved to pokerRewardStore.ts
 
+/**
+ * Lazy read of the player's NFT collection from the Hive data store.
+ * Lives behind globalThis to keep the game-engine chunk independent of
+ * the blockchain chunk (HiveDataLayer registers itself at creation time
+ * via `unifiedCombatStore.ts`-style ambient publishing). Returns
+ * `undefined` when the store hasn't been mounted yet — that path is
+ * exercised at module-load and during tests.
+ */
+function readHiveCollection(): HiveCardAsset[] | undefined {
+  try {
+    const hiveStore = (globalThis as Record<string, unknown>).__ragnarokHiveDataStore as
+      { getState: () => { cardCollection?: HiveCardAsset[] } } | undefined;
+    return hiveStore?.getState?.()?.cardCollection;
+  } catch {
+    return undefined;
+  }
+}
+
 // Create store with subscribeWithSelector middleware for precise battlefield monitoring
 export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get) => ({
   gameState: initializeGame(),
   matchSeed: null,
+  myCanonicalSide: null,
+  matchId: null,
   lastStateHash: null,
   selectedCard: null,
   hoveredCard: null,
@@ -142,167 +191,98 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
   initGame: () => {
     if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
     isAttackProcessing = false;
+    isAITurnProcessing = false;
     if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
-    // Get selectedDeck and selectedHero from useGame store
+
     const { selectedDeck, selectedHero, selectedHeroId } = useGame.getState();
-    // Convert null to undefined for function compatibility
-    const deckId = selectedDeck === null ? undefined : selectedDeck;
-    const hero = selectedHero === null ? undefined : selectedHero;
-    const heroId = selectedHeroId === null ? undefined : selectedHeroId;
+    const hiveCollection = readHiveCollection();
 
     set({
-      gameState: initializeGame(deckId, hero, heroId),
+      gameState: initializeGameSeeded({
+        rng: cryptoRng,
+        playerIdGen: cryptoIdGen,
+        opponentIdGen: cryptoIdGen,
+        selectedDeckId: selectedDeck ?? undefined,
+        selectedHeroClass: selectedHero ?? undefined,
+        selectedHeroId: selectedHeroId ?? undefined,
+        hiveCollection,
+      }),
+      // SP convention: human is always first-mover globally → 'player'.
+      // P2P sets this from `deriveCanonicalSide` after seed_reveal instead;
+      // SP never goes through that path.
+      myCanonicalSide: 'player',
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,
-      heroTargetMode: false
+      heroTargetMode: false,
+    });
+  },
+
+  initGameWithSeed: (matchSeed: string) => {
+    if (autoEndTurnTimer) { clearTimeout(autoEndTurnTimer); autoEndTurnTimer = null; }
+    isAttackProcessing = false;
+    isAITurnProcessing = false;
+    if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
+
+    const { selectedDeck, selectedHero, selectedHeroId } = useGame.getState();
+    const hiveCollection = readHiveCollection();
+
+    const rng = createSeededRng(matchSeed);
+    const playerIdGen = createSeededIdGen(matchSeed, 'p1');
+    const opponentIdGen = createSeededIdGen(matchSeed, 'p2');
+
+    set({
+      matchSeed,
+      gameState: initializeGameSeeded({
+        rng,
+        playerIdGen,
+        opponentIdGen,
+        selectedDeckId: selectedDeck ?? undefined,
+        selectedHeroClass: selectedHero ?? undefined,
+        selectedHeroId: selectedHeroId ?? undefined,
+        hiveCollection,
+      }),
+      selectedCard: null,
+      hoveredCard: null,
+      attackingCard: null,
+      heroTargetMode: false,
     });
   },
 
   playCard: (cardId: string, targetId?: string, targetType?: 'minion' | 'hero', insertionIndex?: number, payWithBlood?: boolean) => {
     const { gameState } = get();
-    const audioStore = useAudio.getState();
+    const command = {
+      type: GAME_COMMAND_TYPES.playCard,
+      cardId,
+      targetId,
+      targetType,
+      insertionIndex,
+      payWithBlood,
+    } as const;
+    const result = applyGameCommand(gameState, command, {
+      isAiSimulationMode: isAISimulationMode,
+    });
 
-    try {
-      // Check if it's player's turn - add exception for AI simulation
-      if (gameState.currentTurn !== 'player' && !isAISimulationMode()) {
-        throw new Error('Not your turn');
-      }
+    applyGameCommandToStore({
+      command,
+      beforeState: gameState,
+      result,
+      setState: set,
+    });
+  },
 
-      // Find the card in player's hand
-      const player = gameState.players.player;
-      const cardResult = findCardInstance(player.hand, cardId);
+  applyOpponentCommand: (command: GameCommand) => {
+    const { gameState } = get();
+    const result = applyOpponentCommand(gameState, command, {
+      isAiSimulationMode: isAISimulationMode,
+    });
 
-      if (!cardResult) {
-        debug.warn('Card not found in hand (may have been played already):', cardId);
-        return;
-      }
-
-      // Extract the card instance from the result
-      const cardInstance = cardResult.card as CardInstance;
-
-      // Check if player has enough mana
-      if (!player.mana || typeof player.mana.current !== 'number') {
-        player.mana = { current: 1, max: 1, overloaded: 0, pendingOverload: 0 };
-      }
-
-      const cardCost = cardInstance.card.manaCost ?? 0;
-      const bloodCost = cardInstance.card.bloodPrice;
-      if (payWithBlood && bloodCost && bloodCost > 0) {
-        const heroHp = player.heroHealth ?? player.health ?? 100;
-        if (heroHp <= bloodCost) {
-          throw new Error(`Not enough health. Need more than ${bloodCost} HP to pay Blood Price`);
-        }
-      } else if (cardCost > player.mana.current) {
-        throw new Error(`Not enough mana. Need ${cardCost} but only have ${player.mana.current}`);
-      }
-
-      if (cardInstance.card.type === 'minion' && player.battlefield.length >= MAX_BATTLEFIELD_SIZE) {
-        throw new Error(`Battlefield is full! Maximum ${MAX_BATTLEFIELD_SIZE} minions allowed.`);
-      }
-
-      // For cards with battlecry that require target, check if we have a target
-      if (cardInstance.card.type === 'minion' &&
-          hasKeyword(cardInstance, 'battlecry') &&
-          cardInstance.card.battlecry?.requiresTarget && 
-          !targetId) {
-        debug.log(`${cardInstance.card.name} requires a battlecry target`);
-        return; // Don't proceed without a target
-      }
-      
-      // Save the card data for reference after it's played
-      const cardData = JSON.parse(JSON.stringify(cardInstance.card));
-      
-      try {
-        // Play the card with the target if provided
-        const newState = playCard(gameState, cardId, targetId, targetType, insertionIndex, payWithBlood);
-        
-        // If the card requires a battlecry target but we still don't have a valid game state,
-        // it means the battlecry couldn't be executed properly
-        if (cardData.type === 'minion' &&
-            cardData.keywords?.includes('battlecry') &&
-            cardData.battlecry?.requiresTarget &&
-            newState === gameState) {
-          debug.log('Battlecry target validation failed');
-          return;
-        }
-        
-        // Log to saga feed based on card type
-        if (cardInstance.card.type === 'spell') {
-          logActivity('spell_cast', 'player', `Cast ${cardInstance.card.name}`, {
-            cardName: cardInstance.card.name,
-            cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined,
-            value: cardInstance.card.spellEffect?.value as number
-          });
-        } else if (cardInstance.card.type === 'minion') {
-          logActivity('minion_summoned', 'player', `Summoned ${cardInstance.card.name} (${cardInstance.card.attack}/${cardInstance.card.health})`, {
-            cardName: cardInstance.card.name,
-            cardId: typeof cardInstance.card.id === 'number' ? cardInstance.card.id : undefined
-          });
-        }
-        
-        // Check if the card has a spell effect that triggers discovery
-        const hasDiscover = (cardInstance.card.type === 'spell' && cardInstance.card.spellEffect?.type === 'discover') ||
-                          hasKeyword(cardInstance, 'discover');
-
-        if (hasDiscover && newState.discovery?.active) {
-          // Play sound effect
-          if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-            audioStore.playSoundEffect('discover');
-          }
-          
-          set({ 
-            gameState: newState,
-            selectedCard: null
-          });
-        } else {
-          // Normal card play, no discovery
-          
-          // Play sound effect based on card type
-          if (cardInstance.card.rarity === 'mythic') {
-            if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-              audioStore.playSoundEffect('legendary');
-            }
-          } else if (cardInstance.card.type === 'minion' &&
-                    hasKeyword(cardInstance, 'battlecry') &&
-                    cardInstance.card.battlecry?.type === 'damage') {
-            if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-              audioStore.playSoundEffect('damage');
-            }
-          } else {
-            if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-              audioStore.playSoundEffect('card_play');
-            }
-          }
-          
-          let finalState = newState;
-          const hasCharge = hasKeyword(cardInstance, 'charge');
-          const hasRush = hasKeyword(cardInstance, 'rush');
-          
-          if (cardInstance.card.type === 'minion' && (cardInstance.card.attack ?? 0) > 0 && (hasCharge || hasRush)) {
-            // Find the minion in state and ensure it's ready to attack
-            const minionIndex = finalState.players.player.battlefield.findIndex(
-              (c: CardInstance) => c.instanceId === cardInstance.instanceId
-            );
-            if (minionIndex !== -1) {
-              finalState.players.player.battlefield[minionIndex].isSummoningSick = false;
-              finalState.players.player.battlefield[minionIndex].canAttack = true;
-            }
-          }
-          
-          // Update state
-          set({ 
-            gameState: finalState,
-            selectedCard: null
-          });
-        }
-      } catch (playCardError) {
-        debug.error(`[PLAY-CARD-ERROR] Error in playCard utility for ${cardInstance.card.name}:`, playCardError);
-        throw playCardError;
-      }
-    } catch (error) {
-      debug.error('Error playing card:', error);
-    }
+    applyGameCommandToStore({
+      command,
+      beforeState: gameState,
+      result,
+      setState: set,
+    });
   },
 
   endTurn: () => {
@@ -313,74 +293,56 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     }
 
     const { gameState } = get();
-    const audioStore = useAudio.getState();
 
-    try {
-      // Log end turn to saga feed
-      logActivity('turn_end', 'player', `Turn ${gameState.turnNumber} ended`);
-
-      // Phase 1: End player turn, switch to opponent (skip AI simulation for delay)
-      const intermediateState = endTurn(gameState, true);
-
-      // Log opponent turn start
-      logActivity('turn_start', 'opponent',
-        `Turn ${intermediateState.turnNumber} - Opponent's turn`);
-
-      // Play sound effect
-      if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-        audioStore.playSoundEffect('turn_end');
+    // End Turn = Fold in poker (depends on PRE state; runs before pipeline)
+    const pokerAdapter = getPokerCombatAdapterState();
+    if (pokerAdapter.isActive && pokerAdapter.combatState) {
+      const phase = pokerAdapter.combatState.phase;
+      const playerId = pokerAdapter.combatState.player.playerId;
+      const isTransitioning = useUnifiedCombatStore.getState().isTransitioningHand;
+      const hasFoldWinner = !!pokerAdapter.combatState.foldWinner;
+      if (phase !== CombatPhase.MULLIGAN && phase !== CombatPhase.RESOLUTION && !isTransitioning && !hasFoldWinner) {
+        debug.log('[UnifiedEndTurn] End Turn = Fold');
+        pokerAdapter.performAction(playerId, CombatAction.BRACE);
+      } else {
+        debug.log(`[UnifiedEndTurn] Skipping fold: phase=${phase}, transitioning=${isTransitioning}`);
       }
-
-      // End Turn = Fold in poker
-      const pokerAdapter = getPokerCombatAdapterState();
-      if (pokerAdapter.isActive && pokerAdapter.combatState) {
-        const phase = pokerAdapter.combatState.phase;
-        const playerId = pokerAdapter.combatState.player.playerId;
-
-        const isTransitioning = useUnifiedCombatStore.getState().isTransitioningHand;
-        const hasFoldWinner = !!pokerAdapter.combatState.foldWinner;
-        if (phase !== CombatPhase.MULLIGAN && phase !== CombatPhase.RESOLUTION && !isTransitioning && !hasFoldWinner) {
-          debug.log('[UnifiedEndTurn] End Turn = Fold');
-          pokerAdapter.performAction(playerId, CombatAction.BRACE);
-        } else {
-          debug.log(`[UnifiedEndTurn] Skipping fold: phase=${phase}, transitioning=${isTransitioning}`);
-        }
-      }
-
-      // Set intermediate state (shows opponent's turn, triggers turn banner)
-      set({
-        gameState: intermediateState,
-        selectedCard: null
-      });
-
-      // Phase 2: After AI thinking delay, process AI turn and switch back to player
-      // Skip AI processing if opponent is a real human (P2P connected)
-      const aiDelay = 1800 + Math.random() * 1000; // 1800-2800ms — slow enough to read
-      const scheduledTurnNumber = intermediateState.turnNumber;
-      isAITurnProcessing = true;
-      setTimeout(() => {
-        try {
-          const { gameState: currentState } = get();
-          if (currentState.currentTurn !== 'opponent') return;
-          if (currentState.gamePhase === 'game_over') return;
-          if (currentState.turnNumber !== scheduledTurnNumber) return;
-
-          // If P2P connected, the opponent is a real human — do NOT run AI
-          if (usePeerStore.getState().connectionState === 'connected') return;
-
-          const finalState = processAITurn(currentState);
-
-          logActivity('turn_start', 'player',
-            `Turn ${finalState.turnNumber} - Your turn`);
-
-          set({ gameState: finalState });
-        } finally {
-          isAITurnProcessing = false;
-        }
-      }, aiDelay);
-    } catch (error) {
-      debug.error('Error ending turn:', error);
     }
+
+    const command = { type: GAME_COMMAND_TYPES.endTurn } as const;
+    const result = applyGameCommand(gameState, command, {
+      isAiSimulationMode: isAISimulationMode,
+    });
+
+    applyGameCommandToStore({
+      command,
+      beforeState: gameState,
+      result,
+      setState: set,
+    });
+
+    if (result.status !== 'applied') return;
+
+    // AI delay + AI turn — kept in wrapper so the isAITurnProcessing guard above remains coherent.
+    // Skip if opponent is a real human (P2P connected).
+    const aiDelay = 1800 + Math.random() * 1000;
+    const scheduledTurnNumber = result.state.turnNumber;
+    isAITurnProcessing = true;
+    setTimeout(() => {
+      try {
+        const { gameState: currentState } = get();
+        if (currentState.currentTurn !== 'opponent') return;
+        if (currentState.gamePhase === 'game_over') return;
+        if (currentState.turnNumber !== scheduledTurnNumber) return;
+        if (usePeerStore.getState().connectionState === 'connected') return;
+
+        const finalState = processAITurn(currentState);
+        logActivity('turn_start', 'player', `Turn ${finalState.turnNumber} - Your turn`);
+        set({ gameState: finalState });
+      } finally {
+        isAITurnProcessing = false;
+      }
+    }, aiDelay);
   },
 
   // Select a card as a possible attacker
@@ -446,67 +408,68 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
       attackWatchdogTimer = null;
     }, 5000);
 
-    const { gameState } = get();
-    const audioStore = useAudio.getState();
-    const targetingStore = useTargetingStore.getState();
+    try {
+      const { gameState } = get();
+      const attackerCard = gameState.players.player.battlefield.find(
+        c => c.instanceId === attackerId
+      );
 
-    // Find the attacker card — use fresh state for accurate attacksPerformed
-    const attackerCard = get().gameState.players.player.battlefield.find(
-      c => c.instanceId === attackerId
-    );
-
-    if (attackerCard) {
-      const hasMegaWindfury = hasKeyword(attackerCard, 'mega_windfury');
-      const hasWindfury = hasKeyword(attackerCard, 'windfury');
-      const maxAttacks = hasMegaWindfury ? 4 : hasWindfury ? 2 : 1;
-      if ((attackerCard.attacksPerformed || 0) >= maxAttacks) {
-        showStatus("This minion already attacked this turn!", 'error');
-        targetingStore.cancelTargeting();
-        set({ attackingCard: null });
-        isAttackProcessing = false;
-        if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
+      // Asymmetric early-return: when the attacker isn't on our player.battlefield,
+      // this is either a P2P host receiving an opponent's attack or a stale ID.
+      // Bypass the canonical pipeline so processAttack's player-side checks don't surface as toasts.
+      if (!attackerCard) {
+        useTargetingStore.getState().cancelTargeting();
+        set({ attackingCard: null, selectedCard: null });
         return;
       }
-    }
 
-    try {
-      // Emit animation request — rendering layer handles the visual lunge
-      GameEventBus.emitAnimationRequest({
-        animationType: 'attack_lunge',
-        sourceId: attackerId,
-        targetId: defenderId || 'opponent-hero',
-        params: { attackerSide: 'player' }
+      const command = {
+        type: GAME_COMMAND_TYPES.attack,
+        attackerId,
+        defenderId,
+      } as const;
+      const result = applyGameCommand(gameState, command, {
+        isAiSimulationMode: isAISimulationMode,
       });
 
-      // Process attack logic immediately (animation is purely visual, non-blocking)
-      if (!attackerCard) {
-        targetingStore.cancelTargeting();
-        set({ attackingCard: null, selectedCard: null });
-        isAttackProcessing = false;
-        if (attackWatchdogTimer) { clearTimeout(attackWatchdogTimer); attackWatchdogTimer = null; }
-        return;
+      // Animation: matches original — fires for valid attempts, suppressed only on windfury rejection
+      const isWindfuryRejection = result.status === 'rejected' && result.reason === 'no attacks left';
+      if (!isWindfuryRejection) {
+        GameEventBus.emitAnimationRequest({
+          animationType: 'attack_lunge',
+          sourceId: attackerId,
+          targetId: defenderId || 'opponent-hero',
+          params: { attackerSide: 'player' }
+        });
       }
 
-      const newState = processAttack(gameState, attackerId, defenderId);
-
-      // If the state changed, it means the attack was successful
-      if (newState !== gameState) {
-        // Play sound effect
-        if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-          audioStore.playSoundEffect('attack');
-        }
-
-        // Emit combat events for subscribers (PokerCombatStore, animations, sound, etc.)
+      if (result.status === 'applied') {
         const damage = getAttack(attackerCard.card);
         const targetMinion = gameState.players.opponent.battlefield.find(c => c.instanceId === defenderId);
         const counterDamage = targetMinion ? getAttack(targetMinion.card) : 0;
         const isHeroTarget = !defenderId || defenderId === 'opponent-hero';
 
+        // Capture target health before/after the attack so animations and debug
+        // subscribers see real values (TD-7 closure). For hero targets, read
+        // from heroHealth; for minions, find by instanceId in pre/post state.
+        const beforeOpponent = gameState.players.opponent;
+        const afterOpponent = result.state.players.opponent;
+        const targetHealthBefore = isHeroTarget
+          ? (beforeOpponent.heroHealth ?? beforeOpponent.health ?? 0)
+          : (targetMinion?.currentHealth ?? 0);
+        const afterTargetMinion = !isHeroTarget && defenderId
+          ? afterOpponent.battlefield.find(c => c.instanceId === defenderId)
+          : undefined;
+        const targetHealthAfter = isHeroTarget
+          ? (afterOpponent.heroHealth ?? afterOpponent.health ?? 0)
+          : (afterTargetMinion?.currentHealth ?? 0);
+        const targetDied = !isHeroTarget && defenderId !== undefined && afterTargetMinion === undefined;
+
         CombatEventBus.emitImpactPhase({
-          attackerId: attackerId,
+          attackerId,
           targetId: defenderId || 'opponent-hero',
           damageToTarget: damage,
-          damageToAttacker: isHeroTarget ? 0 : counterDamage
+          damageToAttacker: isHeroTarget ? 0 : counterDamage,
         });
 
         CombatEventBus.emitDamageResolved({
@@ -518,40 +481,22 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
           damageSource: 'minion_attack',
           attackerOwner: 'player',
           defenderOwner: 'opponent',
-          targetHealthBefore: 0,
-          targetHealthAfter: 0,
-          targetDied: false,
-          counterDamage: isHeroTarget ? undefined : counterDamage
+          targetHealthBefore,
+          targetHealthAfter,
+          targetDied,
+          counterDamage: isHeroTarget ? undefined : counterDamage,
         });
-
-        // Log attack to saga feed
-        const targetName = defenderId === 'opponent-hero' || !defenderId
-          ? 'enemy hero'
-          : gameState.players.opponent.battlefield.find(c => c.instanceId === defenderId)?.card.name || 'enemy minion';
-
-        logActivity('attack', 'player', `${attackerCard.card.name} attacked ${targetName}`, {
-          cardName: attackerCard.card.name,
-          targetName: targetName,
-          value: getAttack(attackerCard.card)
-        });
-
-        // Clear targeting state - attack completed
-        targetingStore.cancelTargeting();
-
-        // Update game state
-        set({
-          gameState: newState,
-          attackingCard: null,
-          selectedCard: null
-        });
-      } else {
-        // Attack failed - clear targeting
-        targetingStore.cancelTargeting();
-        set({ attackingCard: null });
       }
+
+      applyGameCommandToStore({
+        command,
+        beforeState: gameState,
+        result,
+        setState: set,
+      });
     } catch (error) {
       debug.error('Error processing attack:', error);
-      targetingStore.cancelTargeting();
+      useTargetingStore.getState().cancelTargeting();
       set({ attackingCard: null, selectedCard: null });
     } finally {
       isAttackProcessing = false;
@@ -583,6 +528,8 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     debug.log('Resetting game state to initial values');
     set({
       gameState: initializeGame(),
+      myCanonicalSide: null,
+      matchId: null,
       selectedCard: null,
       hoveredCard: null,
       attackingCard: null,
@@ -694,94 +641,71 @@ export const useGameStore = create<GameStore>()(subscribeWithSelector((set, get)
     if (newState) set({ gameState: newState });
   },
   
-  // Use hero power on a target (or no target for some powers like Armor Up)
-  useHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => {
+  // Use hero power on a target (or no target for some powers like Armor Up).
+  // Note: this covers the GENERIC hero power path (mage fireblast, warrior armor, etc.,
+  // including Norse heroes whose powers route through `executeNorseHeroPower` inside
+  // the canonical `executeHeroPower`). The poker-combat-coupled hero power flow in
+  // `useRagnarokCombatController.executeHeroPowerEffect` remains a separate path —
+  // it carries poker-combat context (applyDirectDamage, healPlayerHero, setPlayerHeroBuffs)
+  // that does not yet fit the `UseHeroPowerCommand` contract.
+  performHeroPower: (targetId?: string, targetType?: 'card' | 'hero') => {
     const { gameState, heroTargetMode } = get();
-    const audioStore = useAudio.getState();
-    
-    try {
-      // Can only use hero power during player's turn and if not already used
-      if (gameState.currentTurn !== 'player' && !isAISimulationMode()) {
-        throw new Error('Not your turn');
-      }
-      
-      const player = gameState.players.player;
-      
-      if (player.heroPower.used) {
-        throw new Error('Hero power already used this turn');
-      }
-      
-      if (player.mana.current < player.heroPower.cost) {
-        throw new Error(`Not enough mana. Need ${player.heroPower.cost} but only have ${player.mana.current}`);
-      }
-      
-      // Some hero powers don't need a target (warrior, hunter, and special ones like Odin)
-      const heroClass = player.heroClass.toLowerCase();
-      const heroId = player.hero?.id;
-      let needsTarget = false;
-      
-      // Odin's Wisdom of the Ravens does NOT need a target
-      if (heroClass === 'mage' && heroId !== 'hero-odin') {
-        needsTarget = true;
-      }
-      
-      // Make sure we have a target if needed
-      if (needsTarget && (!targetId || !targetType)) {
-        if (!heroTargetMode) {
-          set({ heroTargetMode: true });
-          showStatus('Select a target for your hero power', 'info');
-          return;
-        }
-        throw new Error('This hero power requires a target');
-      }
-      
-      // Execute the hero power
-      const newState = executeHeroPower(gameState, 'player', targetId, targetType);
-      
-      if (newState === gameState) {
+    const player = gameState.players.player;
+
+    // UX pre-step: some hero powers require a target (e.g. mage Fireblast).
+    // If the user clicked the hero-power button without picking a target yet,
+    // enter target-selection mode and bail out — the next click will retry.
+    const heroClass = player.heroClass.toLowerCase();
+    const heroId = player.hero?.id;
+    const needsTarget = heroClass === 'mage' && heroId !== 'hero-odin';
+    if (needsTarget && (!targetId || !targetType)) {
+      if (!heroTargetMode) {
+        set({ heroTargetMode: true });
+        emitNotification({ message: 'Select a target for your hero power', level: 'info' });
         return;
       }
-
-      // Show action announcement for the hero power
-      const announcementStoreState = useAnnouncementStore.getState();
-      if (announcementStoreState && announcementStoreState.addAnnouncement) {
-        announcementStoreState.addAnnouncement({
-          type: 'action' as any,
-          title: player.heroPower.name,
-          subtitle: player.heroPower.description,
-          icon: '✨',
-          duration: 2000
-        });
-      }
-
-      // Play hero power sound effect
-      if (audioStore && typeof audioStore.playSoundEffect === 'function') {
-        audioStore.playSoundEffect('hero_power');
-      }
-      
-      // Log to saga feed
-      logActivity('buff', 'player', `Used ${player.heroPower.name}`);
-
-      // Update game state
-      set({
-        gameState: newState,
-        heroTargetMode: false  // Exit hero power mode
-      });
-      
-      // Success notification
-      showStatus(`Used Hero Power: ${player.heroPower.name}`, 'success');
-
-      // Emit hero power effect event — rendering layer handles the visual
-      GameEventBus.emitAnimationRequest({
-        animationType: 'hero_power_effect',
-        sourceId: 'player',
-        params: { heroClass, effectType: player.heroPower.name }
-      });
-
-      debug.log(`Hero power ${player.heroPower.name} used successfully`);
-    } catch (error) {
-      debug.error('Error using hero power:', error);
+      debug.error('[HeroPower] Target required but none provided');
+      return;
     }
+
+    const command = {
+      type: GAME_COMMAND_TYPES.useHeroPower,
+      targetId,
+      targetType,
+    } as const;
+    const result = applyGameCommand(gameState, command, {
+      isAiSimulationMode: isAISimulationMode,
+    });
+
+    applyGameCommandToStore({
+      command,
+      beforeState: gameState,
+      result,
+      setState: set,
+    });
+
+    if (result.status !== 'applied') return;
+
+    // Wrapper-only side effects: bespoke UI cues that don't fit the canonical
+    // effect vocabulary. Ordered AFTER state apply so they reflect committed action.
+    const announcementStoreState = useAnnouncementStore.getState();
+    if (announcementStoreState && announcementStoreState.addAnnouncement) {
+      announcementStoreState.addAnnouncement({
+        type: 'action' as any,
+        title: player.heroPower.name,
+        subtitle: player.heroPower.description,
+        icon: '✨',
+        duration: 2000,
+      });
+    }
+
+    emitNotification({ message: `Used Hero Power: ${player.heroPower.name}`, level: 'success' });
+
+    GameEventBus.emitAnimationRequest({
+      animationType: 'hero_power_effect',
+      sourceId: 'player',
+      params: { heroClass, effectType: player.heroPower.name },
+    });
   },
   
   grantPokerHandRewards: () => {

@@ -8,16 +8,23 @@
  *   disconnected → expands to username input → Keychain signs a buffer to verify ownership
  *   connected     → shows @username pill + Logout button
  *
- * On connect: calls hiveSync.login(), sets HiveDataLayer user, starts chain replay sync.
+ * On connect: calls HiveAuth login, sets HiveDataLayer user, starts chain replay sync.
  * On logout: stops sync, clears HiveDataLayer state.
  */
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHiveDataStore } from '../../data/HiveDataLayer';
-import { hiveSync } from '../../data/HiveSync';
+import {
+	clearActiveHiveSession,
+	getDefaultHiveWalletProviderId,
+	isHiveWalletAvailable,
+	loginWithHiveWallet,
+	setActiveHiveSession,
+} from '../../data/HiveAuth';
 import { getNFTBridge } from '../nft';
 import { ensureBridgeRuntime } from '../runtime/bridgeRuntime';
+import { Button } from '../../components/ui-norse';
 
 type ConnectStatus = 'idle' | 'connecting' | 'error';
 
@@ -31,14 +38,14 @@ export function HiveKeychainLogin() {
 	const [status, setStatus] = useState<ConnectStatus>('idle');
 	const [errorMsg, setErrorMsg] = useState('');
 
-	const keychainAvailable = hiveSync.isKeychainAvailable();
+	const keychainAvailable = isHiveWalletAvailable();
 
 	// Re-connect on mount if user was previously logged in
 	useEffect(() => {
 		let cancelled = false;
 
 		if (user) {
-			hiveSync.setUsername(user.hiveUsername);
+			setActiveHiveSession(user.hiveUsername, getDefaultHiveWalletProviderId());
 			void ensureBridgeRuntime().then(() => {
 				if (!cancelled) {
 					getNFTBridge().startSync(user.hiveUsername);
@@ -65,7 +72,7 @@ export function HiveKeychainLogin() {
 			return;
 		}
 
-		const result = await hiveSync.login(trimmed);
+		const result = await loginWithHiveWallet(trimmed);
 
 		if (!result.success) {
 			setStatus('error');
@@ -87,6 +94,7 @@ export function HiveKeychainLogin() {
 
 	const handleLogout = () => {
 		getNFTBridge().stopSync();
+		clearActiveHiveSession();
 		logout();
 	};
 
@@ -98,12 +106,22 @@ export function HiveKeychainLogin() {
 	// --- Connected state ---
 	if (user) {
 		return (
-			<div className="flex items-center gap-2 px-3 py-1.5 bg-gray-900/80 rounded-lg border border-gray-700/60 text-sm backdrop-blur-sm">
-				<div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)]" />
-				<span className="text-white font-medium">@{user.hiveUsername}</span>
+			<div className="flex flex-col gap-3">
+				<div className="flex items-center gap-3">
+					<div className="w-10 h-10 rounded-full bg-linear-to-br from-gold-400 to-gold-700 border border-gold-300/60 flex items-center justify-center font-display text-sm font-bold text-obsidian-950 uppercase shrink-0">
+						{user.hiveUsername.slice(0, 2)}
+					</div>
+					<div className="min-w-0 flex-1">
+						<div className="flex items-center gap-1.5">
+							<div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)] shrink-0" />
+							<span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-300">Online</span>
+						</div>
+						<div className="text-ink-0 font-semibold text-sm truncate">@{user.hiveUsername}</div>
+					</div>
+				</div>
 				<button
 					onClick={handleLogout}
-					className="text-gray-500 hover:text-red-400 transition-colors text-xs ml-1"
+					className="self-start font-mono text-[10px] tracking-[0.18em] uppercase text-ink-300 hover:text-blood-300 transition-colors"
 					title="Disconnect wallet"
 				>
 					Disconnect
@@ -114,50 +132,49 @@ export function HiveKeychainLogin() {
 
 	// --- Disconnected state ---
 	return (
-		<div className="flex flex-col items-end gap-2">
-			<motion.button
-				whileHover={{ scale: 1.03 }}
-				whileTap={{ scale: 0.97 }}
+		<div className="flex flex-col gap-3">
+			<p className="text-ink-200 text-xs leading-[1.6]">
+				Sign with Hive Keychain to persist progress, claim NFT cards, and join Warbands.
+			</p>
+			<Button
+				variant="outline"
+				size="default"
 				onClick={() => { setIsExpanded(!isExpanded); setStatus('idle'); setErrorMsg(''); }}
-				className="px-3 py-1.5 bg-amber-800/70 hover:bg-amber-700/70 text-amber-200 rounded-lg border border-amber-600/50 text-sm font-medium transition-colors flex items-center gap-1.5 backdrop-blur-sm"
+				className="w-full"
 			>
-				<span className="text-base">⛓</span>
-				Connect Hive Wallet
-			</motion.button>
+				⛓ Connect Hive
+			</Button>
 
 			<AnimatePresence>
 				{isExpanded && (
 					<motion.div
-						initial={{ opacity: 0, y: -6, scale: 0.96 }}
-						animate={{ opacity: 1, y: 0, scale: 1 }}
-						exit={{ opacity: 0, y: -6, scale: 0.96 }}
-						transition={{ duration: 0.15 }}
-						className="bg-gray-950/95 border border-gray-700/70 rounded-xl p-4 w-64 shadow-2xl backdrop-blur-sm"
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: 'auto' }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.18 }}
+						className="overflow-hidden"
 					>
 						{!keychainAvailable ? (
-							<div className="text-center">
-								<p className="text-amber-400 text-sm font-semibold mb-1">Keychain Not Found</p>
-								<p className="text-gray-400 text-xs mb-3">
+							<div className="rounded-lg border border-obsidian-700 bg-obsidian-900/60 p-3">
+								<p className="text-gold-300 text-xs font-semibold mb-1">Keychain Not Found</p>
+								<p className="text-ink-300 text-xs mb-2">
 									Install the Hive Keychain browser extension to connect.
 								</p>
 								<a
 									href="https://hive-keychain.com"
 									target="_blank"
 									rel="noreferrer"
-									className="text-amber-400 hover:text-amber-300 text-sm underline"
+									className="text-gold-300 hover:text-gold-200 text-xs underline"
 								>
 									Get Hive Keychain →
 								</a>
 							</div>
 						) : (
-							<>
-								<p className="text-gray-300 text-xs font-semibold uppercase tracking-wider mb-3">
-									Connect Hive Wallet
-								</p>
-								<p className="text-gray-500 text-xs mb-3">
+							<div className="rounded-lg border border-obsidian-700 bg-obsidian-900/60 p-3">
+								<p className="text-ink-300 text-[11px] mb-2 leading-relaxed">
 									Keychain will ask you to sign a login message — no transaction is posted.
 								</p>
-								<div className="flex gap-2 mb-2">
+								<div className="flex gap-2">
 									<input
 										type="text"
 										placeholder="@username"
@@ -167,14 +184,13 @@ export function HiveKeychainLogin() {
 										autoFocus
 										spellCheck={false}
 										autoCapitalize="none"
-										className="flex-1 min-w-0 px-3 py-1.5 bg-gray-800/80 border border-gray-600/60 rounded-lg text-white text-sm placeholder-gray-600 focus:outline-none focus:border-amber-500/60"
+										className="flex-1 min-w-0 px-3 py-1.5 bg-obsidian-950 border border-obsidian-600/60 rounded-md text-ink-0 text-sm placeholder-ink-400 focus:outline-hidden focus:border-gold-500/60"
 									/>
-									<motion.button
-										whileHover={{ scale: 1.05 }}
-										whileTap={{ scale: 0.95 }}
+									<Button
+										variant="primary"
+										size="sm"
 										onClick={handleConnect}
 										disabled={status === 'connecting' || !username.trim()}
-										className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
 									>
 										{status === 'connecting' ? (
 											<motion.span
@@ -183,19 +199,19 @@ export function HiveKeychainLogin() {
 											>
 												···
 											</motion.span>
-										) : 'Connect'}
-									</motion.button>
+										) : 'Sign'}
+									</Button>
 								</div>
 								{errorMsg && (
 									<motion.p
 										initial={{ opacity: 0 }}
 										animate={{ opacity: 1 }}
-										className="text-red-400 text-xs mt-1"
+										className="text-blood-300 text-xs mt-2"
 									>
 										{errorMsg}
 									</motion.p>
 								)}
-							</>
+							</div>
 						)}
 					</motion.div>
 				)}

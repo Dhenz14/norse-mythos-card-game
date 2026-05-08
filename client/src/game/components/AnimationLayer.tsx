@@ -158,25 +158,25 @@ const AttackAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
 };
 
 const DamageAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
-  if (!animation.position) return null;
-
   const damageValue = animation.damage !== undefined && animation.damage !== 0 ? animation.damage : 0;
   const showValue = damageValue > 0;
   const isCritical = damageValue >= 10;
   const intensity = animation.intensity;
   const isCritHit = isCritical || intensity === 'critical';
+  const position = animation.position;
 
   useEffect(() => {
-    if (animation.position) {
-      const palette = isCritHit
-        ? { primary: '#ff0000', secondary: '#ffd700', glow: 'rgba(255,0,0,0.8)' }
-        : ELEMENT_PALETTES.fire;
-      spawnParticleBurst(animation.position.x, animation.position.y, isCritHit ? 50 : 20, palette);
-      if (isCritHit) {
-        spawnImpactRing(animation.position.x, animation.position.y, palette);
-      }
+    if (!position) return;
+    const palette = isCritHit
+      ? { primary: '#ff0000', secondary: '#ffd700', glow: 'rgba(255,0,0,0.8)' }
+      : ELEMENT_PALETTES.fire;
+    spawnParticleBurst(position.x, position.y, isCritHit ? 50 : 20, palette);
+    if (isCritHit) {
+      spawnImpactRing(position.x, position.y, palette);
     }
-  }, []);
+  }, [position?.x, position?.y, isCritHit]);
+
+  if (!position) return null;
 
   return (
     <>
@@ -195,8 +195,8 @@ const DamageAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
           position: 'absolute',
           width: isCritHit ? 90 : 60,
           height: isCritHit ? 90 : 60,
-          left: animation.position.x - (isCritHit ? 45 : 30),
-          top: animation.position.y - (isCritHit ? 45 : 30),
+          left: position.x - (isCritHit ? 45 : 30),
+          top: position.y - (isCritHit ? 45 : 30),
           backgroundImage: isCritHit
             ? 'radial-gradient(circle, rgba(255,0,0,0.8) 0%, rgba(200,0,0,0.6) 30%, rgba(120,0,0,0) 70%)'
             : 'radial-gradient(circle, rgba(200,0,0,0.7) 0%, rgba(180,0,0,0.5) 40%, rgba(120,0,0,0) 70%)',
@@ -222,8 +222,8 @@ const DamageAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
             position: 'absolute',
             width: isCritHit ? 80 : 50,
             height: isCritHit ? 80 : 50,
-            left: animation.position.x - (isCritHit ? 40 : 25),
-            top: animation.position.y - (isCritHit ? 40 : 25),
+            left: position.x - (isCritHit ? 40 : 25),
+            top: position.y - (isCritHit ? 40 : 25),
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -257,8 +257,8 @@ const DamageAnimation: React.FC<{ animation: Animation }> = ({ animation }) => {
           position: 'absolute',
           width: 70,
           height: 70,
-          left: animation.position.x - 35,
-          top: animation.position.y - 35,
+          left: position.x - 35,
+          top: position.y - 35,
           zIndex: 100
         }}
         initial={{ scale: 0.3, opacity: 0 }}
