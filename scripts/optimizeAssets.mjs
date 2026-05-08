@@ -93,11 +93,13 @@ async function main() {
 
 	// 2. Convert king portraits PNG → webp (keep original dimensions)
 	console.log('\n2. Converting king portraits PNG → webp...');
-	const kingPngs = readdirSync(join(PUBLIC, 'portraits/kings'))
-		.filter(f => f.endsWith('.png'));
+	const kingDir = join(PUBLIC, 'art/kings');
+	const kingPngs = existsSync(kingDir)
+		? readdirSync(kingDir).filter(f => f.endsWith('.png'))
+		: [];
 	for (const f of kingPngs) {
-		const src = join(PUBLIC, 'portraits/kings', f);
-		const dest = join(PUBLIC, 'portraits/kings', f.replace('.png', '.webp'));
+		const src = join(kingDir, f);
+		const dest = join(kingDir, f.replace('.png', '.webp'));
 		await convertToWebp(src, dest, `kings/${f}`);
 	}
 

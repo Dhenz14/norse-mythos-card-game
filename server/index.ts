@@ -1,6 +1,8 @@
 import { config as loadDotenv } from 'dotenv';
 import express, { type Request, Response, NextFunction } from "express";
+import fs from 'fs';
 import helmet from 'helmet';
+import path from 'path';
 import rateLimit from 'express-rate-limit';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -19,6 +21,7 @@ if (envMode !== 'development' && envMode !== 'production') {
 
 const app = express();
 const isDev = process.env.NODE_ENV !== 'production';
+const publicAssetRoot = path.resolve(process.cwd(), isDev ? 'client/public' : 'dist/public');
 app.use(helmet({
   contentSecurityPolicy: isDev ? false : undefined,
 }));
@@ -78,9 +81,36 @@ const challengeLimiter = rateLimit({
 });
 app.use('/api/friends/challenge', challengeLimiter);
 
+function sendFirstExistingAsset(res: Response, next: NextFunction, candidates: string[]): void {
+  const found = candidates.find(candidate => fs.existsSync(candidate));
+  if (!found) {
+    next();
+    return;
+  }
+
+  res.sendFile(found, err => {
+    if (err) next(err);
+  });
+}
+
+app.get(/^\/art\/([^/]+\.(?:webp|png|jpe?g|gif|avif))$/i, (req, res, next) => {
+  const filename = path.basename(String(req.params[0] ?? ''));
+  sendFirstExistingAsset(res, next, [
+    path.join(publicAssetRoot, 'art', 'nfts', filename),
+    path.join(publicAssetRoot, 'art', 'orphaned', filename),
+  ]);
+});
+
+app.get(/^\/portraits\/kings\/([^/]+\.webp)$/i, (req, res, next) => {
+  const filename = path.basename(String(req.params[0] ?? ''));
+  sendFirstExistingAsset(res, next, [
+    path.join(publicAssetRoot, 'art', 'kings', filename),
+  ]);
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const requestPath = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
@@ -91,8 +121,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (requestPath.startsWith("/api")) {
+      let logLine = `${req.method} ${requestPath} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }

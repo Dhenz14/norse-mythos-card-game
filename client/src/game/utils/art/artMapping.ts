@@ -10,8 +10,9 @@ import { NORSE_KINGS } from '../../data/norseKings';
  * Values are bare `AssetId` strings (matching `[0-9a-f]{4}-[0-9a-z]{8}`).
  * The full asset path is derived once via `assetPathFor` from
  * `@shared/schemas/ids` — never embedded in this file. Hero portraits
- * live on `ALL_NORSE_HEROES[id].portrait`; kings prefer the legacy
- * portrait paths below so the pre-refactor royal art stays intact.
+ * live on `ALL_NORSE_HEROES[id].portrait`; kings prefer the restored
+ * legacy royal images below so the pre-refactor art identity stays intact
+ * while the files remain under the canonical `/art` tree.
  *
  * Invariants (verified by tests):
  *   - every value parses through `AssetIdSchema`
@@ -24,17 +25,17 @@ const KING_PORTRAIT_PATHS: Readonly<Record<string, string>> = {
 	'king-leif': '/art/hero-leif-wayfinder.webp',
 	'king-askr': '/art/hero-askr.webp',
 	'king-embla': '/art/hero-embla.webp',
-	'king-ymir': '/portraits/kings/ymir.webp',
-	'king-buri': '/portraits/kings/buri.webp',
-	'king-surtr': '/portraits/kings/surtr.webp',
-	'king-borr': '/portraits/kings/borr.webp',
-	'king-yggdrasil': '/portraits/kings/yggdrasil.webp',
-	'king-audumbla': '/portraits/kings/audumbla.webp',
-	'king-gaia': '/portraits/kings/gaia.webp',
-	'king-brimir': '/portraits/kings/brimir.webp',
-	'king-ginnungagap': '/portraits/kings/ginnungagap.webp',
-	'king-tartarus': '/portraits/kings/tartarus.webp',
-	'king-uranus': '/portraits/kings/uranus.webp',
+	'king-ymir': '/art/kings/ymir.webp',
+	'king-buri': '/art/kings/buri.webp',
+	'king-surtr': '/art/kings/surtr.webp',
+	'king-borr': '/art/kings/borr.webp',
+	'king-yggdrasil': '/art/kings/yggdrasil.webp',
+	'king-audumbla': '/art/kings/audumbla.webp',
+	'king-gaia': '/art/kings/gaia.webp',
+	'king-brimir': '/art/kings/brimir.webp',
+	'king-ginnungagap': '/art/kings/ginnungagap.webp',
+	'king-tartarus': '/art/kings/tartarus.webp',
+	'king-uranus': '/art/kings/uranus.webp',
 };
 
 function resolveKingPortraitPath(kingId: string | undefined): string | null {

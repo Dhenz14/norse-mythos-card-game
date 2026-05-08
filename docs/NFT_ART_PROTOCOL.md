@@ -10,14 +10,14 @@ The mapping from a game entity to its `.webp` lives **next to the entity definit
 |---|---|---|
 | Cards (numeric ids) | `client/src/game/utils/art/artMapping.ts` `ART_REGISTRY` | record value |
 | Heroes (`hero-X`) | `client/src/game/data/norseHeroes/` | `NorseHero.portrait` |
-| Kings (`king-X`) | `client/src/game/data/norseKings/kingDefinitions.ts` | `NorseKing.portrait` |
+| Kings (`king-X`) | `client/src/game/data/norseKings/kingDefinitions.ts`, with legacy royal-art overrides in `resolveHeroPortrait(id)` | `NorseKing.portrait` or restored `/art/kings/*.webp` |
 
 `ART_REGISTRY` only holds card mappings. Heroes and kings carry their asset id on the entity itself; this avoids the historical dualities where the same fact was duplicated in `ART_REGISTRY` plus `ChessPieceConfig.portrait` plus the entity definition.
 
-`resolveHeroPortrait(id)` reads the right source based on the id prefix:
+`resolveHeroPortrait(id)` reads the right source based on the id prefix. Restored pre-refactor king art is kept under `/art/kings` so the old royal portraits remain visible without reviving the old parallel `/portraits` tree:
 ```ts
 if (id.startsWith('hero-')) return assetPath(`/art/nfts/${ALL_NORSE_HEROES[id]?.portrait}.webp`);
-if (id.startsWith('king-')) return assetPath(`/art/nfts/${NORSE_KINGS[id]?.portrait}.webp`);
+if (id.startsWith('king-')) return restoredKingPath ?? assetPath(`/art/nfts/${NORSE_KINGS[id]?.portrait}.webp`);
 return ART_REGISTRY[id];
 ```
 

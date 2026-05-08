@@ -118,6 +118,8 @@ Repairs applied after browser QA:
 
 - Restored the former king portrait set and starter king hero art that the refactor had removed.
 - Rewired king art resolution so `king-*` heroes prefer the restored legacy royal portraits instead of newer replacement art.
+- Moved restored king portraits under `/art/kings` and added compatibility serving for old `/portraits/kings/*` URLs so the old art identity is preserved without reviving the deprecated parallel portrait tree.
+- Added compatibility serving for old `/art/<assetId>.webp` URLs that now live under `/art/nfts`, protecting local ignored pack manifests and any older cached links.
 - Fixed the campaign launch handoff so `/game/campaign` no longer falls back to the realm select screen before the staged battle can bootstrap.
 - Added a session-backed campaign launch ticket so reloads, HMR, and service-worker transitions do not erase the staged mission during the route handoff.
 - Disabled service-worker registration in development and unregisters stale dev service workers to avoid unexpected local reload behavior.
@@ -138,6 +140,40 @@ Repair verification:
 | Campaign browser smoke | Passed: campaign stages a mission, enters `#/game/campaign`, shows the intro, and renders the chess board |
 | Campaign reload smoke | Passed: session-backed staged mission survives reload and stays in campaign game flow |
 | Dev server | Running on `http://localhost:5000` |
+
+## Second No-Regression Audit
+
+After the first repair pass, a second baseline audit compared:
+
+- pre-Enrique working baseline `1ef94f07`
+- Enrique integration baseline `9a8ca537`
+- current main
+
+Additional hardening from this audit:
+
+- Kept the restored king image bytes identical to the pre-Enrique baseline, then moved the files from deprecated `/portraits/kings` into canonical `/art/kings`.
+- Added server-side compatibility for old `/portraits/kings/*.webp` URLs so existing cached/local links still work.
+- Added server-side compatibility for old generated-art URLs like `/art/<assetId>.webp` by resolving them to `/art/nfts/<assetId>.webp` or `/art/orphaned/<assetId>.webp`.
+- Updated the asset optimizer script to use `/art/kings` so maintenance tooling does not regress back to `/portraits`.
+- Confirmed Enrique's retained progression still stands: match/coordinator split, campaign handoff structure, UI polish, protocol-backed sync, and the new warband/single-game funnel remain in place.
+
+Second-audit verification:
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | Passed |
+| `npm run lint` | Passed with existing warning backlog, no errors |
+| `npm test` | Passed, 23 files and 244 tests |
+| `npm run lint:css` | Passed |
+| `npm run lint:css:dupes` | Passed, no new cross-file duplicates |
+| `npm run lint:css:dupes:infile` | Passed, no regressions |
+| `npm run audit:art` | Completed; Genesis Charter clean, deprecated `/portraits` parallel directory gone, existing mapping backlog remains |
+| `npm run build` | Passed, with existing large-chunk warnings |
+| `npm run build:wasm` | Passed, with existing AssemblyScript informational warnings |
+| `npm audit --audit-level=moderate` | Passed, 0 vulnerabilities |
+| Dev browser smoke | Passed: campaign stages, enters `#/game/campaign`, skips cinematic, enters mission intro, renders Ragnarok Chess board |
+| Single-game smoke | Passed: `#/game/single` falls through to warband setup without crash |
+| Legacy asset compatibility smoke | Passed in dev and production for `/portraits/kings/ymir.webp` and `/art/0005-de79b923.webp` |
 
 ## Wiki Publication Note
 
