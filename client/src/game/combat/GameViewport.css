@@ -60,12 +60,13 @@
      should scale with the gameplay area. */
   background:
     /* UI cluster vignettes — soft pockets behind the gameplay zones */
-    radial-gradient(ellipse 30% 34% at 12% 92%, rgba(6,8,14,0.50) 0%, transparent 70%),
-    radial-gradient(ellipse 26% 22% at 12% 12%, rgba(6,8,14,0.50) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 20% at 50% 96%, rgba(6,8,14,0.42) 0%, transparent 78%),
-    radial-gradient(ellipse 18% 22% at 14% 48%, rgba(6,8,14,0.36) 0%, transparent 78%),
+    radial-gradient(ellipse 32% 36% at 12% 91%, rgba(6,8,14,0.66) 0%, rgba(6,8,14,0.28) 48%, transparent 74%),
+    radial-gradient(ellipse 27% 23% at 12% 12%, rgba(6,8,14,0.64) 0%, rgba(6,8,14,0.26) 50%, transparent 74%),
+    radial-gradient(ellipse 46% 20% at 57% 54%, rgba(5,7,12,0.38) 0%, rgba(5,7,12,0.16) 52%, transparent 78%),
+    radial-gradient(ellipse 52% 22% at 52% 96%, rgba(6,8,14,0.55) 0%, rgba(6,8,14,0.24) 56%, transparent 82%),
+    radial-gradient(ellipse 18% 22% at 14% 48%, rgba(6,8,14,0.48) 0%, transparent 78%),
     /* Global dim so art never overpowers cards */
-    linear-gradient(180deg, rgba(10,14,26,0.32) 0%, rgba(10,14,26,0.18) 38%, rgba(10,14,26,0.18) 62%, rgba(10,14,26,0.32) 100%);
+    linear-gradient(180deg, rgba(10,14,26,0.42) 0%, rgba(10,14,26,0.20) 38%, rgba(10,14,26,0.22) 62%, rgba(10,14,26,0.46) 100%);
   container-type: inline-size;
   container-name: game-viewport;
 }
@@ -296,6 +297,23 @@
   padding: 0;
   background: none;
   border: none;
+  isolation: isolate;
+}
+
+.viewport-mode .unified-community::before {
+  content: '';
+  position: absolute;
+  inset: -14px -18px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(9, 12, 20, 0.52) 0%, rgba(4, 6, 10, 0.28) 100%),
+    radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.16) 0%, transparent 72%);
+  border: 1px solid rgba(212, 175, 55, 0.10);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 /* Risk Display - positioned via styles/pot-display.css */
@@ -314,6 +332,24 @@
   gap: 8px;
   min-height: 120px;
   overflow: visible;
+  isolation: isolate;
+}
+
+.viewport-mode .unified-opponent-field::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  width: 920px;
+  height: 118px;
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(127, 29, 29, 0.18) 0%, rgba(15, 23, 42, 0.18) 48%, transparent 72%),
+    linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.10) 48%, rgba(212, 175, 55, 0.10) 52%, transparent 100%);
+  filter: blur(0.2px);
 }
 
 .viewport-mode .unified-opponent-field:has(.bf-card-wrapper:hover) {
@@ -457,6 +493,24 @@
   gap: 8px;
   min-height: 120px;
   overflow: visible;
+  isolation: isolate;
+}
+
+.viewport-mode .unified-player-field::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -18px;
+  width: 920px;
+  height: 118px;
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(37, 99, 235, 0.18) 0%, rgba(15, 23, 42, 0.18) 48%, transparent 72%),
+    linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.10) 48%, rgba(212, 175, 55, 0.10) 52%, transparent 100%);
+  filter: blur(0.2px);
 }
 
 .viewport-mode .unified-player-field:has(.bf-card-wrapper:hover) {
@@ -503,12 +557,15 @@
   align-items: flex-end; /* Cards bottom-aligned */
   gap: var(--hand-minion-card-spacing);
   padding: 0;
+  perspective: 1200px;
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.45));
 }
 
 /* Hand cards have slight overlap and tilt for natural fan */
 .viewport-mode .poker-hand-container .hand-card-wrapper {
   transition:
-    transform 0.18s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.18s ease,
     z-index 0.1s;
 }
 
@@ -555,8 +612,14 @@
 
 /* Betting button glow effects */
 .viewport-mode .poker-btn {
-  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.15s ease,
+    filter 0.15s ease,
+    box-shadow 0.18s ease;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.34),
+    0 10px 22px rgba(0, 0, 0, 0.22);
 }
 
 .viewport-mode .poker-btn:not(:disabled):hover {

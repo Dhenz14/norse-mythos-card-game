@@ -7,6 +7,7 @@
   gap: 8px;
   width: 100%;
   flex-wrap: nowrap;
+  perspective: 780px;
 }
 
 /* Empty community slot — quiet, intentional, not blank.
@@ -14,16 +15,21 @@
 .card-placeholder {
   width: 112px;
   height: 158px;
-  background: linear-gradient(180deg,
-    rgba(10, 12, 18, 0.55) 0%,
-    rgba(6, 8, 12, 0.7) 100%);
-  border: 1px dashed var(--ui-gold-glow-soft);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.09), transparent 42%),
+    linear-gradient(180deg,
+      rgba(10, 12, 18, 0.58) 0%,
+      rgba(6, 8, 12, 0.74) 100%);
+  border: 1px dashed rgba(212, 175, 55, 0.28);
   border-radius: 7px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 24px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.25);
 }
 
 .card-placeholder::after {
@@ -32,6 +38,7 @@
   font-size: 48px;
   color: rgba(212, 175, 55, 0.18);
   text-shadow: 0 0 12px rgba(212, 175, 55, 0.10);
+  transform: translateY(-1px);
 }
 
 .community-slot {
@@ -40,11 +47,14 @@
   align-items: center;
   gap: 3px;
   flex-shrink: 0;
+  transition: transform 0.22s ease, filter 0.22s ease;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.28));
 }
 
 .community-slot .arena-poker-card.norse {
   width: 112px;
   height: 158px;
+  transform-origin: center bottom;
 }
 
 .community-slot .arena-poker-card .card-value {
@@ -66,7 +76,9 @@
   color: var(--ui-gold-bright);
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 9px rgba(245, 158, 11, 0.18);
 }
 
 .slot-label.dimmed {

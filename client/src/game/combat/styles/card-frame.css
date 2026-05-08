@@ -12,6 +12,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.46));
 }
 
 .hero-card-frame {
@@ -20,16 +21,27 @@
   display: flex;
   flex-direction: column;
   /* Obsidian + iron material from design tokens */
-  background: linear-gradient(160deg,
-    var(--ui-iron-mid) 0%,
-    var(--ui-iron-dark) 38%,
-    var(--ui-iron-darkest) 100%);
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--ui-iron-mid) 86%, #fff 2%) 0%,
+      var(--ui-iron-dark) 38%,
+      var(--ui-iron-darkest) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.09) 0%, transparent 42%);
   border: 3px solid transparent;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease,
+    box-shadow 0.24s ease,
+    filter 0.24s ease;
   isolation: isolate;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -16px 28px rgba(0, 0, 0, 0.26);
+  transform-style: preserve-3d;
 }
 
 /* Engraved tarnished-gold metallic border (carved, not glossy) */
@@ -38,16 +50,19 @@
   position: absolute;
   inset: -3px;
   border-radius: 14px;
-  background: linear-gradient(145deg,
-    var(--ui-gold-warm) 0%,
-    var(--ui-gold-deep) 22%,
-    var(--ui-gold-bright) 50%,
-    var(--ui-gold-deep) 78%,
-    var(--ui-gold-warm) 100%);
+  background:
+    linear-gradient(145deg,
+      var(--ui-gold-warm) 0%,
+      var(--ui-gold-deep) 22%,
+      var(--ui-gold-bright) 48%,
+      color-mix(in srgb, var(--ui-gold-bright) 80%, white) 50%,
+      var(--ui-gold-deep) 78%,
+      var(--ui-gold-warm) 100%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 5px);
   z-index: -2;
   box-shadow:
     0 0 18px rgba(0, 0, 0, 0.85),
-    0 0 14px var(--ui-gold-glow-soft),
+    0 0 18px var(--ui-gold-glow-soft),
     inset 0 1px 0 color-mix(in srgb, var(--gold-200) 18%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--obsidian-950) 55%, transparent);
 }
@@ -59,23 +74,26 @@
   inset: 0;
   border-radius: 9px;
   box-shadow:
-    inset 0 0 32px rgba(0, 0, 0, 0.78),
+    inset 0 0 36px rgba(0, 0, 0, 0.82),
     inset 0 2px 0 color-mix(in srgb, var(--gold-200) 10%, transparent),
-    inset 0 -2px 0 color-mix(in srgb, var(--obsidian-950) 55%, transparent);
+    inset 0 -2px 0 color-mix(in srgb, var(--obsidian-950) 55%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035);
   pointer-events: none;
   z-index: 5;
 }
 
 /* Corner decorations */
 .hero-card-frame .hero-portrait::before {
-  content: '⚜';
+  content: '';
   position: absolute;
-  top: 4px;
-  left: 4px;
-  font-size: 14px;
-  color: color-mix(in srgb, var(--gold-500) 60%, transparent);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.16) 0%, transparent 24%, transparent 72%, rgba(255, 255, 255, 0.06) 100%),
+    radial-gradient(circle at 22% 14%, rgba(255, 255, 255, 0.16) 0%, transparent 24%);
   z-index: 10;
+  pointer-events: none;
+  opacity: 0.72;
+  mix-blend-mode: screen;
 }
 
 /* Opponent variant — same gold frame for visual symmetry; identity is communicated
@@ -98,6 +116,11 @@
   position: relative;
   width: 100%;
   overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    filter 0.24s ease,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: saturate(1.04) contrast(1.05);
 }
 
 .hero-portrait img {
@@ -113,22 +136,30 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40%;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  height: 58%;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.86) 0%, rgba(0, 0, 0, 0.42) 38%, transparent 100%),
+    radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.46) 100%);
   pointer-events: none;
 }
 
 /* Hero name plate — engraved gold ribbon centered under portrait */
 .hero-name-plate {
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.92) 15%,
-    rgba(0, 0, 0, 0.92) 85%,
-    transparent 100%);
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.94) 12%,
+      rgba(15, 13, 10, 0.98) 50%,
+      rgba(0, 0, 0, 0.94) 88%,
+      transparent 100%),
+    linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, transparent 42%, rgba(0, 0, 0, 0.26) 100%);
   padding: 6px 10px 5px;
   text-align: center;
   border-top: 1px solid var(--ui-gold-shadow);
   border-bottom: 1px solid var(--ui-gold-glow-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 -8px 18px rgba(0, 0, 0, 0.22);
 }
 
 .hero-name {

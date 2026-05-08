@@ -82,6 +82,34 @@ These are not merge blockers, but they are worth tracking next:
 - Bundle output has large chunks, especially card-data and the main index chunk. This is a performance follow-up.
 - ESLint currently passes with a large warning backlog. This is a cleanup follow-up, not a failing gate.
 
+## Combat UI Polish Pass
+
+After the refactor adoption, the combat board received a scoped presentation pass that preserves the existing poker-plus-minions layout. Zone coordinates remain owned by `client/src/game/combat/styles/zones.css`; this pass improved the components inside those zones instead of moving the board.
+
+Polished surfaces include:
+
+- combat viewport atmosphere and subtle lane/table lighting
+- hero frames, portraits, hero power badges, and stat bars
+- poker hole cards, community card slots, and opponent card backs
+- minion card physicality, hover depth, and attack/health gems
+- player hand fan motion, playable/blood/evolve states, and shadows
+- betting slider, quick-bet buttons, action buttons, battle intel, and phase director
+
+The browser smoke also caught a non-CSS runtime issue on `#/game/single`: the empty warband deck selector returned a new `[]` every snapshot, which triggered React error `#185` in production. `selectDeckCardIds` now returns a stable frozen empty array, so the route loads cleanly and falls through to the warband setup instead of crashing.
+
+Verification for this pass:
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | Passed |
+| `npm run lint` | Passed with existing warning backlog, no errors |
+| `npm test` | Passed, 23 files and 244 tests |
+| `npm run lint:css` | Passed |
+| `npm run lint:css:dupes` | Passed, no new cross-file duplicates |
+| `npm run lint:css:dupes:infile` | Passed, no regressions |
+| `npm run build` | Passed |
+| Production smoke on `PORT=5176` | Passed health, app route, and headless Chrome route screenshot |
+
 ## Wiki Publication Note
 
 GitHub reports the repository wiki is enabled, but the wiki git repository does not exist yet. GitHub's documented local workflow starts after an initial page has been created on GitHub. The prepared wiki commit is available in `/tmp/norse-mythos-card-game-wiki-20260508` and can be pushed once the wiki backend is instantiated.
@@ -89,4 +117,3 @@ GitHub reports the repository wiki is enabled, but the wiki git repository does 
 ## Operator Notes
 
 No local project value was discarded during adoption. The main repository is clean, the remote is synced, safety branches remain available, and the preserved local ignored content is still recoverable from the preservation folder listed above.
-

@@ -29,6 +29,7 @@ export type WarbandStore = {
 };
 
 const EMPTY_WARBAND: WarbandValue = Object.freeze({ status: 'empty' });
+const EMPTY_DECK_CARD_IDS: ReadonlyArray<number> = Object.freeze([]);
 
 const EMPTY_DECK_LOADOUT: HeroDeckLoadout = Object.freeze({
 	queen: Object.freeze([]),
@@ -130,7 +131,7 @@ export function selectArmy(state: WarbandStore): ArmySelection | null {
 }
 
 export function selectDeckCardIds(state: WarbandStore): ReadonlyArray<number> {
-	return state.warband.status === 'ready' ? state.warband.deckCardIds : [];
+	return state.warband.status === 'ready' ? state.warband.deckCardIds : EMPTY_DECK_CARD_IDS;
 }
 
 export function selectDeckCardIdsByPiece(state: WarbandStore): HeroDeckLoadout {
