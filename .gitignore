@@ -82,10 +82,13 @@ __tests__/
 !**/protocolConformance.test.ts
 !client/src/data/blockchain/cardXPRewards.test.ts
 !client/src/data/blockchain/deckVerification.test.ts
+!client/src/data/blockchain/hashUtils.test.ts
 !client/src/data/blockchain/matchResultPackager.test.ts
+!client/src/data/blockchain/proofOfWork.test.ts
 !client/src/game/stores/starterStore.test.ts
 !client/src/game/deck/heroDeckRules.test.ts
 !client/src/game/utils/cards/cardLevelScaling.test.ts
+!client/src/game/utils/gameUtils.test.ts
 !shared/protocol-core/cardProgression.test.ts
 !shared/protocol-core/campaignResult.test.ts
 !client/src/game/match/economy.test.ts
@@ -95,6 +98,8 @@ __tests__/
 !client/src/game/match/modes/single/resolver.test.ts
 !client/src/game/match/modes/campaign/resolver.test.ts
 !client/src/game/match/modes/p2p/resolver.test.ts
+!server/services/chainState.test.ts
+!server/services/hiveAuth.test.ts
 *.spec.js
 *.spec.ts
 *.test.tsx
