@@ -568,6 +568,7 @@ server/
 | [RULEBOOK.md](docs/RULEBOOK.md) | Complete game rules with examples |
 | [GAME_FLOW.md](docs/GAME_FLOW.md) | Game flow diagrams and state management |
 | [GENESIS_RUNBOOK.md](docs/GENESIS_RUNBOOK.md) | **Operational ceremony guide** — multisig signing, checkpoints, emergency procedures |
+| [OPERATOR_STATUS_2026-05-08.md](docs/OPERATOR_STATUS_2026-05-08.md) | Adoption audit, no-loss controls, verification, and stress results |
 | [HIVE_BLOCKCHAIN_BLUEPRINT.md](docs/HIVE_BLOCKCHAIN_BLUEPRINT.md) | Hive NFT architecture (legacy — protocol spec is now canonical) |
 | [CLAUDE.md](CLAUDE.md) | Technical architecture reference |
 

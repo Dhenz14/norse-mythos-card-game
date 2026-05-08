@@ -1,0 +1,92 @@
+# Operator Status - Enrique Refactor Adoption
+
+Date: 2026-05-08
+
+Repository: `Dhenz14/norse-mythos-card-game`
+
+## Verdict
+
+Main is clean, synced, and deployable after adopting Enrique's Ragnarok refactor.
+
+- Active branch: `main`
+- Remote parity: `HEAD` equals `origin/main`
+- Merge commit before this documentation note: `089d2d01bd6585a6dd48de3640ae776e5bd14cb1`
+- PR: `#2`, "Adopt Enrique Ragnarok refactor"
+- Source remote: `https://github.com/enrique89ve/ragnarok`
+- Source head adopted: `a30d1734`
+
+## No-Loss Controls
+
+- Preserved the pre-adoption state on `backup/pre-enrique-merge-20260508`.
+- Preserved the integration work on `integration/enrique-adoption-20260508`.
+- Copied local ignored assets and scripts outside the repo before adoption:
+  `/mnt/c/Users/theyc/Ragnarok Game Full/ragnarok-local-preservation-20260508`
+- Rescued and tracked previously ignored local regression tests:
+  - `client/src/data/blockchain/hashUtils.test.ts`
+  - `client/src/data/blockchain/proofOfWork.test.ts`
+  - `client/src/game/utils/gameUtils.test.ts`
+  - `server/services/chainState.test.ts`
+  - `server/services/hiveAuth.test.ts`
+- Left private/local files uncommitted, including `.env`, `.env.production`, `.claude/`, `client/public/packs/`, and ignored art scratch folders.
+
+## Adoption Scope
+
+The adoption was large and meaningful:
+
+- `3731` files changed versus the pre-adoption backup branch.
+- `196` added files.
+- `341` deleted files.
+- `468` modified files.
+- `2726` exact renames/moves.
+
+Important adopted improvements include the new Home shell, Starter handoff flow, campaign navigation work, protocol-backed synchronization, marketplace settlement work, legacy pack endpoint compatibility, dependency hardening, and restored local regression coverage.
+
+## Verification Matrix
+
+All required checks passed on `main` after the adoption:
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | Passed |
+| `npm run lint` | Passed with existing warning backlog, no errors |
+| `npm test` | Passed, 23 files and 244 tests |
+| `npm run build` | Passed |
+| `npm run build:wasm` | Passed |
+| `npm audit --audit-level=moderate` | Passed, 0 vulnerabilities |
+| CSS duplicate audit | Passed, no regressions |
+| Dependency sanity check | Passed |
+| Git working tree | Clean on `main` |
+
+## Runtime Stress
+
+Production smoke and stress passed using the built server:
+
+- Environment: `NODE_ENV=production`, `PORT=5055`, `DATABASE_URL` intentionally unset, chain indexer disabled.
+- REST smoke covered app root, health, packs, inventory, matchmaking, chain, explorer, treasury, tournaments, friends, and trades.
+- Matchmaking paired 12 queues successfully and drained the queue to 0.
+- WebSocket relay accepted allowed game frames and rejected invalid JSON, reserved system frames, and unknown frame types.
+- 180-request burst completed with graceful responses: `87` status `200`, `93` status `429`, and no `5xx` failures.
+
+Development smoke also passed:
+
+- Environment: `NODE_ENV=development`, `PORT=5056`, `DATABASE_URL` intentionally unset, chain indexer disabled.
+- Health endpoint returned `ok`.
+- Vite root served the dev client entry.
+- Dev-only mock blockchain endpoint returned `mode: mock`.
+
+## Known Follow-Ups
+
+These are not merge blockers, but they are worth tracking next:
+
+- Art audit command completes and Genesis Charter counts are clean, but it reports missing asset mappings and orphaned art files. This is a content registry follow-up.
+- Bundle output has large chunks, especially card-data and the main index chunk. This is a performance follow-up.
+- ESLint currently passes with a large warning backlog. This is a cleanup follow-up, not a failing gate.
+
+## Wiki Publication Note
+
+GitHub reports the repository wiki is enabled, but the wiki git repository does not exist yet. GitHub's documented local workflow starts after an initial page has been created on GitHub. The prepared wiki commit is available in `/tmp/norse-mythos-card-game-wiki-20260508` and can be pushed once the wiki backend is instantiated.
+
+## Operator Notes
+
+No local project value was discarded during adoption. The main repository is clean, the remote is synced, safety branches remain available, and the preserved local ignored content is still recoverable from the preservation folder listed above.
+
