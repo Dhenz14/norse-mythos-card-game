@@ -1,4 +1,4 @@
-import { useEffect, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import { getDefaultArmySelection } from '../../data/ChessPieceConfig';
 import type { CampaignChapter, CampaignMission } from '../../campaign';
 import type { InitialFlowInput, PostCinematicPlan, RoundFlowState } from '../../flow/round/types';
@@ -65,8 +65,19 @@ function buildPostCinematicPlan(campaignData: NonNullable<CampaignData>): PostCi
 }
 
 export function useCampaignGameBootstrap(input: CampaignGameBootstrapInput): void {
+  const activeRealmKeyRef = useRef<string | null>(null);
+  const flowBootstrapKeyRef = useRef<string | null>(null);
+  const boardBootstrapKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!input.isCampaign || !input.missionRealm) return;
+    if (!input.isCampaign || !input.missionRealm) {
+      activeRealmKeyRef.current = null;
+      return;
+    }
+
+    const realmKey = `${input.missionRealm}:${input.visualRealm}:${input.realmDisplayName}`;
+    if (activeRealmKeyRef.current === realmKey) return;
+    activeRealmKeyRef.current = realmKey;
 
     useGameStore.getState().setGameState({
       activeRealm: {
@@ -83,11 +94,17 @@ export function useCampaignGameBootstrap(input: CampaignGameBootstrapInput): voi
     if (input.flowState !== null) return;
 
     if (input.effectiveInitialArmy && !input.isCampaign) {
+      if (flowBootstrapKeyRef.current === 'local-army') return;
+      flowBootstrapKeyRef.current = 'local-army';
       input.startFlow({ kind: 'chess' });
       return;
     }
 
     if (!input.isCampaign || !input.campaignData) return;
+
+    const flowKey = `campaign:${input.campaignData.mission.id}`;
+    if (flowBootstrapKeyRef.current === flowKey) return;
+    flowBootstrapKeyRef.current = flowKey;
 
     const intro = input.campaignData.chapter.cinematicIntro;
     const narrative = input.campaignData.mission.narrativeBefore;
@@ -125,7 +142,18 @@ export function useCampaignGameBootstrap(input: CampaignGameBootstrapInput): voi
   ]);
 
   useEffect(() => {
-    if (!input.isCampaign || input.playerArmy || input.initialArmy) return;
+    if (!input.isCampaign) {
+      boardBootstrapKeyRef.current = null;
+      return;
+    }
+
+    if (input.playerArmy || input.initialArmy) return;
+
+    const missionKey = input.campaignData?.mission.id ?? 'campaign-fallback';
+    const opponentKingId = input.opponentArmy.king?.id ?? 'default-opponent';
+    const boardKey = `${missionKey}:${opponentKingId}`;
+    if (boardBootstrapKeyRef.current === boardKey) return;
+    boardBootstrapKeyRef.current = boardKey;
 
     const defaultArmy = getDefaultArmySelection();
     input.setPlayerArmy(defaultArmy);

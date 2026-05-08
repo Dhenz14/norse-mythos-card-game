@@ -110,10 +110,39 @@ Verification for this pass:
 | `npm run build` | Passed |
 | Production smoke on `PORT=5176` | Passed health, app route, and headless Chrome route screenshot |
 
+## Post-Adoption Regression Repair
+
+The pre-Enrique build remains the baseline for campaign correctness, king art identity, and runtime speed. Enrique's refactor is accepted only where it preserves that behavior and improves maintainability or presentation.
+
+Repairs applied after browser QA:
+
+- Restored the former king portrait set and starter king hero art that the refactor had removed.
+- Rewired king art resolution so `king-*` heroes prefer the restored legacy royal portraits instead of newer replacement art.
+- Fixed the campaign launch handoff so `/game/campaign` no longer falls back to the realm select screen before the staged battle can bootstrap.
+- Added a session-backed campaign launch ticket so reloads, HMR, and service-worker transitions do not erase the staged mission during the route handoff.
+- Disabled service-worker registration in development and unregisters stale dev service workers to avoid unexpected local reload behavior.
+- Made campaign bootstrap effects idempotent so active realm setup, game-flow start, and board bootstrapping do not repeat on every store-triggered render.
+- Made player turn counting and boss-rule hooks run once per real turn/move key instead of on repeated renders.
+- Made no-op game-flow transitions avoid redundant store updates.
+- Reduced campaign map rendering pressure by scaling Pixi particle counts from player quality settings and pausing the ticker while the tab is hidden.
+- Collapsed the card-data malformed-effect console flood into one summarized warning, removing a large dev-runtime slowdown while preserving the validation signal.
+
+Repair verification:
+
+| Check | Result |
+| --- | --- |
+| `npm run check` | Passed |
+| `npm run lint` | Passed with existing warning backlog, no errors |
+| `npm test` | Passed, 23 files and 244 tests |
+| `npm run build` | Passed, with existing large-chunk warnings |
+| Campaign browser smoke | Passed: campaign stages a mission, enters `#/game/campaign`, shows the intro, and renders the chess board |
+| Campaign reload smoke | Passed: session-backed staged mission survives reload and stays in campaign game flow |
+| Dev server | Running on `http://localhost:5000` |
+
 ## Wiki Publication Note
 
-GitHub reports the repository wiki is enabled, but the wiki git repository does not exist yet. GitHub's documented local workflow starts after an initial page has been created on GitHub. The prepared wiki commit is available in `/tmp/norse-mythos-card-game-wiki-20260508` and can be pushed once the wiki backend is instantiated.
+GitHub reports the repository wiki is enabled, but the wiki git repository does not exist yet. GitHub's documented local workflow starts after an initial page has been created on GitHub. The prepared wiki working copy is available in `/tmp/norse-mythos-card-game-wiki-20260508` and can be pushed once the wiki backend is instantiated.
 
 ## Operator Notes
 
-No local project value was discarded during adoption. The main repository is clean, the remote is synced, safety branches remain available, and the preserved local ignored content is still recoverable from the preservation folder listed above.
+No local project value was discarded during adoption. Safety branches remain available, the preserved local ignored content is still recoverable from the preservation folder listed above, and the current repair set explicitly restores value that existed before the refactor.

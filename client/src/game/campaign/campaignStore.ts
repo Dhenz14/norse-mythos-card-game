@@ -7,6 +7,52 @@ import { triggerAutoSave } from '../stores/saveStateManager';
 import { CAMPAIGN_ID } from '@shared/campaign/constants';
 import { createCampaignRunDraft, saveCampaignRunDraft } from './campaignResultAdapter';
 
+const STAGED_CAMPAIGN_SESSION_KEY = 'ragnarok-campaign-staged-mission';
+
+export type StagedCampaignMission = {
+	missionId: string;
+	difficulty: Difficulty;
+	localRunId: string | null;
+};
+
+function writeStagedCampaignMission(staged: StagedCampaignMission): void {
+	if (typeof window === 'undefined') return;
+	try {
+		window.sessionStorage.setItem(STAGED_CAMPAIGN_SESSION_KEY, JSON.stringify(staged));
+	} catch {
+		// Session storage can be unavailable in private/locked-down contexts.
+	}
+}
+
+export function readStagedCampaignMission(): StagedCampaignMission | null {
+	if (typeof window === 'undefined') return null;
+	try {
+		const raw = window.sessionStorage.getItem(STAGED_CAMPAIGN_SESSION_KEY);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw) as Partial<StagedCampaignMission>;
+		if (typeof parsed.missionId !== 'string') return null;
+		if (parsed.difficulty !== 'normal' && parsed.difficulty !== 'heroic' && parsed.difficulty !== 'mythic') {
+			return null;
+		}
+		return {
+			missionId: parsed.missionId,
+			difficulty: parsed.difficulty,
+			localRunId: typeof parsed.localRunId === 'string' ? parsed.localRunId : null,
+		};
+	} catch {
+		return null;
+	}
+}
+
+function clearStagedCampaignMission(): void {
+	if (typeof window === 'undefined') return;
+	try {
+		window.sessionStorage.removeItem(STAGED_CAMPAIGN_SESSION_KEY);
+	} catch {
+		// Non-fatal; the in-memory store remains authoritative.
+	}
+}
+
 interface MissionCompletion {
 	difficulty: Difficulty;
 	completedAt: number;
@@ -53,27 +99,33 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 			seenCinematics: [],
 			bossRulesApplied: false,
 
-			startMission: (missionId, difficulty) => {
-				const account = getNFTBridge().getUsername();
-				const run = createCampaignRunDraft({ account, missionId, difficulty });
-				saveCampaignRunDraft(run)
-					.catch(err => debug.warn('[campaignStore] Failed to record campaign run:', err));
-				set({
-					currentMission: missionId,
-					currentRunId: run.localRunId,
+				startMission: (missionId, difficulty) => {
+					const account = getNFTBridge().getUsername();
+					const run = createCampaignRunDraft({ account, missionId, difficulty });
+					saveCampaignRunDraft(run)
+						.catch(err => debug.warn('[campaignStore] Failed to record campaign run:', err));
+					writeStagedCampaignMission({
+						missionId,
+						difficulty,
+						localRunId: run.localRunId,
+					});
+					set({
+						currentMission: missionId,
+						currentRunId: run.localRunId,
 					currentDifficulty: difficulty,
 					bossRulesApplied: false,
 				});
 			},
 
-			completeMission: (missionId, difficulty, turns) => {
-				const existing = get().completedMissions[missionId];
-				const better = !existing || turns < existing.bestTurns;
-				const diffOrder: Record<Difficulty, number> = { normal: 0, heroic: 1, mythic: 2 };
-				const existingDiff = existing?.bestDifficulty ?? existing?.difficulty ?? 'normal';
-				const bestDiff = diffOrder[difficulty] > diffOrder[existingDiff] ? difficulty : existingDiff;
-				set(state => ({
-					completedMissions: {
+				completeMission: (missionId, difficulty, turns) => {
+					const existing = get().completedMissions[missionId];
+					const better = !existing || turns < existing.bestTurns;
+					const diffOrder: Record<Difficulty, number> = { normal: 0, heroic: 1, mythic: 2 };
+					const existingDiff = existing?.bestDifficulty ?? existing?.difficulty ?? 'normal';
+					const bestDiff = diffOrder[difficulty] > diffOrder[existingDiff] ? difficulty : existingDiff;
+					clearStagedCampaignMission();
+					set(state => ({
+						completedMissions: {
 						...state.completedMissions,
 						[missionId]: {
 							difficulty,
@@ -131,21 +183,27 @@ export const useCampaignStore = create<CampaignState & CampaignActions>()(
 				return get().seenCinematics.includes(chapterId);
 			},
 
-			clearCurrent: () => set({
-				currentMission: null,
-				currentRunId: null,
-				bossRulesApplied: false,
-			}),
-
-			reset: () => set({
-				completedMissions: {},
-				currentMission: null,
-				currentRunId: null,
-				currentDifficulty: 'normal',
-				rewardsClaimed: [],
-				seenCinematics: [],
-				bossRulesApplied: false,
-			}),
+				clearCurrent: () => {
+					clearStagedCampaignMission();
+					set({
+						currentMission: null,
+						currentRunId: null,
+						bossRulesApplied: false,
+					});
+				},
+	
+				reset: () => {
+					clearStagedCampaignMission();
+					set({
+						completedMissions: {},
+						currentMission: null,
+						currentRunId: null,
+						currentDifficulty: 'normal',
+						rewardsClaimed: [],
+						seenCinematics: [],
+						bossRulesApplied: false,
+					});
+				},
 
 			markBossRulesApplied: () => set({ bossRulesApplied: true }),
 			resetBossRulesApplied: () => set({ bossRulesApplied: false }),

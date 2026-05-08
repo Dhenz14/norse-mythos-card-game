@@ -12,6 +12,26 @@ import { debug } from '../config/debugConfig';
 
 type EffectSlot = 'battlecry' | 'deathrattle' | 'spellEffect';
 
+type MalformedEffectSample = {
+	readonly cardId: number;
+	readonly slot: EffectSlot;
+	readonly reason: string;
+};
+
+type MalformedEffectSummary = {
+	total: number;
+	samples: MalformedEffectSample[];
+};
+
+const MAX_MALFORMED_EFFECT_SAMPLES = 12;
+const MAX_MALFORMED_REASON_CHARS = 180;
+
+function compactReason(reason: string): string {
+	return reason.length <= MAX_MALFORMED_REASON_CHARS
+		? reason
+		: `${reason.slice(0, MAX_MALFORMED_REASON_CHARS)}...`;
+}
+
 const CARD_TYPE_MAP: Record<string, number> = {
 	minion: 0, spell: 1, weapon: 2, hero: 3,
 	secret: 4, location: 5, poker_spell: 6, artifact: 7, armor: 8,
@@ -30,6 +50,7 @@ function mapEffectToPattern(
 	effect: BattlecryEffect | DeathrattleEffect | SpellEffect | undefined,
 	cardId: number,
 	slot: EffectSlot,
+	malformed: MalformedEffectSummary,
 ): {
 	pattern: string; value: number; value2: number;
 	targetType: string; condition: string; cardId: number; count: number;
@@ -44,7 +65,10 @@ function mapEffectToPattern(
 	// (skip the effect) — the warn raises visibility without a hard break.
 	const parsed = parseEffect(effect);
 	if (!parsed.ok) {
-		debug.warn(`[cardDataExporter] Skipping malformed effect (card=${cardId} slot=${slot}): ${parsed.reason}`);
+		malformed.total += 1;
+		if (malformed.samples.length < MAX_MALFORMED_EFFECT_SAMPLES) {
+			malformed.samples.push({ cardId, slot, reason: parsed.reason });
+		}
 		return null;
 	}
 
@@ -74,6 +98,7 @@ export interface WasmCardLoader {
 
 export function exportCardDataToWasm(cards: CardData[], loader: WasmCardLoader): number {
 	loader.clearCardData();
+	const malformed: MalformedEffectSummary = { total: 0, samples: [] };
 
 	for (const card of cards) {
 		const id = typeof card.id === 'number' ? card.id : parseInt(String(card.id), 10);
@@ -108,21 +133,31 @@ export function exportCardDataToWasm(cards: CardData[], loader: WasmCardLoader):
 		}
 
 		if ('battlecry' in card) {
-			const bc = mapEffectToPattern(card.battlecry as BattlecryEffect, id, 'battlecry');
+			const bc = mapEffectToPattern(card.battlecry as BattlecryEffect, id, 'battlecry', malformed);
 			if (bc) loader.setCardBattlecry(bc.pattern, bc.value, bc.value2, bc.targetType, bc.condition, bc.cardId, bc.count);
 		}
 
 		if ('deathrattle' in card) {
-			const dr = mapEffectToPattern(card.deathrattle as DeathrattleEffect, id, 'deathrattle');
+			const dr = mapEffectToPattern(card.deathrattle as DeathrattleEffect, id, 'deathrattle', malformed);
 			if (dr) loader.setCardDeathrattle(dr.pattern, dr.value, dr.value2, dr.targetType, dr.condition, dr.cardId, dr.count);
 		}
 
 		if ('spellEffect' in card) {
-			const se = mapEffectToPattern(card.spellEffect as SpellEffect, id, 'spellEffect');
+			const se = mapEffectToPattern(card.spellEffect as SpellEffect, id, 'spellEffect', malformed);
 			if (se) loader.setCardSpellEffect(se.pattern, se.value, se.value2, se.targetType, se.condition, se.cardId, se.count);
 		}
 
 		loader.commitCard();
+	}
+
+	if (malformed.total > 0) {
+		const sampleText = malformed.samples
+			.map(sample => `card=${sample.cardId} slot=${sample.slot}: ${compactReason(sample.reason)}`)
+			.join(' | ');
+		debug.warn(
+			`[cardDataExporter] Skipped ${malformed.total} malformed effects while loading card data. ` +
+			`First ${malformed.samples.length}: ${sampleText}`
+		);
 	}
 
 	return loader.getCardCount();

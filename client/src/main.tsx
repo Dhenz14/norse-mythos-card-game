@@ -11,8 +11,9 @@ window.addEventListener('unhandledrejection', (e) => {
 	if (import.meta.env.DEV) console.error('Unhandled rejection:', e.reason);
 });
 
-// Service worker: register + detect updates so users get fresh builds
-if ('serviceWorker' in navigator) {
+// Service worker: register + detect updates so users get fresh production builds.
+// In dev, silent SW reloads can wipe transient route handoffs while testing.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     const swPath = `${import.meta.env.BASE_URL}sw.js`;
     navigator.serviceWorker.register(swPath, { scope: import.meta.env.BASE_URL, updateViaCache: 'none' })
@@ -32,6 +33,16 @@ if ('serviceWorker' in navigator) {
       })
       .catch(() => {});
   });
+}
+
+if (import.meta.env.DEV && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations()
+    .then((registrations) => {
+      registrations.forEach((registration) => {
+        registration.unregister().catch(() => {});
+      });
+    })
+    .catch(() => {});
 }
 
 // Offline detection: show/hide banner when network status changes

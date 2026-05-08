@@ -9,9 +9,9 @@ import { NORSE_KINGS } from '../../data/norseKings';
  *
  * Values are bare `AssetId` strings (matching `[0-9a-f]{4}-[0-9a-z]{8}`).
  * The full asset path is derived once via `assetPathFor` from
- * `@shared/schemas/ids` — never embedded in this file. Hero and king
- * portraits live on `ALL_NORSE_HEROES[id].portrait` /
- * `NORSE_KINGS[id].portrait` respectively (also bare `AssetId`s).
+ * `@shared/schemas/ids` — never embedded in this file. Hero portraits
+ * live on `ALL_NORSE_HEROES[id].portrait`; kings prefer the legacy
+ * portrait paths below so the pre-refactor royal art stays intact.
  *
  * Invariants (verified by tests):
  *   - every value parses through `AssetIdSchema`
@@ -19,6 +19,29 @@ import { NORSE_KINGS } from '../../data/norseKings';
  */
 
 export const DEFAULT_PORTRAIT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256' viewBox='0 0 256 256'%3E%3Crect fill='%231a1a2e' width='256' height='256'/%3E%3Cpath d='M128 60l-40 80h80z' fill='%23c9a84c' opacity='0.6'/%3E%3Ccircle cx='128' cy='170' r='30' fill='none' stroke='%23c9a84c' stroke-width='2' opacity='0.4'/%3E%3Ctext x='128' y='178' text-anchor='middle' fill='%23c9a84c' font-size='24' opacity='0.7'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E";
+
+const KING_PORTRAIT_PATHS: Readonly<Record<string, string>> = {
+	'king-leif': '/art/hero-leif-wayfinder.webp',
+	'king-askr': '/art/hero-askr.webp',
+	'king-embla': '/art/hero-embla.webp',
+	'king-ymir': '/portraits/kings/ymir.webp',
+	'king-buri': '/portraits/kings/buri.webp',
+	'king-surtr': '/portraits/kings/surtr.webp',
+	'king-borr': '/portraits/kings/borr.webp',
+	'king-yggdrasil': '/portraits/kings/yggdrasil.webp',
+	'king-audumbla': '/portraits/kings/audumbla.webp',
+	'king-gaia': '/portraits/kings/gaia.webp',
+	'king-brimir': '/portraits/kings/brimir.webp',
+	'king-ginnungagap': '/portraits/kings/ginnungagap.webp',
+	'king-tartarus': '/portraits/kings/tartarus.webp',
+	'king-uranus': '/portraits/kings/uranus.webp',
+};
+
+function resolveKingPortraitPath(kingId: string | undefined): string | null {
+	if (!kingId) return null;
+	const portraitPath = KING_PORTRAIT_PATHS[kingId];
+	return portraitPath ? assetPath(portraitPath) : null;
+}
 
 /**
  * `cardId` (numeric, stringified) → asset-id string.
@@ -2505,10 +2528,14 @@ export function getHeroArtPath(heroId: string): string | null {
 }
 
 export function getKingArtPath(kingId: string): string | null {
-	return resolve(kingId);
+	return resolveKingPortraitPath(kingId) ?? resolve(kingId);
 }
 
 export function resolveHeroPortrait(heroId?: string, explicitPortrait?: string): string | undefined {
+	if (heroId?.startsWith('king-')) {
+		const kingPortrait = resolveKingPortraitPath(heroId);
+		if (kingPortrait) return kingPortrait;
+	}
 	if (heroId) {
 		const r = resolve(heroId);
 		if (r) return r;

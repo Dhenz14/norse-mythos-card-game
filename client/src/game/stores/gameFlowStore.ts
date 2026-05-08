@@ -53,13 +53,15 @@ export const useGameFlowStore = create<GameFlowStore>()((set) => ({
 	},
 
 	dispatch: (event) => {
-		set((s) =>
-			s.current === null ? s : { current: nextState(s.current, event) }
-		);
+		set((s) => {
+			if (s.current === null) return s;
+			const next = nextState(s.current, event);
+			return next === s.current ? s : { current: next };
+		});
 	},
 
 	clear: () => {
-		set({ current: null });
+		set((s) => (s.current === null ? s : { current: null }));
 	},
 }));
 

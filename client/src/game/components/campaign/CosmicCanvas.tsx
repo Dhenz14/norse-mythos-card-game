@@ -2,18 +2,19 @@
  * CosmicCanvas — GPU-accelerated cosmic background for the campaign map.
  *
  * Layers (bottom → top):
- *   1. Deep star field   (2000 sprites, slow parallax)
- *   2. Nebula clouds     (30 large additive sprites, realm-colored, orbiting)
- *   3. Mid star field    (500 sprites, medium parallax)
- *   4. Cosmic dust       (200 tiny sprites drifting)
+ *   1. Deep star field   (quality-scaled sprites, slow parallax)
+ *   2. Nebula clouds     (realm-colored additive sprites, orbiting)
+ *   3. Mid star field    (quality-scaled sprites, medium parallax)
+ *   4. Cosmic dust       (quality-scaled sprites drifting)
  *   5. Bifrost beams     (particles traveling along realm connections)
  *   6. Near star field   (80 bright sprites, fast parallax)
  *
  * All rendering uses Pixi v8 with additive blending for glow.
  * Mouse movement shifts layers at different rates for parallax depth.
  */
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { Application, Container, Graphics } from 'pixi.js';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 /* ── Star layer config ── */
 
@@ -30,6 +31,12 @@ const STAR_LAYERS: StarLayer[] = [
 	{ count: 400,  sizeRange: [1, 2.5],   alphaRange: [0.3, 0.6],  speed: 0.04,  twinkleSpeed: 0.5 },
 	{ count: 60,   sizeRange: [2, 4],     alphaRange: [0.5, 0.9],  speed: 0.08,  twinkleSpeed: 0.7 },
 ];
+
+const QUALITY_PARTICLE_SCALE = {
+	low: 0.12,
+	medium: 0.28,
+	high: 0.45,
+} as const;
 
 /* ── Nebula config ── */
 
@@ -94,6 +101,16 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 	const dustRef = useRef<{ gfx: Graphics[]; baseX: number[]; baseY: number[] }>();
 	const flowRef = useRef<FlowParticle[]>([]);
 	const animFrameRef = useRef<number>(0);
+	const animationsEnabled = useSettingsStore(state => state.animationsEnabled);
+	const reduceMotion = useSettingsStore(state => state.reduceMotion);
+	const enhancedVFX = useSettingsStore(state => state.enhancedVFX);
+	const cardQuality = useSettingsStore(state => state.cardQuality);
+	const particleScale = useMemo(() => {
+		if (!animationsEnabled || reduceMotion) return 0.08;
+		const scale = QUALITY_PARTICLE_SCALE[cardQuality] ?? QUALITY_PARTICLE_SCALE.medium;
+		return enhancedVFX ? scale : Math.min(scale, 0.24);
+	}, [animationsEnabled, cardQuality, enhancedVFX, reduceMotion]);
+	const animateCosmos = animationsEnabled && !reduceMotion;
 
 	const initApp = useCallback(async () => {
 		if (!containerRef.current) return;
@@ -108,7 +125,7 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 			height: h,
 			backgroundAlpha: 0,
 			antialias: false,
-			resolution: Math.min(window.devicePixelRatio, 1.5),
+			resolution: Math.min(window.devicePixelRatio, cardQuality === 'high' ? 1.15 : 1),
 			autoDensity: true,
 		});
 		el.appendChild(app.canvas as HTMLCanvasElement);
@@ -121,8 +138,9 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 			const baseX: number[] = [];
 			const baseY: number[] = [];
 			const phase: number[] = [];
+			const count = Math.max(layer.count > 100 ? 24 : 8, Math.round(layer.count * particleScale));
 
-			for (let i = 0; i < layer.count; i++) {
+			for (let i = 0; i < count; i++) {
 				const sz = layer.sizeRange[0] + Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]);
 				const roll = Math.random();
 				const color = roll < 0.1 ? 0xaaccff : roll < 0.18 ? 0xffddaa : roll < 0.22 ? 0xffaaaa : 0xffffff;
@@ -195,7 +213,8 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 		const dustGfx: Graphics[] = [];
 		const dustBaseX: number[] = [];
 		const dustBaseY: number[] = [];
-		for (let i = 0; i < 150; i++) {
+		const dustCount = Math.max(12, Math.round(120 * particleScale));
+		for (let i = 0; i < dustCount; i++) {
 			const g = new Graphics();
 			g.circle(0, 0, 0.8);
 			g.fill(0xaabbcc);
@@ -217,7 +236,9 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 		const flowParticles: FlowParticle[] = [];
 
 		for (const conn of connections) {
-			const particleCount = conn.active ? 10 : 3;
+			const particleCount = conn.active
+				? Math.max(2, Math.round(8 * particleScale))
+				: Math.max(1, Math.round(2 * particleScale));
 			const x1 = (conn.x1 / 100) * w;
 			const y1 = (conn.y1 / 100) * h;
 			const x2 = (conn.x2 / 100) * w;
@@ -257,20 +278,25 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 		flowRef.current = flowParticles;
 
 		return app;
-	}, [realms, connections]);
+	}, [animateCosmos, cardQuality, connections, particleScale, realms]);
 
 	// ── Animation loop ──
 	useEffect(() => {
 		let app: Application | null = null;
 		let destroyed = false;
+		let removeVisibilityListener: (() => void) | null = null;
 
 		(async () => {
 			app = await initApp() ?? null;
 			if (destroyed || !app) return;
+			if (!animateCosmos) return;
 
 			let time = 0;
 			const tick = () => {
 				if (destroyed) return;
+				animFrameRef.current = 0;
+				if (document.hidden) return;
+
 				time += 0.016;
 				const mx = mouseRef.current.x;
 				const my = mouseRef.current.y;
@@ -325,14 +351,26 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 					p.gfx.alpha = 0.15 + 0.55 * Math.sin(p.t * Math.PI);
 				}
 
-				animFrameRef.current = requestAnimationFrame(tick);
+				if (!destroyed) {
+					animFrameRef.current = requestAnimationFrame(tick);
+				}
 			};
+
+			const resumeIfVisible = () => {
+				if (!document.hidden && !animFrameRef.current) {
+					animFrameRef.current = requestAnimationFrame(tick);
+				}
+			};
+			document.addEventListener('visibilitychange', resumeIfVisible);
+			removeVisibilityListener = () => document.removeEventListener('visibilitychange', resumeIfVisible);
 			animFrameRef.current = requestAnimationFrame(tick);
 		})();
 
 		return () => {
 			destroyed = true;
+			removeVisibilityListener?.();
 			cancelAnimationFrame(animFrameRef.current);
+			animFrameRef.current = 0;
 			if (app) {
 				app.destroy(true, { children: true, texture: true });
 			}
@@ -342,7 +380,7 @@ export default function CosmicCanvas({ realms, connections, className }: CosmicC
 			dustRef.current = undefined;
 			flowRef.current = [];
 		};
-	}, [initApp]);
+	}, [animateCosmos, initApp]);
 
 	// ── Mouse tracking ──
 	useEffect(() => {

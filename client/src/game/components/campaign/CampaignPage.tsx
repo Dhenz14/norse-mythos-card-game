@@ -144,7 +144,7 @@ export const PILL_CLASS =
 
 function StarField() {
 	const stars = useMemo(() =>
-		Array.from({ length: 70 }, (_, i) => ({
+		Array.from({ length: 36 }, (_, i) => ({
 			id: i,
 			x: Math.random() * 100,
 			y: Math.random() * 100,

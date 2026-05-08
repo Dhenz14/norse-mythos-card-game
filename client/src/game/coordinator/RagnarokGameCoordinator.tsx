@@ -155,6 +155,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
     flowState !== null && flowState.tag === 'game_over' ? flowState.sub : 'result';
   const gameEndProcessedRef = useRef(false);
   const gameOverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countedPlayerTurnKeyRef = useRef<string | null>(null);
 
   const {
     boardState,
@@ -320,7 +321,6 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
     campaignDifficulty,
     flowState,
     boardState,
-    turnCount,
     bossRulesApplied,
     markBossRulesApplied,
     updatePieceHealth,
@@ -647,10 +647,27 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
   }, [cardsGamePhase, cardsWinner, playSoundEffect]);
 
   useEffect(() => {
-    if (flowState?.tag === 'chess' && boardState.currentTurn === 'player' && boardState.gameStatus === 'playing') {
-      incrementPlayerTurn();
+    const isLivePlayerTurn =
+      flowState?.tag === 'chess' &&
+      boardState.currentTurn === 'player' &&
+      boardState.gameStatus === 'playing';
+
+    if (!isLivePlayerTurn) {
+      countedPlayerTurnKeyRef.current = null;
+      return;
     }
-  }, [flowState, boardState.currentTurn, boardState.gameStatus, incrementPlayerTurn]);
+
+    const turnKey = `player:${boardState.moveCount}`;
+    if (countedPlayerTurnKeyRef.current === turnKey) return;
+    countedPlayerTurnKeyRef.current = turnKey;
+    incrementPlayerTurn();
+  }, [
+    flowState?.tag,
+    boardState.currentTurn,
+    boardState.gameStatus,
+    boardState.moveCount,
+    incrementPlayerTurn,
+  ]);
 
   // AI driver — fires only when the chess phase is active AND there's no
   // P2P match (the hook gates internally on `matchSeed`, see useChessAITurn
@@ -665,7 +682,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
       dispatchFlow({ type: 'COMBAT_TRIGGERED', pieces: { attacker, defender } });
       playSoundEffect('card_draw');
     }
-  }, [pendingCombat, boardState.gameStatus, flowState, playSoundEffect, dispatchFlow]);
+  }, [pendingCombat, boardState.gameStatus, flowState?.tag, playSoundEffect, dispatchFlow]);
 
   useEffect(() => {
     if (flowState?.tag === 'chess' && boardState.gameStatus === 'playing') {
@@ -687,13 +704,14 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
         setGameStatus(winnerStatus);
       }
     }
-  }, [flowState, boardState.currentTurn, boardState.gameStatus, boardState.pieces, getValidMoves, setGameStatus]);
+  }, [flowState?.tag, boardState.currentTurn, boardState.gameStatus, boardState.pieces, getValidMoves, setGameStatus]);
 
   const handleRestart = useCallback(() => {
     resetBoard();
     setPlayerArmy(null);
     setSharedDeck([]);
     resetPlayerTurnCount();
+    countedPlayerTurnKeyRef.current = null;
     gameEndProcessedRef.current = false;
     bootstrappedFromWarbandRef.current = false;
     clearFlow();
@@ -733,6 +751,7 @@ const RagnarokGameCoordinator: React.FC<RagnarokGameCoordinatorProps> = ({ initi
     resetBoard();
     setPlayerArmy(null);
     resetPlayerTurnCount();
+    countedPlayerTurnKeyRef.current = null;
     resetBossRulesApplied();
     gameEndProcessedRef.current = false;
     const defaultArmy = getDefaultArmySelection();

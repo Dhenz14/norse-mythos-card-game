@@ -8,7 +8,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 
-import { useCampaignStore } from '../../../campaign';
+import { readStagedCampaignMission, useCampaignStore } from '../../../campaign';
 import { cryptoMatchIdentityFactory, type MatchIdentityFactory } from '../../identityFactory';
 import { useMatchStore } from '../../store';
 import type { CampaignResolveArgs } from './resolver';
@@ -20,14 +20,24 @@ interface MatchSetupCampaignProps {
 	readonly identityFactory?: MatchIdentityFactory;
 }
 
+type SetupStatus = 'pending' | 'ready' | 'failed';
+
 function getStagedCampaignArgs(identityFactory: MatchIdentityFactory): CampaignResolveArgs | null {
 	const campaign = useCampaignStore.getState();
-	if (!campaign.currentMission) return null;
+	const staged = campaign.currentMission
+		? {
+			missionId: campaign.currentMission,
+			difficulty: campaign.currentDifficulty,
+			localRunId: campaign.currentRunId,
+		}
+		: readStagedCampaignMission();
+	if (!staged) return null;
+
 	return {
 		identity: identityFactory.create(),
-		missionId: campaign.currentMission,
-		difficulty: campaign.currentDifficulty,
-		localRunId: campaign.currentRunId,
+		missionId: staged.missionId,
+		difficulty: staged.difficulty,
+		localRunId: staged.localRunId,
 	};
 }
 
@@ -37,7 +47,7 @@ export function MatchSetupCampaign({
 	identityFactory = cryptoMatchIdentityFactory,
 }: MatchSetupCampaignProps) {
 	const [stagedArgs] = useState(() => getStagedCampaignArgs(identityFactory));
-	const [ready, setReady] = useState(false);
+	const [status, setStatus] = useState<SetupStatus>(() => stagedArgs ? 'pending' : 'failed');
 
 	useEffect(() => {
 		if (!stagedArgs) return;
@@ -45,18 +55,20 @@ export function MatchSetupCampaign({
 		const result = resolveCampaign(stagedArgs);
 		if (!result.ok) {
 			useCampaignStore.getState().clearCurrent();
+			setStatus('failed');
 			return;
 		}
 
 		useMatchStore.getState().setMatch(result.ctx);
-		setReady(true);
+		setStatus('ready');
 
 		return () => {
 			useMatchStore.getState().clearMatch();
 		};
 	}, [stagedArgs]);
 
-	if (!ready) return <>{fallback}</>;
+	if (status === 'failed') return <>{fallback}</>;
+	if (status === 'pending') return null;
 
 	return <>{children}</>;
 }

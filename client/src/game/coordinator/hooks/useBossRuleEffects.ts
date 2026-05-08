@@ -16,7 +16,6 @@ type BossRuleEffectsInput = {
   readonly campaignDifficulty: Difficulty;
   readonly flowState: RoundFlowState | null;
   readonly boardState: ChessBoardState;
-  readonly turnCount: number;
   readonly bossRulesApplied: boolean;
   readonly markBossRulesApplied: () => void;
   readonly updatePieceHealth: (pieceId: string, health: number) => void;
@@ -126,7 +125,7 @@ export function useBossRuleEffects(input: BossRuleEffectsInput): void {
   useEffect(() => {
     if (!input.isCampaign || !input.campaignData || input.flowState?.tag !== 'chess') return;
 
-    const turnKey = `${input.boardState.currentTurn}-${input.turnCount}`;
+    const turnKey = `${input.boardState.currentTurn}-${input.boardState.moveCount}`;
     if (lastBossRuleTurnRef.current === turnKey) return;
     lastBossRuleTurnRef.current = turnKey;
 
@@ -189,11 +188,11 @@ export function useBossRuleEffects(input: BossRuleEffectsInput): void {
     }
   }, [
     input.boardState.currentTurn,
+    input.boardState.moveCount,
     input.campaignData,
     input.campaignDifficulty,
-    input.flowState,
+    input.flowState?.tag,
     input.isCampaign,
-    input.turnCount,
     input.updatePieceHealth,
   ]);
 }
