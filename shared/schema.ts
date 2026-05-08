@@ -1,6 +1,6 @@
 import { pgTable, text, serial, integer, boolean, timestamp, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { RARITY, type Rarity } from "./schemas/rarity";
 
 export const users = pgTable("users", {
