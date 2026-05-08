@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { getNFTBridge } from '../nft';
-import { showStatus } from '../components/ui/GameStatusBanner';
+import { emitNotification } from '../actions/gameActions';
 import { debug } from '../config/debugConfig';
 
 export interface TradeOffer {
@@ -57,11 +57,11 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				set({ offers: data.offers || [], loading: false });
 			} else {
 				set({ error: 'Failed to load trades', loading: false });
-				showStatus('Failed to load trade offers', 'error');
+				emitNotification({ message: 'Failed to load trade offers', level: 'error' });
 			}
 		} catch {
 			set({ error: 'Network error', loading: false });
-			showStatus('Network error loading trades', 'error');
+			emitNotification({ message: 'Network error loading trades', level: 'error' });
 		}
 	},
 
@@ -92,15 +92,15 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				const data = await res.json();
 				set(s => ({ offers: [data.offer, ...s.offers], loading: false }));
 				get().clearSelections();
-				showStatus('Trade offer created', 'success');
+				emitNotification({ message: 'Trade offer created', level: 'success' });
 				return true;
 			}
 			set({ error: 'Failed to create trade', loading: false });
-			showStatus('Failed to create trade offer', 'error');
+			emitNotification({ message: 'Failed to create trade offer', level: 'error' });
 			return false;
 		} catch {
 			set({ error: 'Network error', loading: false });
-			showStatus('Network error creating trade', 'error');
+			emitNotification({ message: 'Network error creating trade', level: 'error' });
 			return false;
 		}
 	},
@@ -138,20 +138,20 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 								bridge.removeCard(uid);
 								bridge.emitCardTransferred(uid, offer.fromUser, offer.toUser);
 							});
-							showStatus(`Transferred ${uids.length} card(s) on-chain`, 'success');
+							emitNotification({ message: `Transferred ${uids.length} card(s) on-chain`, level: 'success' });
 						} else {
 							debug.warn('[Trade] On-chain transfer failed — server trade accepted but chain transfer incomplete');
-							showStatus('Trade accepted but chain transfer failed — contact support', 'warning');
+							emitNotification({ message: 'Trade accepted but chain transfer failed — contact support', level: 'warning' });
 						}
 					}
 				}
 				return true;
 			}
-			showStatus('Failed to accept trade', 'error');
+			emitNotification({ message: 'Failed to accept trade', level: 'error' });
 			return false;
 		} catch (err) {
 			debug.warn('[Trade] acceptOffer error:', err);
-			showStatus('Error accepting trade', 'error');
+			emitNotification({ message: 'Error accepting trade', level: 'error' });
 			return false;
 		}
 	},
@@ -172,10 +172,10 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				}));
 				return true;
 			}
-			showStatus('Failed to decline trade', 'error');
+			emitNotification({ message: 'Failed to decline trade', level: 'error' });
 			return false;
 		} catch {
-			showStatus('Error declining trade', 'error');
+			emitNotification({ message: 'Error declining trade', level: 'error' });
 			return false;
 		}
 	},
@@ -196,10 +196,10 @@ export const useTradeStore = create<TradeState & TradeActions>()((set, get) => (
 				}));
 				return true;
 			}
-			showStatus('Failed to cancel trade', 'error');
+			emitNotification({ message: 'Failed to cancel trade', level: 'error' });
 			return false;
 		} catch {
-			showStatus('Error cancelling trade', 'error');
+			emitNotification({ message: 'Error cancelling trade', level: 'error' });
 			return false;
 		}
 	},

@@ -3,25 +3,31 @@ import type { GameEndedEvent } from '@/core/events/GameEvents';
 import { useGameStore } from '../stores/gameStore';
 import { useTransactionQueueStore } from '@/data/blockchain/transactionQueueStore';
 import { packageMatchResult, packMatchResultForChain } from '@/data/blockchain/matchResultPackager';
-import { isBlockchainPackagingEnabled, isHiveMode } from '../config/featureFlags';
+import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { generateMatchId, useHiveDataStore } from '@/data/HiveDataLayer';
+import { getStarterUid, isStarterEntitlementAsset, type HiveCardAsset } from '@/data/schemas/HiveTypes';
 import { debug } from '../config/debugConfig';
-import type { CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
+import type { CardOwnershipSource, CardUidMapping, PackagedMatchResult } from '@/data/blockchain/types';
 import { getCard, putCard } from '@/data/blockchain/replayDB';
-import { getLevelForXP } from '@/data/blockchain/cardXPSystem';
+import { xpKeyFor } from '@/data/blockchain/cardXPRewards';
+import { getEconomicLevelForXP } from '@shared/protocol-core/cardProgression';
 import { usePeerStore } from '../stores/peerStore';
 import { hiveSync } from '@/data/HiveSync';
-import { getActiveTranscript, clearTranscript } from '@/data/blockchain/transcriptBuilder';
+import { getActiveTranscript, clearTranscript, recordSessionEvent } from '@/data/blockchain/transcriptBuilder';
 import { pinTranscript } from '@/data/blockchain/transcriptIPFS';
 import { registerAccount, fetchPlayerElo } from '@/data/chainAPI';
-import { computePoW, POW_CONFIG } from '@/data/blockchain/proofOfWork';
+import { computePoW } from '@/data/blockchain/proofOfWork';
 import { sha256Hash, canonicalStringify } from '@/data/blockchain/hashUtils';
 import { useSeasonStore } from '../stores/seasonStore';
 import { getCardsByOwner, getTokenBalance, getEloRating } from '@/data/blockchain/replayDB';
 import { hiveEvents } from '@/data/HiveEvents';
 import { HIVE_USERNAME_RE } from '../../../../shared/protocol-core/types';
+import { isStarterEntitlementCardId } from '@shared/schemas/starterEntitlement';
 
 type UnsubscribeFn = () => void;
+type RuntimeCardSource =
+	| { kind: 'owned'; source: CardOwnershipSource; uid: string }
+	| { kind: 'localDevCatalog' };
 
 let unsubscribes: UnsubscribeFn[] = [];
 let gamePhaseUnsub: (() => void) | null = null;
@@ -32,6 +38,12 @@ let gameStartTime = 0;
 // Dedup guard: "{winner}_{turnNumber}" — unique per game session
 // Prevents double-packaging when both the store watcher and event bus fire for the same game end
 let lastProcessedMatchKey = '';
+
+function preserveStarterEntitlements(chainCards: HiveCardAsset[], currentCards: HiveCardAsset[]): HiveCardAsset[] {
+	const chainUids = new Set(chainCards.map(card => card.uid));
+	const starters = currentCards.filter(card => isStarterEntitlementAsset(card) && !chainUids.has(card.uid));
+	return [...chainCards, ...starters];
+}
 
 // ---------------------------------------------------------------------------
 // Post-match Zustand store refresh from IndexedDB
@@ -49,7 +61,10 @@ async function refreshHiveDataStoreFromIDB(): Promise<void> {
 		]);
 
 		const store = useHiveDataStore.getState();
-		store.loadFromHive({ cardCollection: cards, tokenBalance });
+		store.loadFromHive({
+			cardCollection: preserveStarterEntitlements(cards, store.cardCollection),
+			tokenBalance,
+		});
 		store.updateStats({
 			odinsEloRating: eloRating.elo,
 			wins: eloRating.wins,
@@ -67,10 +82,23 @@ async function refreshHiveDataStoreFromIDB(): Promise<void> {
 // Card UID extraction
 // ---------------------------------------------------------------------------
 
+function resolveRuntimeCardSource(
+	nftUid: string | undefined,
+	cardId: number,
+	category: string | undefined,
+): RuntimeCardSource {
+	if (nftUid) return { kind: 'owned', source: 'nft', uid: nftUid };
+	if (category === 'starter' && isStarterEntitlementCardId(cardId)) {
+		return { kind: 'owned', source: 'starter', uid: getStarterUid(cardId) };
+	}
+	return { kind: 'localDevCatalog' };
+}
+
 /**
  * Builds a CardUidMapping array from all card instances a player used.
- * Uses nft_id if the card is a real NFT, otherwise synthesizes a
- * deterministic test UID so XP calculations produce real data in test mode.
+ * NFTs use their chain UID. Starter cards use their fixed off-chain
+ * entitlement UID. Local/dev catalog cards are gameplay-only and are not
+ * packaged as owned economic assets.
  */
 function extractCardUidsFromGameState(side: 'player' | 'opponent'): CardUidMapping[] {
 	const gs = useGameStore.getState().gameState;
@@ -88,39 +116,37 @@ function extractCardUidsFromGameState(side: 'player' | 'opponent'): CardUidMappi
 		...(player.hand ?? []),
 	];
 
-	const hiveMode = isHiveMode();
 	for (const instance of allInstances) {
 		const cardId = instance.card?.id;
 		if (typeof cardId !== 'number') continue;
 
 		const nftUid: string | undefined = instance.nft_id;
-		if (hiveMode && !nftUid) continue;
+		const runtimeSource = resolveRuntimeCardSource(nftUid, cardId, instance.card?.category);
+		if (runtimeSource.kind === 'localDevCatalog') continue;
 
-		const uid: string = nftUid ?? `test_${side}_${cardId}_${instance.instanceId ?? '0'}`;
-
-		if (seenUids.has(uid)) continue;
-		seenUids.add(uid);
-		uids.push({ uid, cardId });
+		if (seenUids.has(runtimeSource.uid)) continue;
+		seenUids.add(runtimeSource.uid);
+		uids.push({ uid: runtimeSource.uid, cardId, source: runtimeSource.source });
 	}
 
 	return uids;
 }
 
 /**
- * Builds a cardId → rarity map from card instances already in game state.
- * Avoids a separate allCards import — the data is already in memory.
+ * Builds a cardId → XP-progression key map for economic NFT cards only.
+ * Starter cards use account-bound reputation, not CardXP.
  */
 function buildCardRarities(
 	playerUids: CardUidMapping[],
 	opponentUids: CardUidMapping[]
 ): Map<number, string> {
 	const gs = useGameStore.getState().gameState;
-	const rarities = new Map<number, string>();
-	if (!gs) return rarities;
+	const xpKeys = new Map<number, string>();
+	if (!gs) return xpKeys;
 
 	const relevantIds = new Set([
-		...playerUids.map(u => u.cardId),
-		...opponentUids.map(u => u.cardId),
+		...playerUids.filter(u => u.source === 'nft').map(u => u.cardId),
+		...opponentUids.filter(u => u.source === 'nft').map(u => u.cardId),
 	]);
 
 	for (const side of ['player', 'opponent'] as const) {
@@ -135,13 +161,12 @@ function buildCardRarities(
 
 		for (const instance of allInstances) {
 			const cardId = instance.card?.id;
-			if (typeof cardId !== 'number' || !relevantIds.has(cardId) || rarities.has(cardId)) continue;
-			const rarity: string = instance.card?.rarity ?? 'common';
-			rarities.set(cardId, rarity.toLowerCase());
+			if (typeof cardId !== 'number' || !relevantIds.has(cardId) || xpKeys.has(cardId)) continue;
+			xpKeys.set(cardId, xpKeyFor(instance.card ?? {}));
 		}
 	}
 
-	return rarities;
+	return xpKeys;
 }
 
 // ---------------------------------------------------------------------------
@@ -289,6 +314,17 @@ async function handleGameEnded(_event: GameEndedEvent): Promise<void> {
 
 const DUAL_SIG_TIMEOUT_MS = 30_000;
 
+/**
+ * Distinguishes proposer-side outcomes that require different UX:
+ * `rejected` = peer actively said no (with reason); `timeout` =
+ * silence (network drop, client crash). Reason is also persisted
+ * via recordSessionEvent for forensic audit.
+ */
+type CountersignOutcome =
+	| { kind: 'signed'; sig: string }
+	| { kind: 'rejected'; reason: string }
+	| { kind: 'timeout' };
+
 async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatchResult> {
 	const peer = usePeerStore.getState();
 	if (peer.connectionState !== 'connected' || !peer.isHost) return result;
@@ -299,13 +335,43 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 		const proposalId = crypto.randomUUID();
 		peer.send({ type: 'result_propose', result, hash: result.hash, broadcasterSig, proposalId });
 
-		const counterpartySig = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
-		if (counterpartySig) {
-			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: counterpartySig } };
+		const outcome = await waitForCountersign(DUAL_SIG_TIMEOUT_MS);
+		if (outcome.kind === 'signed') {
+			return { ...result, signatures: { broadcaster: broadcasterSig, counterparty: outcome.sig } };
 		}
 
-		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty
-		debug.warn('[BlockchainSubscriber] Dual-sig timeout/rejected — ranked match result blocked (requires both signatures)');
+		// Ranked matches MUST have dual signatures — do NOT broadcast with empty counterparty.
+		// Surface the failure mode to the user so a silently-blocked broadcast doesn't look
+		// like the match was registered on-chain. Persist context for forensic audit.
+		if (outcome.kind === 'rejected') {
+			debug.warn(`[BlockchainSubscriber] Dual-sig rejected by counterparty (reason=${outcome.reason}) — match result not broadcast`);
+			recordSessionEvent('result_rejection_received', {
+				reason: outcome.reason,
+				matchId: result.matchId,
+				proposerWinner: result.winner.username,
+				proposerLoser: result.loser.username,
+				proposalId,
+			});
+			GameEventBus.emitNotification({
+				level: 'warning',
+				message: `Opponent rejected match result (${outcome.reason}). Result was not broadcast on-chain.`,
+				duration: 8000,
+			});
+		} else {
+			debug.warn('[BlockchainSubscriber] Dual-sig timed out (30s) — match result not broadcast');
+			recordSessionEvent('result_countersign_timeout', {
+				matchId: result.matchId,
+				proposerWinner: result.winner.username,
+				proposerLoser: result.loser.username,
+				proposalId,
+				timeoutMs: DUAL_SIG_TIMEOUT_MS,
+			});
+			GameEventBus.emitNotification({
+				level: 'warning',
+				message: 'Opponent did not sign the match result in time. Result was not broadcast on-chain.',
+				duration: 8000,
+			});
+		}
 		return result; // No signatures attached = downstream won't broadcast
 	} catch (err) {
 		debug.warn('[BlockchainSubscriber] Dual-sig signing failed — match result will not be broadcast:', err);
@@ -313,24 +379,35 @@ async function attemptDualSig(result: PackagedMatchResult): Promise<PackagedMatc
 	}
 }
 
-function waitForCountersign(timeoutMs: number): Promise<string | null> {
+function waitForCountersign(timeoutMs: number): Promise<CountersignOutcome> {
 	return new Promise((resolve) => {
 		const conn = usePeerStore.getState().connection;
-		if (!conn) { resolve(null); return; }
+		if (!conn) { resolve({ kind: 'timeout' }); return; }
 
 		let settled = false;
 		const c = conn; // capture non-null ref for closures
 
 		const timer = setTimeout(() => {
-			if (!settled) { settled = true; c.off('data', handler); resolve(null); }
+			if (!settled) { settled = true; c.off('data', handler); resolve({ kind: 'timeout' }); }
 		}, timeoutMs);
 
 		function handler(data: unknown) {
 			const msg = data as Record<string, unknown>;
 			if (msg.type === 'result_countersign' && typeof msg.counterpartySig === 'string') {
-				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(msg.counterpartySig); }
+				if (!settled) {
+					settled = true;
+					clearTimeout(timer);
+					c.off('data', handler);
+					resolve({ kind: 'signed', sig: msg.counterpartySig });
+				}
 			} else if (msg.type === 'result_reject') {
-				if (!settled) { settled = true; clearTimeout(timer); c.off('data', handler); resolve(null); }
+				if (!settled) {
+					settled = true;
+					clearTimeout(timer);
+					c.off('data', handler);
+					const reason = typeof msg.reason === 'string' ? msg.reason : 'unknown';
+					resolve({ kind: 'rejected', reason });
+				}
 			}
 		}
 
@@ -347,7 +424,7 @@ async function applyLocalXPAndStampLevelUps(result: PackagedMatchResult): Promis
 			const card = await getCard(xpReward.cardUid);
 			if (!card) continue;
 
-			const oldLevel = getLevelForXP(card.rarity, card.xp);
+			const oldLevel = getEconomicLevelForXP(card.rarity, card.xp);
 			card.xp = xpReward.xpAfter;
 			card.level = xpReward.levelAfter;
 			await putCard(card);

@@ -14,7 +14,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'The hawk chick peers down from the highest branch.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			trigger: 'on_draw_card',
 			description: 'After drawing a card',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50181,
 		name: 'Duneyrr Fawn',
@@ -39,7 +39,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: "A fawn that nibbles on Yggdrasil's tender shoots.",
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50182,
 		name: 'Ratatoskr Kit',
@@ -64,7 +64,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'The tiny squirrel chatters insults between eagle and dragon.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'basic',
@@ -75,7 +75,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -90,7 +90,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'Its keen eyes pierce the mists between worlds.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -105,7 +105,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			description: 'After drawing a card',
 		},
 		battlecry: { type: 'draw', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50184,
 		name: 'Duneyrr, the Roaring Stag',
@@ -118,7 +118,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'Its roar shakes the World Tree to its roots.',
 		keywords: ['taunt', 'lifesteal'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'grass',
 		weakness: { element: 'fire', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50185,
 		name: 'Ratatoskr, the Mischief',
@@ -144,7 +144,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'The squirrel that stirs the pot, spreading chaos from root to crown.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'adept',
@@ -157,7 +157,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'aoe_damage', targetType: 'all_minions', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -172,7 +172,7 @@ export const yggdrasilWatchersPets: CardData[] = [
 		flavorText: 'The World Tree speaks through its chosen guardian.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		petStage: 'master',
@@ -209,5 +209,5 @@ export const yggdrasilWatchersPets: CardData[] = [
 				battlecry: { type: 'aoe_damage', targetType: 'all_enemies', value: 2 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

@@ -6,7 +6,7 @@
  *
  * Two implementations:
  *   LocalNFTBridge  — localStorage only, no chain ops (local/test mode)
- *   HiveNFTBridge   — delegates to HiveSync, HiveEvents, replayEngine (hive mode)
+ *   HiveNFTBridge   — delegates to HiveSync, HiveAuth, HiveEvents, replayEngine (hive mode)
  */
 
 import type {
@@ -30,6 +30,21 @@ export interface AuthBody {
 	timestamp: number;
 	signature?: string;
 	[key: string]: unknown;
+}
+
+export interface CampaignResultBroadcastPayload {
+	v: 1;
+	cid: string;
+	m: string;
+	d: 'normal' | 'heroic' | 'mythic';
+	n: number;
+	rid: string;
+	lst: number;
+	rh: string;
+	tr: string;
+	tc?: string;
+	fh: string;
+	t: number;
 }
 
 export type NFTEventType =
@@ -83,6 +98,7 @@ export interface INFTBridge {
 
 	// ── Transactions ──
 	claimReward(rewardId: string): Promise<BroadcastResult>;
+	submitCampaignResult(payload: CampaignResultBroadcastPayload): Promise<BroadcastResult>;
 	transferCard(cardUid: string, toUser: string, memo?: string): Promise<BroadcastResult>;
 	transferCards(cardUids: string[], toUser: string, memo?: string): Promise<BroadcastResult>;
 	openPack(packType: string, quantity?: number): Promise<BroadcastResult>;
@@ -97,7 +113,7 @@ export interface INFTBridge {
 	mergeCards(sourceUids: [string, string]): Promise<BroadcastResult>;
 
 	// ── Events ──
-	onEvent(type: NFTEventType | '*', callback: NFTEventCallback): () => void;
+	onEvent(type: NFTEventType, callback: NFTEventCallback): () => void;
 	emitCardTransferred(cardUid: string, from: string, to: string): void;
 	emitTokenUpdate(token: string, amount: number, change: number): void;
 	emitTransactionConfirmed(trxId: string): void;

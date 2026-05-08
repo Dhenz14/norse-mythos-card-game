@@ -513,13 +513,13 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       norseHeroId: 'hero-eir',
     },
     {
-      id: 'hero-frey',
+      id: 'hero-freyr',
       name: 'Frey',
       heroClass: 'priest',
       description: 'God of Fertility: Summon nature tokens and grow your army.',
       fixedCardIds: [],
       element: 'grass',
-      norseHeroId: 'hero-frey'
+      norseHeroId: 'hero-freyr'
     },
     {
       id: 'hero-idunn',
@@ -939,140 +939,157 @@ export const CHESS_PIECE_HEROES: Record<ChessPieceType, ChessPieceHero[]> = {
       id: 'king-leif',
       name: 'Leif the Wayfinder',
       heroClass: 'neutral',
+      element: 'light',
+      mythology: 'norse',
       description: 'All friendly pieces gain +1 Health. At the start of your turn, restore 1 Health to your most damaged piece.',
       fixedCardIds: [],
       passiveEffect: 'leif_passives',
-      chessAbility: 'king-leif'
+      chessAbility: 'king-leif',
     },
     // ===== COMMON =====
     {
       id: 'king-askr',
       name: 'Askr',
       heroClass: 'neutral',
+      element: 'grass',
+      mythology: 'norse',
       description: 'First Man: All friendly pieces gain +1 Attack. Simple but relentless.',
       fixedCardIds: [],
       passiveEffect: 'askr_passives',
-      chessAbility: 'king-askr'
+      chessAbility: 'king-askr',
     },
     {
       id: 'king-embla',
       name: 'Embla',
       heroClass: 'neutral',
+      element: 'grass',
+      mythology: 'norse',
       description: 'First Woman: All friendly pieces gain +1 Health. At end of turn, restore 1 Health to all allies.',
       fixedCardIds: [],
       passiveEffect: 'embla_passives',
-      chessAbility: 'king-embla'
+      chessAbility: 'king-embla',
     },
     // ===== PREMIUM =====
     {
       id: 'king-ymir',
       name: 'Ymir',
       heroClass: 'neutral',
+      element: 'ice',
+      mythology: 'norse',
       description: 'Jötun Giant: +2 Attack to allies, -1 Attack to enemies. (Passive)',
       fixedCardIds: [],
       passiveEffect: 'ymir_passives',
       chessAbility: 'king-ymir',
-      portrait: '/portraits/kings/ymir.webp'
     },
     {
       id: 'king-buri',
       name: 'Buri',
       heroClass: 'neutral',
+      element: 'ice',
+      mythology: 'norse',
       description: 'First God: All friendly minions have +1 Armor. At the start of your turn, they gain +1 Health permanently.',
       fixedCardIds: [],
       passiveEffect: 'buri_passives',
       chessAbility: 'king-buri',
-      portrait: '/portraits/kings/buri.webp'
     },
     {
       id: 'king-surtr',
       name: 'Surtr',
       heroClass: 'neutral',
+      element: 'fire',
+      mythology: 'norse',
       description: 'Fire Giant: All friendly minions have +1 Attack. At end of turn, deal 1 damage to all enemies.',
       fixedCardIds: [],
       passiveEffect: 'surtr_passives',
       chessAbility: 'king-surtr',
-      portrait: '/portraits/kings/surtr.webp'
     },
     {
       id: 'king-borr',
       name: 'Borr',
       heroClass: 'neutral',
+      element: 'ice',
+      mythology: 'norse',
       description: 'Father of Odin: All friendly minions have +1/+1. Whenever you play a minion, restore 2 Health to it.',
       fixedCardIds: [],
       passiveEffect: 'borr_passives',
       chessAbility: 'king-borr',
-      portrait: '/portraits/kings/borr.webp'
     },
     {
       id: 'king-yggdrasil',
       name: 'Yggdrasil',
       heroClass: 'neutral',
+      element: 'grass',
+      mythology: 'norse',
       description: 'World Tree: Whenever a minion is healed, it gains +1 Attack permanently. End of turn heals all allies 1.',
       fixedCardIds: [],
       passiveEffect: 'yggdrasil_passives',
       chessAbility: 'king-yggdrasil',
-      portrait: '/portraits/kings/yggdrasil.webp'
     },
     {
       id: 'king-audumbla',
       name: 'Auðumbla',
       heroClass: 'neutral',
+      element: 'grass',
+      mythology: 'norse',
       description: 'Primordial Cow: All friendly minions have +2 Health. Whenever healed, they gain +1 Attack.',
       fixedCardIds: [],
       passiveEffect: 'audumbla_passives',
       chessAbility: 'king-audumbla',
-      portrait: '/portraits/kings/audumbla.webp'
     },
     {
       id: 'king-gaia',
       name: 'Gaia',
       heroClass: 'neutral',
+      element: 'grass',
+      mythology: 'greek',
       description: 'Mother Earth: All friendly minions gain +1 Health. At the start of your turn, a random enemy minion loses 1 Attack permanently.',
       fixedCardIds: [],
       passiveEffect: 'gaia_passives',
       chessAbility: 'king-gaia',
-      portrait: '/portraits/kings/gaia.webp'
     },
     {
       id: 'king-brimir',
       name: 'Brimir',
       heroClass: 'neutral',
+      element: 'ice',
+      mythology: 'norse',
       description: 'Sea Titan: All friendly minions have +2 Health. At the start of your turn, freeze a random enemy.',
       fixedCardIds: [],
       passiveEffect: 'brimir_passives',
       chessAbility: 'king-brimir',
-      portrait: '/portraits/kings/brimir.webp'
     },
     {
       id: 'king-ginnungagap',
       name: 'Ginnungagap',
       heroClass: 'neutral',
+      element: 'dark',
+      mythology: 'norse',
       description: 'Primordial Void: Enemy minions have -2 Attack. Whenever you play a minion, summon a random keyword token.',
       fixedCardIds: [],
       passiveEffect: 'ginnungagap_passives',
       chessAbility: 'king-ginnungagap',
-      portrait: '/portraits/kings/ginnungagap.webp'
     },
     {
       id: 'king-tartarus',
       name: 'Tartarus',
       heroClass: 'neutral',
+      element: 'dark',
+      mythology: 'greek',
       description: 'The Abyss Below: ALL minions (friendly and enemy) have -1 Attack. At end of turn, deal 1 damage to ALL minions.',
       fixedCardIds: [],
       passiveEffect: 'tartarus_passives',
       chessAbility: 'king-tartarus',
-      portrait: '/portraits/kings/tartarus.webp'
     },
     {
       id: 'king-uranus',
       name: 'Uranus',
       heroClass: 'neutral',
+      element: 'light',
+      mythology: 'greek',
       description: 'The Sky Father: All friendly minions gain +1 Attack. When a friendly minion attacks, it deals 1 damage to a random adjacent enemy.',
       fixedCardIds: [],
       passiveEffect: 'uranus_passives',
       chessAbility: 'king-uranus',
-      portrait: '/portraits/kings/uranus.webp'
     }
   ],
   pawn: [

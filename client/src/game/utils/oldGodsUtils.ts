@@ -17,6 +17,7 @@ import { debug } from '../config/debugConfig';
 import { MAX_BATTLEFIELD_SIZE } from '../constants/gameConstants';
 import { hasKeyword } from './cards/keywordUtils';
 import { executeSpell } from './spells/spellUtils';
+import { cryptoIdGen } from './seededRng';
 
 interface CThunState {
   baseAttack: number;
@@ -291,7 +292,7 @@ export function executeNZothBattlecry(
     // Create a fresh copy of the minion
     const newMinion: CardInstance = {
       ...JSON.parse(JSON.stringify(minion)),
-      instanceId: `${playerType}_nzoth_${minion.card.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      instanceId: `${playerType}_nzoth_${minion.card.id}_${cryptoIdGen()}`,
       isPlayed: false,
       isSummoningSick: true,
       attacksPerformed: 0,
@@ -470,7 +471,7 @@ export function executeYShaarjEffect(
   
   // Create a CardInstance from the CardData and add to battlefield
   const newInstance: CardInstance = {
-    instanceId: `${playerType}_yshaarj_${cardToSummon.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    instanceId: `${playerType}_yshaarj_${cardToSummon.id}_${cryptoIdGen()}`,
     card: cardToSummon,
     currentHealth: getHealth(cardToSummon),
     isSummoningSick: true,

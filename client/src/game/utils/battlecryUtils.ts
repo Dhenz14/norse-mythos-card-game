@@ -17,14 +17,15 @@ import { MAX_BATTLEFIELD_SIZE, MAX_HAND_SIZE } from '../constants/gameConstants'
 import { useAnimationStore } from '../animations/AnimationManager';
 import allCards, { getCardById } from '../data/allCards';
 import { addKeyword, setKeywords, getKeywords, hasKeyword } from './cards/keywordUtils';
-import { 
-  findCardInstance, 
-  createCardInstance, 
-  getCardTribe, 
-  isCardOfTribe, 
+import {
+  findCardInstance,
+  createCardInstance,
+  getCardTribe,
+  isCardOfTribe,
   isNagaCard,
   instanceToCardData,
-  getCardKeywords
+  getCardKeywords,
+  getCardRealm
 } from './cards/cardUtils';
 import { transformMinion, silenceMinion } from './transformUtils';
 import { dealDamage } from './effects/damageUtils';
@@ -40,6 +41,7 @@ import { summonColossalParts } from './mechanics/colossalUtils';
 import executeReturnReturn from '../effects/handlers/battlecry/returnHandler';
 import { checkPetEvolutionTrigger } from './petEvolutionTriggers';
 import { executeCThunBattlecry, executeYoggSaronBattlecry, executeNZothBattlecry, buffCThun } from './oldGodsUtils';
+import { cryptoRng, cryptoIdGen } from './seededRng';
 
 /**
  * Execute an AoE damage battlecry effect
@@ -199,7 +201,7 @@ function executeAoEDamageBattlecry(
         // Cards are usually discarded at random
         for (let i = 0; i < discardCount; i++) {
           if (state.players.player.hand.length > 0) {
-            const randomIndex = Math.floor(Math.random() * state.players.player.hand.length);
+            const randomIndex = Math.floor(cryptoRng() * state.players.player.hand.length);
             const discardedCard = state.players.player.hand.splice(randomIndex, 1)[0];
           }
         }
@@ -362,7 +364,7 @@ export function executeBattlecry(
         if (silTarget === 'random_enemy_minion') {
           const oppBf = newState.players.opponent.battlefield || [];
           if (oppBf.length > 0) {
-            const randIdx = Math.floor(Math.random() * oppBf.length);
+            const randIdx = Math.floor(cryptoRng() * oppBf.length);
             newState = silenceMinion(newState, oppBf[randIdx].instanceId);
           }
           return checkPetEvolutionTrigger(newState, 'on_silence');
@@ -505,7 +507,12 @@ export function executeBattlecry(
         // Execute a battlecry to buff all minions of a specific tribe
         // Used by cards like Coldlight Seer (Give your other Murlocs +2 Health)
         return executeBuffTribeBattlecry(newState, cardInstanceId, battlecry);
-        
+
+      case 'realm_aligned_buff':
+        // Execute a Realm Aligned battlecry: buff self if active battlefield
+        // realm matches this minion's lore-origin realm. See docs/RULEBOOK.md.
+        return executeRealmAlignedBuffBattlecry(newState, cardInstanceId, battlecry);
+
       case 'conditional_grant_keyword':
         return executeConditionalGrantKeywordBattlecry(newState, battlecry, cardInstanceId);
         
@@ -937,7 +944,7 @@ export function executeBattlecry(
         if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
         const srcMinion = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
         if (srcMinion) {
-          const copy = createCardInstance(srcMinion.card);
+          const copy = createCardInstance(srcMinion.card, cryptoIdGen());
           copy.isSummoningSick = true;
           copy.isPlayed = true;
           copy.currentHealth = (srcMinion.card as MinionCardData).health || 1;
@@ -949,7 +956,7 @@ export function executeBattlecry(
       case 'destroy_random_enemy': {
         const dreOppBf = newState.players.opponent.battlefield || [];
         if (dreOppBf.length > 0) {
-          const dreRandIdx = Math.floor(Math.random() * dreOppBf.length);
+          const dreRandIdx = Math.floor(cryptoRng() * dreOppBf.length);
           const dreTarget = dreOppBf[dreRandIdx];
           newState = destroyCard(newState, dreTarget.instanceId, 'opponent');
         }
@@ -1022,8 +1029,8 @@ export function executeBattlecry(
         const cfohCount = battlecry.value || 1;
         for (let i = 0; i < cfohCount; i++) {
           if (cfohHand.length === 0 || newState.players.player.hand.length >= MAX_HAND_SIZE) break;
-          const cfohIdx = Math.floor(Math.random() * cfohHand.length);
-          const cfohCopy = createCardInstance(cfohHand[cfohIdx].card);
+          const cfohIdx = Math.floor(cryptoRng() * cfohHand.length);
+          const cfohCopy = createCardInstance(cfohHand[cfohIdx].card, cryptoIdGen());
           newState.players.player.hand.push(cfohCopy);
         }
         return newState;
@@ -1048,7 +1055,7 @@ export function executeBattlecry(
         if (!checkBattlecryCondition(newState, cmcEffect.condition || '')) return newState;
         const cmcOppBf = newState.players.opponent.battlefield || [];
         if (cmcOppBf.length === 0 || newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
-        const cmcIdx = Math.floor(Math.random() * cmcOppBf.length);
+        const cmcIdx = Math.floor(cryptoRng() * cmcOppBf.length);
         const cmcStolen = cmcOppBf.splice(cmcIdx, 1)[0];
         cmcStolen.isSummoningSick = true;
         cmcStolen.canAttack = false;
@@ -1101,14 +1108,14 @@ export function executeBattlecry(
         const jstPlayerDeck = newState.players.player.deck;
         const jstOppDeck = newState.players.opponent.deck;
         if (jstPlayerDeck.length === 0 || jstOppDeck.length === 0) return newState;
-        const jstPlayerCard = jstPlayerDeck[Math.floor(Math.random() * jstPlayerDeck.length)];
-        const jstOppCard = jstOppDeck[Math.floor(Math.random() * jstOppDeck.length)];
+        const jstPlayerCard = jstPlayerDeck[Math.floor(cryptoRng() * jstPlayerDeck.length)];
+        const jstOppCard = jstOppDeck[Math.floor(cryptoRng() * jstOppDeck.length)];
         const jstPlayerCost = jstPlayerCard.manaCost ?? 0;
         const jstOppCost = jstOppCard.manaCost ?? 0;
         if (jstPlayerCost > jstOppCost && jstEffect.winEffect === 'draw') {
           if (jstPlayerDeck.length > 0 && newState.players.player.hand.length < MAX_HAND_SIZE) {
             const drawn = jstPlayerDeck.shift()!;
-            newState.players.player.hand.push(createCardInstance(drawn));
+            newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
           }
         }
         return newState;
@@ -1167,7 +1174,7 @@ export function executeBattlecry(
           (dwdOpp as any).weapon = undefined;
           if (newState.players.player.deck.length > 0 && newState.players.player.hand.length < MAX_HAND_SIZE) {
             const dwdDrawn = newState.players.player.deck.shift()!;
-            newState.players.player.hand.push(createCardInstance(dwdDrawn));
+            newState.players.player.hand.push(createCardInstance(dwdDrawn, cryptoIdGen()));
           }
         }
         return newState;
@@ -1233,7 +1240,7 @@ export function executeBattlecry(
           const dunTop = dunPlayer.deck[0];
           const dunIsDragon = isCardOfTribe(dunTop, 'dragon');
           const dunDrawn = dunPlayer.deck.shift()!;
-          dunPlayer.hand.push(createCardInstance(dunDrawn));
+          dunPlayer.hand.push(createCardInstance(dunDrawn, cryptoIdGen()));
           if (!dunIsDragon) break;
         }
         return newState;
@@ -1314,7 +1321,7 @@ export function executeBattlecry(
         if (!gocCardData) return newState;
         for (let i = 0; i < gocCount; i++) {
           if (newState.players.opponent.hand.length >= MAX_HAND_SIZE) break;
-          newState.players.opponent.hand.push(createCardInstance(gocCardData));
+          newState.players.opponent.hand.push(createCardInstance(gocCardData, cryptoIdGen()));
         }
         return newState;
       }
@@ -1328,7 +1335,7 @@ export function executeBattlecry(
         for (let i = 0; i < dpsCount; i++) {
           if (newState.players.player.deck.length === 0 || newState.players.player.hand.length >= MAX_HAND_SIZE) break;
           const dpsDrawn = newState.players.player.deck.shift()!;
-          newState.players.player.hand.push(createCardInstance(dpsDrawn));
+          newState.players.player.hand.push(createCardInstance(dpsDrawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1339,7 +1346,7 @@ export function executeBattlecry(
         const duhsPlayer = newState.players.player;
         while (duhsPlayer.hand.length < duhsTarget && duhsPlayer.deck.length > 0) {
           const duhsDrawn = duhsPlayer.deck.shift()!;
-          duhsPlayer.hand.push(createCardInstance(duhsDrawn));
+          duhsPlayer.hand.push(createCardInstance(duhsDrawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1347,8 +1354,8 @@ export function executeBattlecry(
       case 'copy_random_card_in_hand': {
         const crcHand = newState.players.player.hand || [];
         if (crcHand.length === 0 || crcHand.length >= MAX_HAND_SIZE) return newState;
-        const crcIdx = Math.floor(Math.random() * crcHand.length);
-        const crcCopy = createCardInstance(crcHand[crcIdx].card);
+        const crcIdx = Math.floor(cryptoRng() * crcHand.length);
+        const crcCopy = createCardInstance(crcHand[crcIdx].card, cryptoIdGen());
         newState.players.player.hand.push(crcCopy);
         return newState;
       }
@@ -1358,7 +1365,7 @@ export function executeBattlecry(
         const srcCost = srcEffect.value ?? 1;
         const srcHand = newState.players.player.hand || [];
         if (srcHand.length === 0) return newState;
-        const srcIdx = Math.floor(Math.random() * srcHand.length);
+        const srcIdx = Math.floor(cryptoRng() * srcHand.length);
         srcHand[srcIdx].card = { ...srcHand[srcIdx].card, manaCost: srcCost };
         return newState;
       }
@@ -1381,7 +1388,7 @@ export function executeBattlecry(
         const cmthAll = [...(newState.players.player.battlefield || []), ...(newState.players.opponent.battlefield || [])];
         const cmthTgt = cmthAll.find(m => m.instanceId === targetId);
         if (!cmthTgt || newState.players.player.hand.length >= MAX_HAND_SIZE) return newState;
-        const cmthCopy = createCardInstance(cmthTgt.card);
+        const cmthCopy = createCardInstance(cmthTgt.card, cryptoIdGen());
         newState.players.player.hand.push(cmthCopy);
         return newState;
       }
@@ -1394,7 +1401,7 @@ export function executeBattlecry(
           const dtIdx = dtPlayer.deck.findIndex(c => isCardOfTribe(c, tribe.toLowerCase()));
           if (dtIdx !== -1 && dtPlayer.hand.length < MAX_HAND_SIZE) {
             const dtDrawn = dtPlayer.deck.splice(dtIdx, 1)[0];
-            dtPlayer.hand.push(createCardInstance(dtDrawn));
+            dtPlayer.hand.push(createCardInstance(dtDrawn, cryptoIdGen()));
           }
         }
         return newState;
@@ -1413,7 +1420,7 @@ export function executeBattlecry(
         }
         if (dlcLowestIdx !== -1) {
           const dlcDrawn = dlcPlayer.deck.splice(dlcLowestIdx, 1)[0];
-          dlcPlayer.hand.push(createCardInstance(dlcDrawn));
+          dlcPlayer.hand.push(createCardInstance(dlcDrawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1425,7 +1432,7 @@ export function executeBattlecry(
         const dtbIdx = dtbPlayer.deck.findIndex(c => isCardOfTribe(c, dtbTribe));
         if (dtbIdx !== -1 && dtbPlayer.hand.length < MAX_HAND_SIZE) {
           const dtbDrawn = dtbPlayer.deck.splice(dtbIdx, 1)[0];
-          dtbPlayer.hand.push(createCardInstance(dtbDrawn));
+          dtbPlayer.hand.push(createCardInstance(dtbDrawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1442,7 +1449,7 @@ export function executeBattlecry(
         const dasEffect = battlecry as any;
         const dasShuffleTarget = dasEffect.shuffleTarget === 'opponent_deck' ? 'opponent' : dasOwner;
         const dasDeck = newState.players[dasShuffleTarget].deck;
-        const dasInsertIdx = Math.floor(Math.random() * (dasDeck.length + 1));
+        const dasInsertIdx = Math.floor(cryptoRng() * (dasDeck.length + 1));
         dasDeck.splice(dasInsertIdx, 0, dasCardData);
         return newState;
       }
@@ -1465,7 +1472,7 @@ export function executeBattlecry(
         for (let i = 0; i < dascDrawCount; i++) {
           if (dascPlayer.deck.length === 0 || dascPlayer.hand.length >= MAX_HAND_SIZE) break;
           const dascDrawn = dascPlayer.deck.shift()!;
-          const dascInst = createCardInstance({ ...dascDrawn, manaCost: dascSetCost });
+          const dascInst = createCardInstance({ ...dascDrawn, manaCost: dascSetCost }, cryptoIdGen());
           dascPlayer.hand.push(dascInst);
         }
         return newState;
@@ -1532,7 +1539,7 @@ export function executeBattlecry(
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
           const stTokenCard = getCardById(stTokenId);
           if (stTokenCard) {
-            const stInst = createCardInstance(stTokenCard);
+            const stInst = createCardInstance(stTokenCard, cryptoIdGen());
             stInst.isSummoningSick = true;
             stInst.isPlayed = true;
             stInst.currentHealth = (stTokenCard as MinionCardData).health || 1;
@@ -1652,7 +1659,7 @@ export function executeBattlecry(
         const dsTotal = battlecry.value || 1;
         const dsTargets = [...newState.players.opponent.battlefield.map(m => ({ type: 'minion' as const, ref: m })), { type: 'hero' as const, ref: null }];
         for (let i = 0; i < dsTotal && dsTargets.length > 0; i++) {
-          const pick = dsTargets[Math.floor(Math.random() * dsTargets.length)];
+          const pick = dsTargets[Math.floor(cryptoRng() * dsTargets.length)];
           if (pick.type === 'hero') {
             newState = dealDamage(newState, 'opponent', 'hero', 1);
           } else if (pick.ref) {
@@ -1734,7 +1741,7 @@ export function executeBattlecry(
         newState = dealDamage(newState, 'opponent', 'hero', dasVal);
         newState.players.opponent.battlefield = newState.players.opponent.battlefield.filter(m => (m.currentHealth ?? 1) > 0);
         if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
-          const dasToken = createCardInstance({ id: 0, name: 'Hippocampus', type: 'minion', manaCost: 4, attack: dasVal, health: dasVal, rarity: 'common', keywords: ['lifesteal', 'rush'] } as CardData);
+          const dasToken = createCardInstance({ id: 0, name: 'Hippocampus', type: 'minion', manaCost: 4, attack: dasVal, health: dasVal, rarity: 'common', keywords: ['lifesteal', 'rush'] } as CardData, cryptoIdGen());
           dasToken.isSummoningSick = false;
           dasToken.canAttack = true;
           dasToken.isPlayed = true;
@@ -1769,7 +1776,7 @@ export function executeBattlecry(
         const dadKilled = dadBefore - newState.players.opponent.battlefield.length;
         for (let i = 0; i < dadKilled && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1792,7 +1799,7 @@ export function executeBattlecry(
         let dsrKilled = false;
         const dsrTargets = [...newState.players.opponent.battlefield.map(m => ({ type: 'minion' as const, ref: m })), { type: 'hero' as const, ref: null }];
         for (let i = 0; i < dsrTotal && dsrTargets.length > 0; i++) {
-          const pick = dsrTargets[Math.floor(Math.random() * dsrTargets.length)];
+          const pick = dsrTargets[Math.floor(cryptoRng() * dsrTargets.length)];
           if (pick.type === 'hero') {
             newState = dealDamage(newState, 'opponent', 'hero', 1);
           } else if (pick.ref) {
@@ -1818,7 +1825,7 @@ export function executeBattlecry(
         const dspTotal = battlecry.value || 1;
         const dspTargets = [...newState.players.opponent.battlefield.map(m => ({ type: 'minion' as const, ref: m })), { type: 'hero' as const, ref: null }];
         for (let i = 0; i < dspTotal && dspTargets.length > 0; i++) {
-          const pick = dspTargets[Math.floor(Math.random() * dspTargets.length)];
+          const pick = dspTargets[Math.floor(cryptoRng() * dspTargets.length)];
           if (pick.type === 'hero') {
             newState = dealDamage(newState, 'opponent', 'hero', 1);
           } else if (pick.ref) {
@@ -1861,7 +1868,7 @@ export function executeBattlecry(
             newState = destroyCard(newState, cdTarget, cdIsOnOpp(cdTarget) ? 'opponent' : 'player');
             const remaining = newState.players.opponent.battlefield;
             if (remaining.length > 0) {
-              cdTarget = remaining[Math.floor(Math.random() * remaining.length)].instanceId;
+              cdTarget = remaining[Math.floor(cryptoRng() * remaining.length)].instanceId;
             } else { break; }
           } else { break; }
         }
@@ -1977,7 +1984,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < 2 && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -1992,7 +1999,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < bgddVal && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2010,7 +2017,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < bftsVal; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const treant = createCardInstance({ id: 0, name: 'Treant', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['taunt'] } as CardData);
+          const treant = createCardInstance({ id: 0, name: 'Treant', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['taunt'] } as CardData, cryptoIdGen());
           treant.isSummoningSick = true;
           treant.isPlayed = true;
           treant.currentHealth = 2;
@@ -2025,20 +2032,20 @@ export function executeBattlecry(
         const dadOppBf = newState.players.opponent.battlefield;
         let dadDrawCount = 0;
         if (dadOppBf.length > 0) {
-          const idx1 = Math.floor(Math.random() * dadOppBf.length);
+          const idx1 = Math.floor(cryptoRng() * dadOppBf.length);
           const t1 = dadOppBf[idx1];
           const t1Atk = t1.currentAttack ?? (t1.card as MinionCardData).attack ?? 0;
           newState = destroyCard(newState, t1.instanceId, 'opponent');
           dadDrawCount++;
           if (t1Atk >= (battlecry.value || 5) && newState.players.opponent.battlefield.length > 0) {
-            const idx2 = Math.floor(Math.random() * newState.players.opponent.battlefield.length);
+            const idx2 = Math.floor(cryptoRng() * newState.players.opponent.battlefield.length);
             newState = destroyCard(newState, newState.players.opponent.battlefield[idx2].instanceId, 'opponent');
             dadDrawCount++;
           }
         }
         for (let i = 0; i < dadDrawCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2055,7 +2062,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < dlhsKills; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const draugr = createCardInstance({ id: 0, name: 'Draugr', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['rush'] } as CardData);
+          const draugr = createCardInstance({ id: 0, name: 'Draugr', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['rush'] } as CardData, cryptoIdGen());
           draugr.isSummoningSick = false;
           draugr.canAttack = true;
           draugr.isPlayed = true;
@@ -2144,7 +2151,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < dlasKills; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 2, attack: 3, health: 3, rarity: 'common', keywords: ['lifesteal'] } as CardData);
+          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 2, attack: 3, health: 3, rarity: 'common', keywords: ['lifesteal'] } as CardData, cryptoIdGen());
           shade.isSummoningSick = true;
           shade.isPlayed = true;
           shade.currentHealth = 3;
@@ -2166,7 +2173,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < cdsKills; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common' } as CardData);
+          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common' } as CardData, cryptoIdGen());
           shade.isSummoningSick = true;
           shade.isPlayed = true;
           shade.currentHealth = 2;
@@ -2184,7 +2191,7 @@ export function executeBattlecry(
         ];
         for (const t of spTokens) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const tok = createCardInstance({ id: 0, name: t.name, type: 'minion', manaCost: spVal, attack: t.atk, health: t.hp, rarity: 'common', keywords: t.kw } as CardData);
+          const tok = createCardInstance({ id: 0, name: t.name, type: 'minion', manaCost: spVal, attack: t.atk, health: t.hp, rarity: 'common', keywords: t.kw } as CardData, cryptoIdGen());
           tok.isSummoningSick = true;
           tok.isPlayed = true;
           tok.currentHealth = t.hp;
@@ -2202,7 +2209,7 @@ export function executeBattlecry(
         ];
         for (const t of sgpTokens) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const tok = createCardInstance({ id: 0, name: t.name, type: 'minion', manaCost: sgpVal, attack: sgpVal, health: sgpVal, rarity: 'common', keywords: t.kw } as CardData);
+          const tok = createCardInstance({ id: 0, name: t.name, type: 'minion', manaCost: sgpVal, attack: sgpVal, health: sgpVal, rarity: 'common', keywords: t.kw } as CardData, cryptoIdGen());
           tok.isSummoningSick = t.kw.includes('rush') ? false : true;
           tok.canAttack = t.kw.includes('rush');
           tok.isPlayed = true;
@@ -2218,7 +2225,7 @@ export function executeBattlecry(
         const swdbCount = battlecry.value || 4;
         for (let i = 0; i < swdbCount; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const ox = createCardInstance({ id: 0, name: 'Ox', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['taunt'] } as CardData);
+          const ox = createCardInstance({ id: 0, name: 'Ox', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['taunt'] } as CardData, cryptoIdGen());
           ox.isSummoningSick = true;
           ox.isPlayed = true;
           ox.currentHealth = 2;
@@ -2235,7 +2242,7 @@ export function executeBattlecry(
         const totemStats = [[0, 2], [1, 1], [0, 2], [0, 2]];
         for (let i = 0; i < totemNames.length; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const tok = createCardInstance({ id: 0, name: totemNames[i], type: 'minion', manaCost: 1, attack: totemStats[i][0] + satbVal, health: totemStats[i][1] + satbVal, rarity: 'common', race: 'Spirit' } as CardData);
+          const tok = createCardInstance({ id: 0, name: totemNames[i], type: 'minion', manaCost: 1, attack: totemStats[i][0] + satbVal, health: totemStats[i][1] + satbVal, rarity: 'common', race: 'Spirit' } as CardData, cryptoIdGen());
           tok.isSummoningSick = true;
           tok.isPlayed = true;
           tok.currentHealth = totemStats[i][1] + satbVal;
@@ -2252,7 +2259,7 @@ export function executeBattlecry(
         let stdTotemCount = 0;
         for (let i = 0; i < stdTotemNames.length; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const tok = createCardInstance({ id: 0, name: stdTotemNames[i], type: 'minion', manaCost: 1, attack: stdTotemStats[i][0] + stdVal, health: stdTotemStats[i][1] + stdVal, rarity: 'common', race: 'Spirit' } as CardData);
+          const tok = createCardInstance({ id: 0, name: stdTotemNames[i], type: 'minion', manaCost: 1, attack: stdTotemStats[i][0] + stdVal, health: stdTotemStats[i][1] + stdVal, rarity: 'common', race: 'Spirit' } as CardData, cryptoIdGen());
           tok.isSummoningSick = true;
           tok.isPlayed = true;
           tok.currentHealth = stdTotemStats[i][1] + stdVal;
@@ -2263,7 +2270,7 @@ export function executeBattlecry(
         const stdExistingTotems = newState.players.player.battlefield.filter(m => ((m.card as any).race || '').toLowerCase() === 'spirit').length;
         for (let i = 0; i < stdExistingTotems && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2271,7 +2278,7 @@ export function executeBattlecry(
       case 'summon_beast_synergy': {
         const sbsVal = battlecry.value || 5;
         if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
-          const wolf = createCardInstance({ id: 0, name: 'Moonlit Wolf', type: 'minion', manaCost: 5, attack: sbsVal, health: sbsVal, rarity: 'common', race: 'Beast', keywords: ['rush'] } as CardData);
+          const wolf = createCardInstance({ id: 0, name: 'Moonlit Wolf', type: 'minion', manaCost: 5, attack: sbsVal, health: sbsVal, rarity: 'common', race: 'Beast', keywords: ['rush'] } as CardData, cryptoIdGen());
           wolf.isSummoningSick = false;
           wolf.canAttack = true;
           wolf.isPlayed = true;
@@ -2298,7 +2305,7 @@ export function executeBattlecry(
         const sfdbCount = Math.min(sfdbDeadBeasts.length, 5);
         for (let i = 0; i < sfdbCount; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const wolf = createCardInstance({ id: 0, name: 'Wolf', type: 'minion', manaCost: 2, attack: sfdbVal, health: sfdbVal, rarity: 'common', race: 'Beast', keywords: ['rush'] } as CardData);
+          const wolf = createCardInstance({ id: 0, name: 'Wolf', type: 'minion', manaCost: 2, attack: sfdbVal, health: sfdbVal, rarity: 'common', race: 'Beast', keywords: ['rush'] } as CardData, cryptoIdGen());
           wolf.isSummoningSick = false;
           wolf.canAttack = true;
           wolf.isPlayed = true;
@@ -2316,14 +2323,14 @@ export function executeBattlecry(
 
       case 'equip_weapon_summon': {
         const ewsVal = battlecry.value || 4;
-        const ewsWeapon = createCardInstance({ id: 0, name: 'Divine Hammer', type: 'weapon', manaCost: 4, attack: ewsVal, health: 2, rarity: 'common' } as CardData);
+        const ewsWeapon = createCardInstance({ id: 0, name: 'Divine Hammer', type: 'weapon', manaCost: 4, attack: ewsVal, health: 2, rarity: 'common' } as CardData, cryptoIdGen());
         ewsWeapon.currentAttack = ewsVal;
         ewsWeapon.currentHealth = 2;
         (ewsWeapon as any).durability = 2;
         newState.players.player.weapon = ewsWeapon;
         for (let i = 0; i < 2; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const auto = createCardInstance({ id: 0, name: 'Bronze Automaton', type: 'minion', manaCost: 2, attack: 3, health: 3, rarity: 'common', race: 'Automaton', keywords: ['reborn'] } as CardData);
+          const auto = createCardInstance({ id: 0, name: 'Bronze Automaton', type: 'minion', manaCost: 2, attack: 3, health: 3, rarity: 'common', race: 'Automaton', keywords: ['reborn'] } as CardData, cryptoIdGen());
           auto.isSummoningSick = true;
           auto.isPlayed = true;
           auto.currentHealth = 3;
@@ -2339,7 +2346,7 @@ export function executeBattlecry(
           (m as any).hasStealth = true;
         }
         if (newState.players.player.battlefield.length < MAX_BATTLEFIELD_SIZE) {
-          const wolf = createCardInstance({ id: 0, name: 'Shadow Wolf', type: 'minion', manaCost: 4, attack: saasVal, health: saasVal, rarity: 'common', race: 'Beast', keywords: ['lifesteal'] } as CardData);
+          const wolf = createCardInstance({ id: 0, name: 'Shadow Wolf', type: 'minion', manaCost: 4, attack: saasVal, health: saasVal, rarity: 'common', race: 'Beast', keywords: ['lifesteal'] } as CardData, cryptoIdGen());
           wolf.isSummoningSick = true;
           wolf.isPlayed = true;
           wolf.currentHealth = saasVal;
@@ -2387,7 +2394,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < 2; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const totem = createCardInstance({ id: 0, name: 'Frost Totem', type: 'minion', manaCost: 2, attack: fasVal, health: fasVal, rarity: 'common', race: 'Spirit', keywords: ['taunt'] } as CardData);
+          const totem = createCardInstance({ id: 0, name: 'Frost Totem', type: 'minion', manaCost: 2, attack: fasVal, health: fasVal, rarity: 'common', race: 'Spirit', keywords: ['taunt'] } as CardData, cryptoIdGen());
           totem.isSummoningSick = true;
           totem.isPlayed = true;
           totem.currentHealth = fasVal;
@@ -2443,7 +2450,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < bwsBounced; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const sailor = createCardInstance({ id: 0, name: 'Drowned Sailor', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['rush'] } as CardData);
+          const sailor = createCardInstance({ id: 0, name: 'Drowned Sailor', type: 'minion', manaCost: 1, attack: 2, health: 2, rarity: 'common', keywords: ['rush'] } as CardData, cryptoIdGen());
           sailor.isSummoningSick = false;
           sailor.canAttack = true;
           sailor.isPlayed = true;
@@ -2470,7 +2477,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < bfdDrawCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2512,7 +2519,7 @@ export function executeBattlecry(
         if (clfOppHand.length === 0) return newState;
         const clfLowest = [...clfOppHand].sort((a, b) => ((a.card as any).manaCost || 0) - ((b.card as any).manaCost || 0))[0];
         for (let i = 0; i < clfCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
-          const copy = createCardInstance(JSON.parse(JSON.stringify(clfLowest.card)));
+          const copy = createCardInstance(JSON.parse(JSON.stringify(clfLowest.card)), cryptoIdGen());
           (copy.card as any).manaCost = 0;
           newState.players.player.hand.push(copy);
         }
@@ -2522,7 +2529,7 @@ export function executeBattlecry(
       case 'mind_control_random': {
         const mcrOppBf = newState.players.opponent.battlefield;
         if (mcrOppBf.length === 0 || newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) return newState;
-        const mcrIdx = Math.floor(Math.random() * mcrOppBf.length);
+        const mcrIdx = Math.floor(cryptoRng() * mcrOppBf.length);
         const mcrStolen = mcrOppBf.splice(mcrIdx, 1)[0];
         mcrStolen.isSummoningSick = true;
         mcrStolen.canAttack = false;
@@ -2534,7 +2541,7 @@ export function executeBattlecry(
         const radCount = battlecry.value || 2;
         for (let i = 0; i < radCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2548,7 +2555,7 @@ export function executeBattlecry(
         let dabsDrawn = 0;
         for (let i = 0; i < dabsDrawCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) { newState.players.player.hand.push(createCardInstance(drawn)); dabsDrawn++; }
+          if (drawn) { newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen())); dabsDrawn++; }
         }
         const dabsSelfM = newState.players.player.battlefield.find(c => c.instanceId === cardInstanceId);
         if (dabsSelfM) {
@@ -2595,8 +2602,8 @@ export function executeBattlecry(
         const fhdaDiscount = battlecry.value || 2;
         const fhdaSpells = allCards.filter(c => c.type === 'spell' && ((c as any).class === 'Druid' || (c as any).heroClass === 'druid'));
         while (newState.players.player.hand.length < MAX_HAND_SIZE && fhdaSpells.length > 0) {
-          const pick = fhdaSpells[Math.floor(Math.random() * fhdaSpells.length)];
-          const inst = createCardInstance(JSON.parse(JSON.stringify(pick)));
+          const pick = fhdaSpells[Math.floor(cryptoRng() * fhdaSpells.length)];
+          const inst = createCardInstance(JSON.parse(JSON.stringify(pick)), cryptoIdGen());
           (inst.card as any).manaCost = Math.max(0, ((inst.card as any).manaCost || 0) - fhdaDiscount);
           newState.players.player.hand.push(inst);
         }
@@ -2608,7 +2615,7 @@ export function executeBattlecry(
         const rbCount = battlecry.value || 3;
         const rbGy = newState.players.player.graveyard || [];
         const rbDead = rbGy.filter(m => m.card.type === 'minion');
-        const rbShuffled = [...rbDead].sort(() => Math.random() - 0.5);
+        const rbShuffled = [...rbDead].sort(() => cryptoRng() - 0.5);
         for (let i = 0; i < rbCount && i < rbShuffled.length; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
           const dead = rbShuffled[i];
@@ -2638,7 +2645,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < sasKills; i++) {
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 3, attack: sasVal, health: sasVal, rarity: 'common', keywords: ['rush'] } as CardData);
+          const shade = createCardInstance({ id: 0, name: 'Shade', type: 'minion', manaCost: 3, attack: sasVal, health: sasVal, rarity: 'common', keywords: ['rush'] } as CardData, cryptoIdGen());
           shade.isSummoningSick = false;
           shade.canAttack = true;
           shade.isPlayed = true;
@@ -2658,7 +2665,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < sfdCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2675,7 +2682,7 @@ export function executeBattlecry(
         }
         for (let i = 0; i < sasdEnemyCount && newState.players.player.hand.length < MAX_HAND_SIZE; i++) {
           const drawn = newState.players.player.deck.shift();
-          if (drawn) newState.players.player.hand.push(createCardInstance(drawn));
+          if (drawn) newState.players.player.hand.push(createCardInstance(drawn, cryptoIdGen()));
         }
         return newState;
       }
@@ -2699,7 +2706,7 @@ export function executeBattlecry(
           if (newState.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
           const idx = rbbDeck.indexOf(cardData);
           if (idx !== -1) rbbDeck.splice(idx, 1);
-          const inst = createCardInstance(cardData);
+          const inst = createCardInstance(cardData, cryptoIdGen());
           inst.isSummoningSick = false;
           inst.canAttack = true;
           inst.isPlayed = true;
@@ -2812,7 +2819,7 @@ function executeDamageBattlecry(
     const oppBf = state.players.opponent.battlefield || [];
     const targets = [...oppBf.map((m, i) => ({ type: 'minion' as const, idx: i })), { type: 'hero' as const, idx: -1 }];
     if (targets.length > 0) {
-      const pick = targets[Math.floor(Math.random() * targets.length)];
+      const pick = targets[Math.floor(cryptoRng() * targets.length)];
       if (pick.type === 'hero') {
         state = dealDamage(state, 'opponent', 'hero', damage);
       } else {
@@ -3252,6 +3259,114 @@ function executeBuffTribeBattlecry(
 }
 
 /**
+ * Execute a Realm Aligned battlecry effect.
+ *
+ * Compares the source minion's lore-origin realm (`card.realm`, immutable, set
+ * at design time) against the active battlefield realm (`gameState.activeRealm.id`,
+ * mutable, written by Realm Shift spells). When they match, the minion gains
+ * `buffAttack`/`buffHealth` on itself. When no realm is active or the realms
+ * differ, the battlecry is a no-op (no penalty). See docs/RULEBOOK.md
+ * "Realm Aligned" section for the full design rationale.
+ *
+ * Mirrors the structural pattern of `executeBuffTribeBattlecry` (deep copy via
+ * JSON, try/catch, animation trigger, debug logging) and the self-target
+ * lookup pattern of `executeConditionalSelfBuffBattlecry` (search both
+ * battlefields, since either side may play this card).
+ */
+function executeRealmAlignedBuffBattlecry(
+  state: GameState,
+  cardInstanceId: string,
+  battlecry: BattlecryEffect
+): GameState {
+  // Create a deep copy of the state to avoid mutation
+  const newState = JSON.parse(JSON.stringify(state)) as GameState;
+
+  try {
+    // Locate the source minion on either battlefield (either side may play this)
+    const playerBattlefield = newState.players.player.battlefield || [];
+    const opponentBattlefield = newState.players.opponent.battlefield || [];
+    let cardInfo = findCardInstance(playerBattlefield, cardInstanceId);
+    let ownerKey: 'player' | 'opponent' = 'player';
+    if (!cardInfo) {
+      cardInfo = findCardInstance(opponentBattlefield, cardInstanceId);
+      ownerKey = 'opponent';
+    }
+    if (!cardInfo) {
+      debug.error('Card not found for realm aligned battlecry', cardInstanceId);
+      return state;
+    }
+
+    const sourceCard = cardInfo.card;
+    const cardRealm = getCardRealm(sourceCard);
+    const activeRealmId = newState.activeRealm?.id;
+
+    // No-op if either side of the equation is missing (no realm active OR
+    // card is untagged). Per spec, this resolves cleanly with no penalty.
+    if (!cardRealm || !activeRealmId) {
+      debug.log('Realm aligned battlecry no-op: missing realm tag or no active realm', {
+        cardRealm,
+        activeRealmId
+      });
+      return newState;
+    }
+
+    // Case-insensitive comparison (mirrors isCardOfTribe / isCardOfRealm)
+    if (cardRealm.toLowerCase() !== activeRealmId.toLowerCase()) {
+      debug.log('Realm aligned battlecry no-op: realm mismatch', {
+        cardRealm,
+        activeRealmId
+      });
+      return newState;
+    }
+
+    // Realms match — apply the self-buff
+    const attackBuff = battlecry.buffAttack || (battlecry as any).buffs?.attack || 0;
+    const healthBuff = battlecry.buffHealth || (battlecry as any).buffs?.health || 0;
+
+    if (attackBuff === 0 && healthBuff === 0) {
+      debug.error('No buff values provided for realm aligned battlecry');
+      return state;
+    }
+
+    const battlefield = newState.players[ownerKey].battlefield || [];
+    const targetIndex = battlefield.findIndex(c => c.instanceId === cardInstanceId);
+    if (targetIndex === -1) {
+      debug.error('Source minion lost from battlefield during realm aligned battlecry', cardInstanceId);
+      return state;
+    }
+
+    const target = battlefield[targetIndex];
+    const targetCard = target.card as MinionCardData;
+    const currentAttack = targetCard.attack || 0;
+    const currentHealth = targetCard.health || 0;
+    const currentHealthValue = target.currentHealth ?? currentHealth;
+
+    // Update base stats and current health (matches buff_tribe stat-update style)
+    newState.players[ownerKey].battlefield[targetIndex].card = {
+      ...target.card,
+      attack: currentAttack + attackBuff,
+      health: currentHealth + healthBuff
+    } as MinionCardData;
+    newState.players[ownerKey].battlefield[targetIndex].currentHealth = currentHealthValue + healthBuff;
+
+    // Trigger animation (mirrors buff_tribe)
+    const addAnimation = useAnimationStore.getState().addAnimation;
+    addAnimation({
+      id: `realm-aligned-${cardRealm}-${Date.now()}`,
+      type: 'buff',
+      sourceId: sourceCard.card.id as number,
+      position: { x: 400, y: 300 },
+      duration: 800
+    } as any);
+
+    return newState;
+  } catch (error) {
+    debug.error('Error executing realm aligned battlecry:', error);
+    return state;
+  }
+}
+
+/**
  * Execute a summon battlecry effect (summoning a specific minion)
  */
 function executeSummonBattlecry(
@@ -3281,7 +3396,7 @@ function executeSummonBattlecry(
 
   for (let i = 0; i < summonCount; i++) {
     if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-    const summonedCard = createCardInstance(cardToSummon);
+    const summonedCard = createCardInstance(cardToSummon, cryptoIdGen());
     summonedCard.isPlayed = true;
     if (!state.players.player.battlefield) {
       state.players.player.battlefield = [];
@@ -3326,8 +3441,8 @@ function executeSummonRandomBattlecry(
 
   for (let i = 0; i < actualCount; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
-    const selected = candidates[Math.floor(Math.random() * candidates.length)];
-    const instance = createCardInstance(selected);
+    const selected = candidates[Math.floor(cryptoRng() * candidates.length)];
+    const instance = createCardInstance(selected, cryptoIdGen());
     instance.isPlayed = true;
     state.players.player.battlefield.push(instance);
   }
@@ -3359,7 +3474,7 @@ function executeSummonCopyBattlecry(
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
     const cardData = getCardById(sourceCard.card.id as number);
     if (cardData) {
-      const copy = createCardInstance(cardData);
+      const copy = createCardInstance(cardData, cryptoIdGen());
       copy.isPlayed = true;
       state.players.player.battlefield.push(copy);
     }
@@ -3386,7 +3501,7 @@ function executeFillBoardBattlecry(
     if (summonCardId) {
       const cardData = getCardById(summonCardId);
       if (cardData) {
-        const instance = createCardInstance(cardData);
+        const instance = createCardInstance(cardData, cryptoIdGen());
         instance.isPlayed = true;
         if (summonAttack !== undefined) (instance.card as any).attack = summonAttack;
         if (summonHealth !== undefined) {
@@ -3402,13 +3517,13 @@ function executeFillBoardBattlecry(
         description: 'Summoned token',
         manaCost: 1,
         type: 'minion',
-        rarity: 'token' as any,
+        rarity: 'common',
         heroClass: 'neutral',
         attack: summonAttack !== undefined ? summonAttack : 1,
         health: summonHealth !== undefined ? summonHealth : 1,
         keywords: []
       } as any;
-      const instance = createCardInstance(tokenCard);
+      const instance = createCardInstance(tokenCard, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     }
@@ -3433,14 +3548,14 @@ function executeSummonYggdrasilGolemBattlecry(
     description: `A ${golemSize}/${golemSize} Yggdrasil Golem.`,
     manaCost: Math.min(golemSize, 10),
     type: 'minion',
-    rarity: 'token' as any,
+    rarity: 'common',
     heroClass: 'neutral',
     attack: golemSize,
     health: golemSize,
     keywords: []
   } as any;
 
-  const instance = createCardInstance(golemCard);
+  const instance = createCardInstance(golemCard, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -3479,11 +3594,11 @@ function executeSummonRandomMinionsBattlecry(
       available = candidates;
       usedIndices.clear();
     }
-    const randomIdx = Math.floor(Math.random() * available.length);
+    const randomIdx = Math.floor(cryptoRng() * available.length);
     const selected = available[randomIdx];
     const originalIdx = candidates.indexOf(selected);
     usedIndices.add(originalIdx);
-    const instance = createCardInstance(selected);
+    const instance = createCardInstance(selected, cryptoIdGen());
     instance.isPlayed = true;
     state.players.player.battlefield.push(instance);
   }
@@ -3510,7 +3625,7 @@ function executeSummonCopyFromDeckBattlecry(
   if (minionsInDeck.length === 0) return state;
 
   const actualCount = Math.min(count, availableSlots, minionsInDeck.length);
-  const shuffled = [...minionsInDeck].sort(() => Math.random() - 0.5);
+  const shuffled = [...minionsInDeck].sort(() => cryptoRng() - 0.5);
 
   for (let i = 0; i < actualCount; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
@@ -3519,7 +3634,7 @@ function executeSummonCopyFromDeckBattlecry(
     let cardData = getCardById(minionId);
     
     if (cardData) {
-      const instance = createCardInstance(cardData);
+      const instance = createCardInstance(cardData, cryptoIdGen());
       instance.isPlayed = true;
       if (statOverride) {
         (instance.card as any).attack = overrideAttack !== undefined ? overrideAttack : 1;
@@ -3530,7 +3645,7 @@ function executeSummonCopyFromDeckBattlecry(
       state.players.player.battlefield.push(instance);
     } else if (deckMinion.card) {
       // Fallback: create CardInstance directly from deck card's data when allCards lookup fails
-      const instance = createCardInstance(deckMinion.card);
+      const instance = createCardInstance(deckMinion.card, cryptoIdGen());
       instance.isPlayed = true;
       if (statOverride) {
         (instance.card as any).attack = overrideAttack !== undefined ? overrideAttack : 1;
@@ -3556,7 +3671,7 @@ function executeSummonFromSpellCostBattlecry(
   );
   if (spellsInDeck.length === 0) return state;
 
-  const randomIdx = Math.floor(Math.random() * spellsInDeck.length);
+  const randomIdx = Math.floor(cryptoRng() * spellsInDeck.length);
   const revealedSpell = spellsInDeck[randomIdx];
   const spellCost = revealedSpell.card ? revealedSpell.card.manaCost : revealedSpell.manaCost;
 
@@ -3575,8 +3690,8 @@ function executeSummonFromSpellCostBattlecry(
   );
   if (minionsWithCost.length === 0) return state;
 
-  const selected = minionsWithCost[Math.floor(Math.random() * minionsWithCost.length)];
-  const instance = createCardInstance(selected);
+  const selected = minionsWithCost[Math.floor(cryptoRng() * minionsWithCost.length)];
+  const instance = createCardInstance(selected, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -3603,7 +3718,7 @@ function executeSummonSkeletonsBasedOnGraveyardBattlecry(
   for (let i = 0; i < skeletonsToSummon; i++) {
     if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
     if (skeletonData) {
-      const instance = createCardInstance(skeletonData);
+      const instance = createCardInstance(skeletonData, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     } else {
@@ -3613,13 +3728,13 @@ function executeSummonSkeletonsBasedOnGraveyardBattlecry(
         description: 'Summoned skeleton',
         manaCost: 1,
         type: 'minion',
-        rarity: 'token' as any,
+        rarity: 'common',
         heroClass: 'neutral',
         attack: 1,
         health: 1,
         keywords: []
       } as any;
-      const instance = createCardInstance(tokenCard);
+      const instance = createCardInstance(tokenCard, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     }
@@ -3652,7 +3767,7 @@ function executeDrawBattlecry(
         if (state.players.player.hand.length === 0) break;
         
         // Get a random index
-        const randomIndex = Math.floor(Math.random() * state.players.player.hand.length);
+        const randomIndex = Math.floor(cryptoRng() * state.players.player.hand.length);
         const discardedCard = state.players.player.hand[randomIndex];
         
         // Remove the card from hand
@@ -3750,7 +3865,7 @@ function executeDrawBattlecry(
     }
     
     if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
-    const cardInstance = createCardInstance(drawnCard);
+    const cardInstance = createCardInstance(drawnCard, cryptoIdGen());
     state.players.player.hand.push(cardInstance);
 
     drawnCount++;
@@ -3819,7 +3934,7 @@ function executeDrawBothBattlecry(
   for (let i = 0; i < cardsToDraw; i++) {
     if (state.players.player.deck.length > 0 && state.players.player.hand.length < MAX_HAND_SIZE) {
       const drawnCard = state.players.player.deck.shift()!;
-      const cardInstance = createCardInstance(drawnCard);
+      const cardInstance = createCardInstance(drawnCard, cryptoIdGen());
       state.players.player.hand.push(cardInstance);
       playerDrawnCount++;
     }
@@ -3829,7 +3944,7 @@ function executeDrawBothBattlecry(
   for (let i = 0; i < cardsToDraw; i++) {
     if (state.players.opponent.deck.length > 0 && state.players.opponent.hand.length < MAX_HAND_SIZE) {
       const drawnCard = state.players.opponent.deck.shift()!;
-      const cardInstance = createCardInstance(drawnCard);
+      const cardInstance = createCardInstance(drawnCard, cryptoIdGen());
       state.players.opponent.hand.push(cardInstance);
       opponentDrawnCount++;
     } else {
@@ -3990,7 +4105,7 @@ function executeDiscoverBattlecry(
       
       // Add the selected card directly to the opponent's hand as CardInstance
       if (state.players.opponent.hand.length < MAX_HAND_SIZE) {
-        const cardInstance = createCardInstance(selectedCard);
+        const cardInstance = createCardInstance(selectedCard, cryptoIdGen());
         state.players.opponent.hand.push(cardInstance);
       }
       
@@ -4069,7 +4184,7 @@ function executeCastAllSpellsBattlecry(state: GameState): GameState {
 
   let result = newState;
   for (let i = 0; i < spellsCast; i++) {
-    const randomSpell = allSpells[Math.floor(Math.random() * allSpells.length)];
+    const randomSpell = allSpells[Math.floor(cryptoRng() * allSpells.length)];
     const fakeInstance = {
       instanceId: `replay-spell-${i}`,
       card: randomSpell,
@@ -4098,7 +4213,7 @@ function executeCastOpponentSpellBattlecry(state: GameState): GameState {
 	});
 	if (spellIndices.length === 0) return newState;
 
-	const pickedIndex = spellIndices[Math.floor(Math.random() * spellIndices.length)];
+	const pickedIndex = spellIndices[Math.floor(cryptoRng() * spellIndices.length)];
 	const spellCard = opponentHand[pickedIndex];
 	newState.players.opponent.hand = opponentHand.filter((_, i) => i !== pickedIndex);
 
@@ -4201,7 +4316,7 @@ function executeAddToHandBattlecry(
       }
 
       // Create a card instance and add it to the hand
-      const cardInstance = createCardInstance(cardToAdd);
+      const cardInstance = createCardInstance(cardToAdd, cryptoIdGen());
       state.players.player.hand.push(cardInstance);
     }
   } else {
@@ -4214,11 +4329,11 @@ function executeAddToHandBattlecry(
       
       // Generate a random card as a placeholder
       // In a real implementation, this would follow specific rules based on the card's effect
-      const randomIndex = Math.floor(Math.random() * allCards.length);
+      const randomIndex = Math.floor(cryptoRng() * allCards.length);
       const randomCard = allCards[randomIndex];
       
       // Create a card instance and add it to the hand
-      const cardInstance = createCardInstance(randomCard);
+      const cardInstance = createCardInstance(randomCard, cryptoIdGen());
       state.players.player.hand.push(cardInstance);
     }
   }
@@ -4349,7 +4464,7 @@ function executeCopyBattlecry(
   
   // Create a copy of the minion with the same stats and effects
   const copiedMinionData = { ...targetMinion.card };
-  const copiedMinion = createCardInstance(copiedMinionData);
+  const copiedMinion = createCardInstance(copiedMinionData, cryptoIdGen());
   
   // Copy current health and other relevant status effects
   copiedMinion.currentHealth = targetMinion.currentHealth;
@@ -4395,7 +4510,7 @@ function executeReturnToHandBattlecry(
     }
     
     // Create a new card instance and add it to the hand
-    const cardInstance = createCardInstance(targetMinion.card);
+    const cardInstance = createCardInstance(targetMinion.card, cryptoIdGen());
     state.players.player.hand.push(cardInstance);
     
     // Remove from battlefield
@@ -4471,7 +4586,7 @@ function executeFreezeBattlecry(
   if (frzTarget === 'random_enemy' || frzTarget === 'random_enemy_minion') {
     const oppBf = state.players.opponent.battlefield || [];
     if (oppBf.length > 0) {
-      const idx = Math.floor(Math.random() * oppBf.length);
+      const idx = Math.floor(cryptoRng() * oppBf.length);
       state.players.opponent.battlefield[idx].isFrozen = true;
     }
     return state;
@@ -4738,7 +4853,7 @@ function executeSummonMultipleBattlecry(
       if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
       const cardData = getCardById(cardId);
       if (cardData) {
-        const instance = createCardInstance(cardData);
+        const instance = createCardInstance(cardData, cryptoIdGen());
         instance.isPlayed = true;
         state.players.player.battlefield.push(instance);
       }
@@ -4751,7 +4866,7 @@ function executeSummonMultipleBattlecry(
       if (cardData) {
         for (let i = 0; i < count; i++) {
           if (state.players.player.battlefield.length >= MAX_BOARD_SIZE) break;
-          const instance = createCardInstance(cardData);
+          const instance = createCardInstance(cardData, cryptoIdGen());
           instance.isPlayed = true;
           state.players.player.battlefield.push(instance);
         }
@@ -4821,8 +4936,8 @@ function executeAddRandomToHandBattlecry(
 
   for (let i = 0; i < count; i++) {
     if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
-    const randomIdx = Math.floor(Math.random() * candidates.length);
-    const cardInstance = createCardInstance(candidates[randomIdx]);
+    const randomIdx = Math.floor(cryptoRng() * candidates.length);
+    const cardInstance = createCardInstance(candidates[randomIdx], cryptoIdGen());
     state.players.player.hand.push(cardInstance);
   }
   return state;
@@ -4868,11 +4983,11 @@ function executeRecruitBattlecry(
     });
     if (minionIndices.length === 0) break;
 
-    const randomIdx = minionIndices[Math.floor(Math.random() * minionIndices.length)];
+    const randomIdx = minionIndices[Math.floor(cryptoRng() * minionIndices.length)];
     const recruited = deck.splice(randomIdx, 1)[0];
     const cardData = recruited.card || recruited;
     const lookupCard = getCardById(cardData.id as number);
-    const instance = createCardInstance(lookupCard || cardData);
+    const instance = createCardInstance(lookupCard || cardData, cryptoIdGen());
     instance.isPlayed = true;
     instance.isSummoningSick = true;
     instance.canAttack = false;
@@ -4896,7 +5011,7 @@ function executeSummonForOpponentBattlecry(
 
   for (let i = 0; i < count; i++) {
     if (state.players.opponent.battlefield.length >= MAX_BOARD_SIZE) break;
-    const instance = createCardInstance(cardData);
+    const instance = createCardInstance(cardData, cryptoIdGen());
     instance.isPlayed = true;
     state.players.opponent.battlefield.push(instance);
   }
@@ -5065,7 +5180,12 @@ function checkBattlecryCondition(state: GameState, condition: string): boolean {
     }
     case 'hand_size_10_plus':
       return (player.hand || []).length >= 10;
+    case 'realm_active':
+      return !!state.activeRealm;
+    case 'realm_shifts_2':
+      return (state.realmsVisited?.length ?? 0) >= 2;
     default:
+      debug.warn('Unknown battlecry condition', condition);
       return true;
   }
 }
@@ -5140,7 +5260,7 @@ function executeSummonByConditionBattlecry(
   if (!cardToSummon) return state;
   for (let i = 0; i < summonCount; i++) {
     if (state.players.player.battlefield.length >= MAX_BATTLEFIELD_SIZE) break;
-    const summonedCard = createCardInstance(cardToSummon);
+    const summonedCard = createCardInstance(cardToSummon, cryptoIdGen());
     summonedCard.isPlayed = true;
     state.players.player.battlefield.push(summonedCard);
     trackQuestProgress('player', 'summon_minion', summonedCard.card);
@@ -5310,9 +5430,9 @@ function executeCopyFromOpponentBattlecry(
     if (state.players.player.hand.length >= maxHandSize) break;
     if (opponentHand.length === 0) break;
 
-    const randomIndex = Math.floor(Math.random() * opponentHand.length);
+    const randomIndex = Math.floor(cryptoRng() * opponentHand.length);
     const card = opponentHand[randomIndex];
-    const copy = createCardInstance(card.card);
+    const copy = createCardInstance(card.card, cryptoIdGen());
     state.players.player.hand.push(copy);
   }
   return state;
@@ -5342,7 +5462,7 @@ function executeAdaptBattlecry(
     { type: 'keyword', keyword: 'deathrattle_tokens' },
   ];
 
-  const chosen = adaptations[Math.floor(Math.random() * adaptations.length)];
+  const chosen = adaptations[Math.floor(cryptoRng() * adaptations.length)];
 
   if (chosen.type === 'stats') {
     (minion.card as any).attack = ((minion.card as any).attack || 0) + (chosen.attack || 0);
@@ -5394,7 +5514,7 @@ function executeSummonUntilFullBattlecry(
   if (!cardTemplate) return state;
 
   while (state.players.player.battlefield.length < MAX_BOARD_SIZE) {
-    const instance = createCardInstance(cardTemplate);
+    const instance = createCardInstance(cardTemplate, cryptoIdGen());
     instance.currentHealth = (cardTemplate as any).health || 1;
     state.players.player.battlefield.push(instance);
   }
@@ -5617,7 +5737,7 @@ function executeBrawlBattlecry(
 
   if (allMinions.length <= 1) return state;
 
-  const survivorIdx = Math.floor(Math.random() * allMinions.length);
+  const survivorIdx = Math.floor(cryptoRng() * allMinions.length);
   const survivor = allMinions[survivorIdx];
 
   state.players.player.battlefield = [];
@@ -5641,7 +5761,7 @@ function executeChooseKeywordsBattlecry(
 
   const minion = battlefield[idx];
   const options = ['taunt', 'divine_shield', 'windfury', 'stealth'];
-  const chosen = options[Math.floor(Math.random() * options.length)];
+  const chosen = options[Math.floor(cryptoRng() * options.length)];
 
   addKeyword(minion, chosen);
 
@@ -5719,10 +5839,10 @@ function executeStealFromDeckBattlecry(
   for (let i = 0; i < count; i++) {
     if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     if (opponentDeck.length === 0) break;
-    const randomIdx = Math.floor(Math.random() * opponentDeck.length);
+    const randomIdx = Math.floor(cryptoRng() * opponentDeck.length);
     const stolen = opponentDeck.splice(randomIdx, 1)[0];
     const cardData = stolen.card || stolen;
-    const instance = createCardInstance(cardData);
+    const instance = createCardInstance(cardData, cryptoIdGen());
     state.players.player.hand.push(instance);
   }
   return state;
@@ -5755,7 +5875,7 @@ function executeAdaptNagasBattlecry(
     { type: 'keyword', keyword: 'poisonous' },
   ];
 
-  const chosen = adaptations[Math.floor(Math.random() * adaptations.length)];
+  const chosen = adaptations[Math.floor(cryptoRng() * adaptations.length)];
 
   for (const minion of nagas) {
     if (chosen.type === 'stats') {
@@ -5786,7 +5906,7 @@ function executeSummonHorsemanBattlecry(
   if (battlecry.summonCardId) {
     const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
-      const instance = createCardInstance(cardData);
+      const instance = createCardInstance(cardData, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
       return state;
@@ -5799,13 +5919,13 @@ function executeSummonHorsemanBattlecry(
     description: 'A 2/2 Herald of Ragnarök.',
     manaCost: 2,
     type: 'minion',
-    rarity: 'token' as any,
+    rarity: 'common',
     heroClass: 'neutral',
     attack: 2,
     health: 2,
     keywords: []
   } as any;
-  const instance = createCardInstance(tokenCard);
+  const instance = createCardInstance(tokenCard, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -5820,8 +5940,8 @@ function executeSummonRandomMythicBattlecry(
   const legendaries = allCards.filter(c => c.type === 'minion' && c.rarity === 'mythic');
   if (legendaries.length === 0) return state;
 
-  const selected = legendaries[Math.floor(Math.random() * legendaries.length)];
-  const instance = createCardInstance(selected);
+  const selected = legendaries[Math.floor(cryptoRng() * legendaries.length)];
+  const instance = createCardInstance(selected, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -5837,7 +5957,7 @@ function executeSummonSplittingBattlecry(
   if (battlecry.summonCardId) {
     const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
-      const instance = createCardInstance(cardData);
+      const instance = createCardInstance(cardData, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     }
@@ -5859,7 +5979,7 @@ function executeSummonIfOtherDiedBattlecry(
   if (battlecry.summonCardId) {
     const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
-      const instance = createCardInstance(cardData);
+      const instance = createCardInstance(cardData, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     }
@@ -5876,7 +5996,7 @@ function executeSummonAndDrawBattlecry(
   if (battlecry.summonCardId && state.players.player.battlefield.length < MAX_BOARD_SIZE) {
     const cardData = getCardById(battlecry.summonCardId as number);
     if (cardData) {
-      const instance = createCardInstance(cardData);
+      const instance = createCardInstance(cardData, cryptoIdGen());
       instance.isPlayed = true;
       state.players.player.battlefield.push(instance);
     }
@@ -5887,7 +6007,7 @@ function executeSummonAndDrawBattlecry(
     if (state.players.player.deck.length === 0) break;
     if (state.players.player.hand.length >= MAX_HAND_SIZE) break;
     const drawn = state.players.player.deck.shift()!;
-    const instance = createCardInstance(drawn);
+    const instance = createCardInstance(drawn, cryptoIdGen());
     state.players.player.hand.push(instance);
   }
   return state;
@@ -5903,8 +6023,8 @@ function executeSummonCopyFromHandBattlecry(
   const minionsInHand = hand.filter(c => c.card.type === 'minion');
   if (minionsInHand.length === 0) return state;
 
-  const randomCard = minionsInHand[Math.floor(Math.random() * minionsInHand.length)];
-  const copy = createCardInstance(randomCard.card);
+  const randomCard = minionsInHand[Math.floor(cryptoRng() * minionsInHand.length)];
+  const copy = createCardInstance(randomCard.card, cryptoIdGen());
   copy.isPlayed = true;
   state.players.player.battlefield.push(copy);
   return state;
@@ -5920,12 +6040,12 @@ function executeSummonFromBothHandsBattlecry(
   const minionsInHand = opponentHand.filter(c => c.card.type === 'minion');
   if (minionsInHand.length === 0) return state;
 
-  const randomIdx = Math.floor(Math.random() * minionsInHand.length);
+  const randomIdx = Math.floor(cryptoRng() * minionsInHand.length);
   const selected = minionsInHand[randomIdx];
   const handIdx = opponentHand.indexOf(selected);
   if (handIdx !== -1) opponentHand.splice(handIdx, 1);
 
-  const instance = createCardInstance(selected.card);
+  const instance = createCardInstance(selected.card, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -5941,12 +6061,12 @@ function executeSummonFromOpponentHandBattlecry(
   const minionsInHand = opponentHand.filter(c => c.card.type === 'minion');
   if (minionsInHand.length === 0) return state;
 
-  const randomIdx = Math.floor(Math.random() * minionsInHand.length);
+  const randomIdx = Math.floor(cryptoRng() * minionsInHand.length);
   const selected = minionsInHand[randomIdx];
   const handIdx = opponentHand.indexOf(selected);
   if (handIdx !== -1) opponentHand.splice(handIdx, 1);
 
-  const instance = createCardInstance(selected.card);
+  const instance = createCardInstance(selected.card, cryptoIdGen());
   instance.isPlayed = true;
   state.players.player.battlefield.push(instance);
   return state;
@@ -5973,14 +6093,14 @@ function executeSummonAllTotemsBattlecry(
       description: `A basic ${totemDef.name}.`,
       manaCost: 1,
       type: 'minion',
-      rarity: 'token' as any,
+      rarity: 'common',
       heroClass: 'shaman',
       attack: totemDef.attack,
       health: totemDef.health,
       race: 'Spirit',
       keywords: totemDef.keywords
     } as any;
-    const instance = createCardInstance(tokenCard);
+    const instance = createCardInstance(tokenCard, cryptoIdGen());
     instance.isPlayed = true;
     if (totemDef.keywords.includes('taunt')) {
       (instance as any).hasTaunt = true;
@@ -6006,13 +6126,13 @@ function executeSummonDefenderBattlecry(
     description: 'A defender with Taunt.',
     manaCost: 1,
     type: 'minion',
-    rarity: 'token' as any,
+    rarity: 'common',
     heroClass: 'neutral',
     attack: atk,
     health: hp,
     keywords: ['taunt']
   } as any;
-  const instance = createCardInstance(tokenCard);
+  const instance = createCardInstance(tokenCard, cryptoIdGen());
   instance.isPlayed = true;
   (instance as any).hasTaunt = true;
   state.players.player.battlefield.push(instance);
@@ -6028,7 +6148,7 @@ function executeCopyToHandBattlecry(state: GameState, targetId?: string): GameSt
 
   if ((player.hand?.length ?? 0) >= MAX_HAND_SIZE) return state;
 
-  const copy = createCardInstance(target.card);
+  const copy = createCardInstance(target.card, cryptoIdGen());
   player.hand = player.hand || [];
   player.hand.push(copy);
 
@@ -6172,7 +6292,7 @@ function executeConditionalDrawBattlecry(
   for (let i = 0; i < drawCount; i++) {
     if (player.deck.length === 0 || player.hand.length >= MAX_HAND_SIZE) break;
     const drawn = player.deck.shift()!;
-    player.hand.push(createCardInstance(drawn));
+    player.hand.push(createCardInstance(drawn, cryptoIdGen()));
   }
 
   return state;

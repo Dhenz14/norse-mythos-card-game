@@ -7,6 +7,7 @@ import { CardInstance, GameState, GameLogEventType } from '../../types';
 import { createGameLogEvent } from '../logUtils';
 import { MAX_HAND_SIZE } from '../../constants/gameConstants';
 import { hasKeyword } from '../cards/keywordUtils';
+import { cryptoIdGen } from '../seededRng';
 
 /**
  * Check if a card has the Echo keyword
@@ -68,7 +69,7 @@ export function createEchoCopy(
   // but retain other modified properties
   const echoCopy: CardInstance = {
     ...originalCard,
-    instanceId: `${player}_echo_${playedCard.card.id}_${Date.now()}`,
+    instanceId: `${player}_echo_${playedCard.card.id}_${cryptoIdGen()}`,
     isPlayed: false,
     isEchoCopy: true, 
     echoCreatedThisTurn: true, // Mark that this echo copy was created this turn

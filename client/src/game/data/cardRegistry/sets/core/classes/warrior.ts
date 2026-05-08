@@ -13,7 +13,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5009,
@@ -35,7 +35,7 @@ export const warriorCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5012,
@@ -54,7 +54,7 @@ export const warriorCards: CardData[] = [
       targetType: "friendly_charge_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5015,
@@ -69,7 +69,7 @@ export const warriorCards: CardData[] = [
     class: "Warrior",
     keywords: ["charge"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5016,
@@ -88,7 +88,7 @@ export const warriorCards: CardData[] = [
       summonCardId: 5919
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5017,
@@ -103,7 +103,7 @@ export const warriorCards: CardData[] = [
     class: "Warrior",
     keywords: ["taunt"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5024,
@@ -117,21 +117,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 5030,
-    name: "Raging Berserker",
-    manaCost: 3,
-    attack: 2,
-    health: 4,
-    description: "Whenever a minion takes damage, gain +1 Attack.",
-    flavorText: "He used to work as an accountant before finding his true calling as a frothing berserker.",
-    type: "minion",
-    rarity: "common",
-    class: "Warrior",
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5013,
@@ -150,7 +136,7 @@ export const warriorCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5014,
@@ -162,7 +148,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5018,
@@ -180,7 +166,7 @@ export const warriorCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5019,
@@ -192,7 +178,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5022,
@@ -209,7 +195,7 @@ export const warriorCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5023,
@@ -221,7 +207,7 @@ export const warriorCards: CardData[] = [
     rarity: "rare",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5025,
@@ -238,7 +224,7 @@ export const warriorCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5026,
@@ -250,7 +236,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5029,
@@ -262,7 +248,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5031,
@@ -276,7 +262,7 @@ export const warriorCards: CardData[] = [
     rarity: "rare",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 5919,
@@ -290,7 +276,7 @@ export const warriorCards: CardData[] = [
     rarity: "common",
     class: "Warrior",
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20005,
@@ -305,7 +291,7 @@ export const warriorCards: CardData[] = [
     keywords: ["charge"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20300,
@@ -320,7 +306,7 @@ export const warriorCards: CardData[] = [
     keywords: ["battlecry"],
     class: "Warrior",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "buff_weapon",
       requiresTarget: false,
@@ -342,7 +328,7 @@ export const warriorCards: CardData[] = [
     keywords: [],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20802,
@@ -358,7 +344,7 @@ export const warriorCards: CardData[] = [
     class: "Warrior",
     cantAttack: true,
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20806,
@@ -373,7 +359,7 @@ export const warriorCards: CardData[] = [
     keywords: ["rush"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20709,
@@ -388,7 +374,7 @@ export const warriorCards: CardData[] = [
     keywords: [],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20710,
@@ -403,7 +389,7 @@ export const warriorCards: CardData[] = [
     keywords: [],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Echo Card ===
   {
@@ -423,7 +409,7 @@ export const warriorCards: CardData[] = [
       targetType: "all_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Reborn Cards ===
   {
@@ -439,7 +425,7 @@ export const warriorCards: CardData[] = [
     keywords: ["reborn"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 19007,
@@ -454,7 +440,7 @@ export const warriorCards: CardData[] = [
     keywords: ["rush", "reborn"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Magnetic Card ===
   {
@@ -471,9 +457,8 @@ export const warriorCards: CardData[] = [
     race: "Automaton",
     class: "Warrior",
     collectible: true,
-    set: "core"
-  },
-  // === Migrated from additionalClassMinions.ts ===
+    set: "genesis"
+  },
   {
     id: 40020,
     name: "Armored Warhorse",
@@ -486,7 +471,7 @@ export const warriorCards: CardData[] = [
     flavorText: "Bred for battle, protected by steel.",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40021,
@@ -509,7 +494,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40022,
@@ -524,7 +509,7 @@ export const warriorCards: CardData[] = [
     keywords: ["enrage"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40023,
@@ -544,7 +529,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40024,
@@ -565,7 +550,7 @@ export const warriorCards: CardData[] = [
       targetType: "friendly_minion"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40025,
@@ -579,7 +564,7 @@ export const warriorCards: CardData[] = [
     flavorText: "The roar of the crowd is matched only by the clash of steel.",
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40026,
@@ -600,7 +585,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40027,
@@ -615,7 +600,7 @@ export const warriorCards: CardData[] = [
     keywords: ["enrage"],
     class: "Warrior",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40028,
@@ -637,7 +622,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 40029,
@@ -657,9 +642,8 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
-  },
-  // === Migrated from additionalSpellCards.ts ===
+    set: "genesis"
+  },
   {
     id: 31050,
     name: "Defensive Stance",
@@ -677,7 +661,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31051,
@@ -696,7 +680,7 @@ export const warriorCards: CardData[] = [
       targetType: "any_minion"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31052,
@@ -714,7 +698,7 @@ export const warriorCards: CardData[] = [
       targetType: "any_minion"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31053,
@@ -733,26 +717,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 31054,
-    name: "Call of Valhalla",
-    manaCost: 2,
-    type: "spell",
-    rarity: "common",
-    description: "Give all damaged friendly minions +2 Attack.",
-    flavorText: "The rallying cry of Valhalla's chosen.",
-    class: "Warrior",
-    spellEffect: {
-      type: "buff_damaged_minions",
-      buffAttack: 2,
-      buffHealth: 0,
-      requiresTarget: false,
-      targetType: "none"
-    },
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31055,
@@ -769,7 +734,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31056,
@@ -788,7 +753,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31057,
@@ -806,7 +771,7 @@ export const warriorCards: CardData[] = [
       targetType: "any_minion"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31058,
@@ -824,7 +789,7 @@ export const warriorCards: CardData[] = [
       drawPerArmorGained: 5
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31059,
@@ -844,7 +809,7 @@ export const warriorCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Quest Cards ===
   {
@@ -866,7 +831,7 @@ export const warriorCards: CardData[] = [
       cardId: 70012
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 70012,
@@ -881,7 +846,7 @@ export const warriorCards: CardData[] = [
     keywords: [],
     class: "Warrior",
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   // === Gullveig Card ===
   {
@@ -904,7 +869,7 @@ export const warriorCards: CardData[] = [
       armorGain: 10
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Whirlwind & Enrage Expansion ===
   {
@@ -922,7 +887,7 @@ export const warriorCards: CardData[] = [
       targetType: "all_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39102,
@@ -937,7 +902,7 @@ export const warriorCards: CardData[] = [
     class: "Warrior",
     keywords: ["enrage"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39103,
@@ -957,7 +922,7 @@ export const warriorCards: CardData[] = [
       targetType: "all_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39104,
@@ -972,6 +937,6 @@ export const warriorCards: CardData[] = [
     class: "Warrior",
     keywords: ["frenzy"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   }
 ];

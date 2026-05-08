@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeTransformDeck(
   context: GameContext,
@@ -42,7 +43,7 @@ export default function executeTransformDeck(
     
     for (const cardInstance of cardsToTransform) {
       const originalCost = cardInstance.card.manaCost;
-      const randomDragon = dragonPool[Math.floor(Math.random() * dragonPool.length)];
+      const randomDragon = dragonPool[Math.floor(cryptoRng() * dragonPool.length)];
       
       const transformedCard: Card = {
         id: randomDragon.id || 90000,

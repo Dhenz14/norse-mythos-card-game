@@ -15,7 +15,7 @@ export const berserkerCards: CardData[] = [
       value: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9102,
@@ -32,7 +32,7 @@ export const berserkerCards: CardData[] = [
       targetType: "random_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9103,
@@ -48,7 +48,7 @@ export const berserkerCards: CardData[] = [
       targetType: "friendly_hero"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9104,
@@ -64,7 +64,7 @@ export const berserkerCards: CardData[] = [
       value: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9105,
@@ -81,7 +81,7 @@ export const berserkerCards: CardData[] = [
       value: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9111,
@@ -103,7 +103,7 @@ export const berserkerCards: CardData[] = [
       condition: "hero_attacked_this_turn"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9112,
@@ -118,7 +118,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9113,
@@ -133,7 +133,7 @@ export const berserkerCards: CardData[] = [
       type: "swap_hero_power"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9116,
@@ -150,43 +150,7 @@ export const berserkerCards: CardData[] = [
       summonCardId: 9117
     },
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 48001,
-    name: "Fenrir's Gaze",
-    manaCost: 3,
-    description: "Lifesteal. Deal 3 damage to a minion. Outcast: This costs (1).",
-    flavorText: "The great wolf's eyes pierce through the darkness of Ragnarok.",
-    type: "spell",
-    rarity: "common",
-    class: "Berserker",
-    keywords: ["outcast", "lifesteal"],
-    spellEffect: {
-      type: "damage",
-      value: 3,
-      requiresTarget: true,
-      targetType: "any_minion"
-    },
-    collectible: true,
-    set: "core"
-  },
-  {
-    id: 48002,
-    name: "Odin's Vision",
-    manaCost: 2,
-    description: "Draw a card. Outcast: Draw another.",
-    flavorText: "He sacrificed his eye for wisdom - but gained sight beyond mortal ken.",
-    type: "spell",
-    rarity: "common",
-    class: "Berserker",
-    keywords: ["outcast"],
-    spellEffect: {
-      type: "draw",
-      value: 1
-    },
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 10008,
@@ -200,7 +164,7 @@ export const berserkerCards: CardData[] = [
     rarity: "rare",
     class: "Berserker",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 10009,
@@ -216,7 +180,7 @@ export const berserkerCards: CardData[] = [
     race: "Titan",
     keywords: ["dormant"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9114,
@@ -234,7 +198,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 9117,
@@ -249,7 +213,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["rush"],
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 20013,
@@ -264,7 +228,7 @@ export const berserkerCards: CardData[] = [
     keywords: ["battlecry"],
     class: "Berserker",
     collectible: true,
-    set: "core",
+    set: "genesis",
     battlecry: {
       type: "buff",
       requiresTarget: false,
@@ -288,7 +252,7 @@ export const berserkerCards: CardData[] = [
     keywords: ["dormant"],
     class: "Berserker",
     collectible: true,
-    set: "core",
+    set: "genesis",
     dormantTurns: 2,
     awakenEffect: {
       type: "equip_weapon",
@@ -296,7 +260,6 @@ export const berserkerCards: CardData[] = [
       durability: 2
     }
   },
-  // === Migrated from additionalClassMinions.ts ===
   {
     id: 40019,
     name: "Battlefiend",
@@ -314,23 +277,7 @@ export const berserkerCards: CardData[] = [
       buffAttack: 1
     },
     collectible: true,
-    set: "core"
-  },
-  // === Migrated Outcast Cards ===
-  {
-    id: 48005,
-    name: "Einherjar Berserker",
-    manaCost: 4,
-    attack: 5,
-    health: 3,
-    type: "minion",
-    rarity: "rare",
-    description: "Rush. Outcast: Gain +2/+2.",
-    flavorText: "Chosen warriors from Valhalla, eternally hungry for battle.",
-    class: "Berserker",
-    keywords: ["rush", "outcast"],
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 48006,
@@ -344,7 +291,7 @@ export const berserkerCards: CardData[] = [
     flavorText: "She serves the goddess of divine retribution with unyielding fury.",
     class: "Berserker",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 8501,
@@ -359,7 +306,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["taunt"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Berserker Expansion — filling class gaps ===
   {
@@ -374,7 +321,7 @@ export const berserkerCards: CardData[] = [
     rarity: "common",
     class: "Berserker",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31502,
@@ -392,7 +339,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31503,
@@ -409,7 +356,7 @@ export const berserkerCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31504,
@@ -426,11 +373,11 @@ export const berserkerCards: CardData[] = [
       targetType: "friendly_hero"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31505,
-    name: "Fenrir's Fang",
+    name: "Fenrir's Snap",
     manaCost: 2,
     attack: 3,
     durability: 2,
@@ -441,7 +388,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31506,
@@ -456,7 +403,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31507,
@@ -472,7 +419,7 @@ export const berserkerCards: CardData[] = [
       value: 4
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31508,
@@ -487,7 +434,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["rush"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31509,
@@ -507,7 +454,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: false
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31510,
@@ -522,7 +469,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["rush", "overkill"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31511,
@@ -539,7 +486,7 @@ export const berserkerCards: CardData[] = [
       targetType: "all_characters"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 31512,
@@ -559,7 +506,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
 
   // ═══════════════════════════════════════════════════════════════
@@ -568,7 +515,7 @@ export const berserkerCards: CardData[] = [
 
   {
     id: 36201,
-    name: "Ragnarok's Wrath",
+    name: "Ragnarok's Final Strike",
     manaCost: 8,
     description: "Deal 5 damage to all minions. Give your hero +5 Attack this turn.",
     flavorText: "The world ends. Everything burns. From the ashes, something new may grow.",
@@ -581,7 +528,7 @@ export const berserkerCards: CardData[] = [
       targetType: "all_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36202,
@@ -597,7 +544,7 @@ export const berserkerCards: CardData[] = [
     race: "Elemental",
     keywords: ["rush", "mega_windfury", "overkill"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36203,
@@ -615,7 +562,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36204,
@@ -630,7 +577,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["frenzy"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36205,
@@ -644,7 +591,7 @@ export const berserkerCards: CardData[] = [
     rarity: "rare",
     class: "Berserker",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36206,
@@ -661,7 +608,7 @@ export const berserkerCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36207,
@@ -676,7 +623,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["taunt"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36208,
@@ -693,7 +640,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36209,
@@ -713,7 +660,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36210,
@@ -728,7 +675,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["rush"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
 
   // === Lifesteal & Outcast Expansion ===
@@ -745,11 +692,11 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["lifesteal", "outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38802,
-    name: "Blood Drinker",
+    name: "Berserker Bloodfeast",
     manaCost: 5,
     attack: 4,
     health: 6,
@@ -760,7 +707,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["lifesteal", "rush"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38803,
@@ -778,7 +725,7 @@ export const berserkerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38804,
@@ -793,7 +740,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["lifesteal"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38805,
@@ -809,7 +756,7 @@ export const berserkerCards: CardData[] = [
     race: "Elemental",
     keywords: ["lifesteal", "taunt", "outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Outcast Payoff Expansion ===
   {
@@ -825,7 +772,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38807,
@@ -844,7 +791,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38808,
@@ -859,7 +806,7 @@ export const berserkerCards: CardData[] = [
     class: "Berserker",
     keywords: ["outcast"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // ==================== COMMON GAP-FILL (Starter Deck Viability) ====================
   {
@@ -877,7 +824,7 @@ export const berserkerCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39202,
@@ -896,7 +843,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39203,
@@ -913,7 +860,7 @@ export const berserkerCards: CardData[] = [
       selfDamage: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39204,
@@ -931,7 +878,7 @@ export const berserkerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 39205,
@@ -945,6 +892,6 @@ export const berserkerCards: CardData[] = [
     rarity: "common",
     class: "Berserker",
     collectible: true,
-    set: "core"
+    set: "genesis"
   }
 ];

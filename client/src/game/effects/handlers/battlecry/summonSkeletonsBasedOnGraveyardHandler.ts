@@ -13,6 +13,7 @@ import { getGraveyard } from '../../../data/cardManagement/graveyardTracker';
 import { getCardById } from '../../../data/cardManagement/cardRegistry';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a battlecry that summons skeletons based on graveyard size
@@ -68,7 +69,7 @@ function executeSummonSkeletonsBasedOnGraveyardSummonSkeletonsBasedOnGraveyard(
     for (let i = 0; i < skeletonsToSummon; i++) {
       // Create a summoned minion instance
       const summonedInstance: any = {
-        instanceId: `skeleton-${Date.now()}-${i}`,
+        instanceId: `skeleton-${cryptoIdGen()}-${i}`,
         card: skeletonCard,
         currentHealth: getHealth(skeletonCard),
         canAttack: false, // Summoning sickness

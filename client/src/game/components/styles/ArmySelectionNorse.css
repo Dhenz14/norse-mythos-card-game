@@ -12,14 +12,12 @@
 /* ============================================
    RARITY ANIMATIONS — conic-gradient border rotation
    ============================================ */
-@property --hero-border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes hero-border-rotate {
-  to { --hero-border-angle: 360deg; }
+/* hero-border-rotate and @property --hero-border-angle removed for performance optimization.
+   Using GPU-friendly background-position panning instead. */
+@keyframes hero-diagonal-pan {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
 }
 
 @keyframes hero-rare-shimmer {
@@ -71,36 +69,35 @@
 /* ============================================
    BACKGROUND LAYERS - Absolute positioned overlays
    ============================================ */
+/* Capa 0 — base canónica (warm obsidian, idéntica a Home/Campaign/Collection) */
 .norse-army-selection .norse-army-bg {
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(ellipse at 50% 0%, rgba(0, 255, 204, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 80%, rgba(0, 255, 204, 0.03) 0%, transparent 40%),
-    radial-gradient(ellipse at 80% 80%, rgba(0, 255, 204, 0.03) 0%, transparent 40%),
-    linear-gradient(180deg, #0a0a1f 0%, #0f172a 100%);
+  background:
+    radial-gradient(ellipse at 50% 0%, var(--obsidian-850) 0%, transparent 60%),
+    linear-gradient(180deg, var(--obsidian-950) 0%, var(--obsidian-900) 100%);
   z-index: -2;
   pointer-events: none;
 }
 
+/* Capa 1 — intent "warband": forja del consejo. Halo gold cenital con pulso lento. */
 .norse-army-selection .norse-lightning-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: 
-    radial-gradient(ellipse at 30% 10%, rgba(0, 255, 204, 0.08) 0%, transparent 30%),
-    radial-gradient(ellipse at 70% 5%, rgba(0, 255, 204, 0.06) 0%, transparent 25%);
-  animation: lightningFlash 8s ease-in-out infinite;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%,
+      color-mix(in oklch, var(--gold-300) 6%, transparent) 0%,
+      transparent 70%);
+  animation: warbandEmberPulse 14s ease-in-out infinite;
   z-index: -1;
+  opacity: 0.85;
 }
 
-@keyframes lightningFlash {
-  0%, 100% { opacity: 0.3; }
-  45% { opacity: 0.4; }
-  48% { opacity: 1; }
-  50% { opacity: 0.2; }
-  52% { opacity: 0.8; }
-  55% { opacity: 0.3; }
+/* Pulso lento (no flash) — el halo respira como brasa, no como rayo. */
+@keyframes warbandEmberPulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
 }
 
 /* ============================================
@@ -589,18 +586,16 @@
   padding: 3px;
   border-radius: 12px;
   border: none;
-  background: conic-gradient(
-    from var(--hero-border-angle),
-    #ef4444, #f97316, #f59e0b,
-    #22c55e, #06b6d4,
-    #3b82f6, #8b5cf6,
-    #a855f7, #ec4899, #ef4444
+  background: linear-gradient(
+    135deg,
+    #ef4444, #f59e0b, #22c55e, #06b6d4, #8b5cf6, #ec4899, #ef4444
   );
+  background-size: 300% 300%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  animation: hero-border-rotate 3s linear infinite;
+  animation: hero-diagonal-pan 3s linear infinite;
 }
 
 .norse-army-selection .norse-hero-card.rarity-mythic:hover {
@@ -633,17 +628,16 @@
   padding: 2px;
   border-radius: 11px;
   border: none;
-  background: conic-gradient(
-    from var(--hero-border-angle),
-    #581C87, #7C3AED, #A855F7, #C084FC,
-    #E9D5FF,
-    #C084FC, #A855F7, #7C3AED, #581C87
+  background: linear-gradient(
+    135deg,
+    #581C87 0%, #A855F7 25%, #E9D5FF 50%, #C084FC 75%, #581C87 100%
   );
+  background-size: 300% 300%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  animation: hero-border-rotate 6s linear infinite;
+  animation: hero-diagonal-pan 5s linear infinite;
 }
 
 .norse-army-selection .norse-hero-card.rarity-epic:hover {
@@ -1035,9 +1029,11 @@
   }
 
   .norse-army-selection .norse-top-bar {
-    height: 72px;
+    height: auto;
+    min-height: 72px;
     padding: 8px 14px 10px;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .norse-army-selection .norse-top-title {
@@ -1056,7 +1052,26 @@
   .norse-army-selection .norse-top-bar-actions {
     width: auto;
   }
-  
+
+  /* Mobile pill: anchored fixed top-right since the army-selection grid
+     overflows the viewport horizontally on narrow widths. Without this
+     the pill renders inside the bar at x=417 (off-screen at vw=390). */
+  .norse-army-selection .norse-user-pill {
+    position: fixed !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 110;
+    height: 32px;
+    padding: 0 10px 0 6px;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+  }
+
+  .norse-army-selection .norse-user-pill-handle {
+    max-width: 100px;
+    font-size: 12px;
+  }
+
   .norse-army-selection .norse-piece-sidebar {
     flex-direction: row;
     overflow-x: auto;
@@ -1659,6 +1674,86 @@
   gap: 12px;
 }
 
+/* User identity pill — Hive login surfaced in the top bar so the player
+   always knows which account is staging the warband. */
+.norse-army-selection .norse-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--obsidian-700);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--obsidian-850) 92%, transparent),
+    color-mix(in srgb, var(--obsidian-900) 96%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink-0) 4%, transparent);
+}
+
+.norse-army-selection .norse-user-pill.is-authed {
+  border-color: color-mix(in srgb, var(--gold-300) 35%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--gold-200) 14%, transparent),
+    0 0 18px -8px color-mix(in srgb, var(--gold-300) 55%, transparent);
+}
+
+.norse-army-selection .norse-user-pill-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--obsidian-700) 80%, transparent);
+  color: var(--ink-200);
+  flex-shrink: 0;
+}
+
+.norse-army-selection .norse-user-pill.is-authed .norse-user-pill-avatar {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--gold-300) 28%, var(--obsidian-800)),
+    color-mix(in srgb, var(--gold-500) 22%, var(--obsidian-900)));
+  color: var(--gold-100);
+}
+
+.norse-army-selection .norse-user-pill-text {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.05;
+  min-width: 0;
+}
+
+.norse-army-selection .norse-user-pill-label {
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+
+.norse-army-selection .norse-user-pill.is-authed .norse-user-pill-label {
+  color: var(--gold-300);
+}
+
+.norse-army-selection .norse-user-pill-handle {
+  font-family: var(--type-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-100);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.norse-army-selection .norse-user-pill.is-guest .norse-user-pill-handle {
+  color: var(--ink-300);
+  font-style: italic;
+  font-weight: 600;
+}
+
 .norse-army-selection .norse-spell-badge {
   font-size: 12px;
   padding: 4px 12px;
@@ -1852,4 +1947,16 @@
 .norse-hero-card:hover .card-particles::before,
 .norse-hero-card:hover .card-particles::after {
   animation-play-state: running;
+}
+
+/* User pill — very narrow viewports drop the secondary label so the
+   handle stays legible without truncating the @username badly. */
+@media (max-width: 480px) {
+  .norse-army-selection .norse-user-pill-label {
+    display: none;
+  }
+  .norse-army-selection .norse-user-pill-handle {
+    max-width: 90px;
+    font-size: 11px;
+  }
 }

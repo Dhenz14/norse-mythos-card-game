@@ -8,6 +8,7 @@
 import { debug } from '../../../config/debugConfig';
 import { GameState, CardInstance, GameLogEvent } from '../../../types';
 import { ComboEffect } from '../../../types/CardTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 /**
  * Execute a buff_self combo effect
@@ -57,7 +58,7 @@ export function executeBuffSelfBuffSelf(
   
   // Create the log entry with correct type
   const logEntry: GameLogEvent = {
-    id: Math.random().toString(36).substring(2, 15),
+    id: cryptoIdGen(),
     type: 'card_played',
     player: currentPlayerId,
     text: `${sourceCard.card.name} gains +${buffAttack}/+${buffHealth} from Combo!`,

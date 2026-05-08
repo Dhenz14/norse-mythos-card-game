@@ -9,6 +9,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 export default function executeReplaySpells(
   context: GameContext, 
@@ -40,7 +41,7 @@ export default function executeReplaySpells(
     
     if (isRandom) {
       for (let i = filteredSpells.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(cryptoRng() * (i + 1));
         [filteredSpells[i], filteredSpells[j]] = [filteredSpells[j], filteredSpells[i]];
       }
     }
@@ -71,7 +72,7 @@ export default function executeReplaySpells(
           } else if (isRandom) {
             const allTargets = context.getAllMinions();
             if (allTargets.length > 0) {
-              targets = [allTargets[Math.floor(Math.random() * allTargets.length)]];
+              targets = [allTargets[Math.floor(cryptoRng() * allTargets.length)]];
             }
           }
           
@@ -82,7 +83,7 @@ export default function executeReplaySpells(
               } else {
                 const enemyTargets = context.getEnemyMinions();
                 if (enemyTargets.length > 0) {
-                  const randomEnemy = enemyTargets[Math.floor(Math.random() * enemyTargets.length)];
+                  const randomEnemy = enemyTargets[Math.floor(cryptoRng() * enemyTargets.length)];
                   context.dealDamage(randomEnemy, spellEffect.value || 1);
                 }
               }

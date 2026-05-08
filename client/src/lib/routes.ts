@@ -1,6 +1,9 @@
 export const routes = {
   home: '/',
+  warband: '/warband',
   game: '/game',
+  singleGame: '/game/single',
+  campaignGame: '/game/campaign',
   campaign: '/campaign',
   multiplayer: '/multiplayer',
   tournaments: '/tournaments',
@@ -11,7 +14,6 @@ export const routes = {
   ladder: '/ladder',
   history: '/history',
   settings: '/settings',
-  spectate: '/spectate/:peerId',
   marketplace: '/marketplace',
   explorer: '/explorer',
   admin: '/admin',

@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from './cards/typeGuards';
 import { debug } from '../config/debugConfig';
 import { hasKeyword } from './cards/keywordUtils';
+import { cryptoRng } from './seededRng';
 
 /**
  * Initialize a card's dormant effect when played
@@ -225,7 +226,7 @@ function processAwakeningEffect(
         // Deal damage one point at a time, randomly
         while (remainingDamage > 0 && targets.length > 0) {
           // Pick a random target
-          const randomIndex = Math.floor(Math.random() * targets.length);
+          const randomIndex = Math.floor(cryptoRng() * targets.length);
           const target = targets[randomIndex];
           
           // Deal 1 damage to the target
@@ -254,7 +255,7 @@ function processAwakeningEffect(
         
         if (minionsInHand.length > 0) {
           // Pick a random minion
-          const randomIndex = Math.floor(Math.random() * minionsInHand.length);
+          const randomIndex = Math.floor(cryptoRng() * minionsInHand.length);
           const randomMinion = minionsInHand[randomIndex];
           
           // Apply discount

@@ -14,7 +14,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'The tireless stallion that nearly built the walls of Asgard.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'basic',
@@ -25,7 +25,7 @@ export const warSteedsPets: CardData[] = [
 			trigger: 'on_survive_turn',
 			description: 'After surviving a turn',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50231,
 		name: 'Blodughofi Colt',
@@ -38,7 +38,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'Swift as the wind, it carries its rider into battle with grace.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -50,7 +50,7 @@ export const warSteedsPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50232,
 		name: 'Gulltoppr Colt',
@@ -63,7 +63,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'Golden-maned, it trots the rainbow bridge as a foal.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -75,7 +75,7 @@ export const warSteedsPets: CardData[] = [
 			trigger: 'on_buff',
 			description: 'After a friendly minion is buffed',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -90,7 +90,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'A tireless worker, its strength is unmatched among mortal beasts.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'adept',
@@ -103,7 +103,7 @@ export const warSteedsPets: CardData[] = [
 			description: 'After surviving a turn',
 		},
 		battlecry: { type: 'draw', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50234,
 		name: "Blodughofi, Freyr's Horse",
@@ -116,7 +116,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: "Freyr's steed charges through fire and frost alike.",
 		keywords: ['rush', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -130,7 +130,7 @@ export const warSteedsPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'aoe_damage', targetType: 'all_enemy_minions', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50235,
 		name: "Gulltoppr, Heimdall's Horse",
@@ -143,7 +143,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'Golden-maned, it gallops across the rainbow bridge.',
 		keywords: ['divine_shield', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -157,7 +157,7 @@ export const warSteedsPets: CardData[] = [
 			description: 'After a friendly minion is buffed',
 		},
 		battlecry: { type: 'buff', targetType: 'friendly_minion', value: 1, buffHealth: 2 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -172,7 +172,7 @@ export const warSteedsPets: CardData[] = [
 		flavorText: 'The gods ride to battle on steeds forged in starlight and blood.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'master',
@@ -208,5 +208,5 @@ export const warSteedsPets: CardData[] = [
 				battlecry: { type: 'buff', targetType: 'all_friendly_minions', value: 1, buffAttack: 1, buffHealth: 1, grantKeywords: ['divine_shield'] },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

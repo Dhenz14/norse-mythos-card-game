@@ -12,6 +12,10 @@
 
 import fs from 'fs';
 import path from 'path';
+import type {
+	CampaignProgressRecord,
+	CampaignSubmissionRecord,
+} from '../../shared/protocol-core/types';
 
 const DEFAULT_ELO_RATING = 1000;
 
@@ -96,6 +100,15 @@ export interface TokenBalanceRecord {
 	RUNE: number;
 }
 
+export interface QueueStateRecord {
+	mode: string;
+	elo: number;
+	peerId: string;
+	deckHash: string;
+	timestamp: number;
+	blockNum: number;
+}
+
 interface SerializedState {
 	players: [string, PlayerRecord][];
 	cards: [string, CardRecord][];
@@ -112,6 +125,9 @@ interface SerializedState {
 	matchAnchors?: [string, MatchAnchorStateRecord][];
 	packCommits?: [string, PackCommitStateRecord][];
 	rewardClaims?: string[];
+	campaignNonces?: [string, number][];
+	campaignSubmissions?: [string, CampaignSubmissionRecord][];
+	campaignProgress?: [string, CampaignProgressRecord][];
 	slashedAccounts?: string[];
 }
 
@@ -135,8 +151,11 @@ const tokenBalances = new Map<string, TokenBalanceRecord>();
 const matchAnchors = new Map<string, MatchAnchorStateRecord>();
 const packCommits = new Map<string, PackCommitStateRecord>();
 const rewardClaims = new Set<string>();
+const campaignNonces = new Map<string, number>();
+const campaignSubmissions = new Map<string, CampaignSubmissionRecord>();
+const campaignProgress = new Map<string, CampaignProgressRecord>();
 const slashedAccounts = new Set<string>();
-const queueEntries = new Map<string, { timestamp: number }>();
+const queueEntries = new Map<string, QueueStateRecord>();
 
 // Marketplace state (v1.2)
 export interface ListingRecord {
@@ -226,6 +245,15 @@ export function loadState(): void {
 		rewardClaims.clear();
 		for (const c of data.rewardClaims ?? []) rewardClaims.add(c);
 
+		campaignNonces.clear();
+		for (const [k, v] of data.campaignNonces ?? []) campaignNonces.set(k, v);
+
+		campaignSubmissions.clear();
+		for (const [k, v] of data.campaignSubmissions ?? []) campaignSubmissions.set(k, v);
+
+		campaignProgress.clear();
+		for (const [k, v] of data.campaignProgress ?? []) campaignProgress.set(k, v);
+
 		slashedAccounts.clear();
 		for (const a of data.slashedAccounts ?? []) slashedAccounts.add(a);
 
@@ -255,6 +283,9 @@ export function saveState(): void {
 			matchAnchors: [...matchAnchors.entries()],
 			packCommits: [...packCommits.entries()],
 			rewardClaims: [...rewardClaims],
+			campaignNonces: [...campaignNonces.entries()],
+			campaignSubmissions: [...campaignSubmissions.entries()],
+			campaignProgress: [...campaignProgress.entries()],
 			slashedAccounts: [...slashedAccounts],
 		};
 		const tmpFile = STATE_FILE + '.tmp';
@@ -510,11 +541,41 @@ export function getUnrevealedCommitsBefore(deadlineBlock: number): PackCommitSta
 export function hasRewardClaim(key: string): boolean { return rewardClaims.has(key); }
 export function addRewardClaim(key: string): void { rewardClaims.add(key); markDirty(); }
 
+export function advanceCampaignNonce(account: string, nonce: number): boolean {
+	const current = campaignNonces.get(account) ?? 0;
+	if (nonce <= current) return false;
+	campaignNonces.set(account, nonce);
+	markDirty();
+	return true;
+}
+
+export function getCampaignSubmission(submissionKey: string): CampaignSubmissionRecord | undefined {
+	return campaignSubmissions.get(submissionKey);
+}
+
+export function setCampaignSubmission(submission: CampaignSubmissionRecord): void {
+	campaignSubmissions.set(submission.submissionKey, submission);
+	markDirty();
+}
+
+export function getCampaignProgress(
+	account: string,
+	campaignId: string,
+	missionId: string,
+): CampaignProgressRecord | undefined {
+	return campaignProgress.get(`${account}:${campaignId}:${missionId}`);
+}
+
+export function setCampaignProgress(progress: CampaignProgressRecord): void {
+	campaignProgress.set(`${progress.account}:${progress.campaignId}:${progress.missionId}`, progress);
+	markDirty();
+}
+
 export function isSlashed(account: string): boolean { return slashedAccounts.has(account); }
 export function addSlashed(account: string): void { slashedAccounts.add(account); markDirty(); }
 
-export function getQueueEntry(account: string): { timestamp: number } | undefined { return queueEntries.get(account); }
-export function setQueueEntry(account: string, data: { timestamp: number }): void { queueEntries.set(account, data); markDirty(); }
+export function getQueueEntry(account: string): QueueStateRecord | undefined { return queueEntries.get(account); }
+export function setQueueEntry(account: string, data: QueueStateRecord): void { queueEntries.set(account, data); markDirty(); }
 export function deleteQueueEntryFn(account: string): void { queueEntries.delete(account); markDirty(); }
 
 // ---------------------------------------------------------------------------

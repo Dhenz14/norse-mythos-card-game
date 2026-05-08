@@ -14,7 +14,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: "Freyja's kitten crackles with playful sparks.",
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50161,
 		name: 'Trjegul Kitten',
@@ -39,7 +39,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: 'Even as a kitten, its pounce ignites the air.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50162,
 		name: 'Hildisvini Piglet',
@@ -64,7 +64,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: "Freyja's boar begins its journey as a gentle piglet.",
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -76,7 +76,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			trigger: 'on_heal',
 			description: 'After a friendly character is healed',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -91,7 +91,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: "Bygul's speed is unmatched, striking twice before foes can blink.",
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50164,
 		name: "Trjegul, Freyja's Stormpouncer",
@@ -117,7 +117,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: "Trjegul's strength surges like a tempest, overwhelming its foes.",
 		keywords: ['rush', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'damage', targetType: 'random_enemy', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50165,
 		name: "Hildisvini, Freyja's Boar",
@@ -144,7 +144,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: "Freyja's loyal boar charges into battle, shielded by her grace.",
 		keywords: ['divine_shield', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -158,7 +158,7 @@ export const freyjasCompanionsPets: CardData[] = [
 			description: 'After a friendly character is healed',
 		},
 		battlecry: { type: 'heal', targetType: 'friendly_hero', value: 3 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -173,7 +173,7 @@ export const freyjasCompanionsPets: CardData[] = [
 		flavorText: 'Chosen by Freyja herself, it embodies the goddess of love and war.',
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		petStage: 'master',
@@ -208,5 +208,5 @@ export const freyjasCompanionsPets: CardData[] = [
 				battlecry: { type: 'buff', targetType: 'all_friendly_minions', value: 1, buffAttack: 1, buffHealth: 1, grantKeywords: ['divine_shield'] },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

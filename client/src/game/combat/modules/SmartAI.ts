@@ -15,6 +15,7 @@ import {
 import { calculateHandStrength, findBestHand } from './HandEvaluator';
 import { COMBAT_DEBUG } from '../debugConfig';
 import { debug } from '../../config/debugConfig';
+import { cryptoRng } from '../../utils/seededRng';
 
 export interface AIDecision {
   action: CombatAction;
@@ -47,7 +48,7 @@ function calculatePotOdds(toCall: number, potSize: number): number {
  */
 function shouldBluff(config: AIConfig, handStrength: number): boolean {
   if (handStrength > 0.3) return false;
-  return Math.random() < config.bluffFrequency * (1 - handStrength);
+  return cryptoRng() < config.bluffFrequency * (1 - handStrength);
 }
 
 /**

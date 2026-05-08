@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeTransformAndSilence(
   context: GameContext,
@@ -50,7 +51,7 @@ export default function executeTransformAndSilence(
     const boardIndex = context.currentPlayer.board.indexOf(sourceOnBoard);
     
     const silencedCopy: CardInstance = {
-      instanceId: `silenced-copy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `silenced-copy-${cryptoIdGen()}`,
       card: {
         ...target.card,
         battlecry: undefined,

@@ -10,7 +10,9 @@
  */
 
 import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
 import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
+import { useGameStore } from '../stores/gameStore';
 import { ChessBoardPosition } from '../types/ChessTypes';
 import {
   getMineShapeTiles,
@@ -109,6 +111,7 @@ export function useKingChessAbility(side: 'player' | 'opponent' = 'player'): Kin
       kingState.kingId,
       allActiveMines,
       ownPieces,
+      side,
       selectedMineDirection ?? undefined
     );
     
@@ -116,6 +119,22 @@ export function useKingChessAbility(side: 'player' | 'opponent' = 'player'): Kin
   }, [kingState?.kingId, allActiveMines, boardState?.pieces, side, selectedMineDirection]);
 
   const enterPlacementMode = useCallback(() => {
+    // P2P: block king mine placement until cross-peer mine sync ships
+    // (chess_mine_placement envelope, separate workstream). Without sync
+    // the mine lives only on the placer's local store; if any opponent
+    // piece lands on a tile the other peer thinks is empty, mine
+    // triggers fire on one side and not the other -> stamina drift ->
+    // eventual `piece_position_mismatch` rejections cascading. Block
+    // at the entry point so the placement mode UI never opens; cleaner
+    // than rejecting after the player picks a tile.
+    const matchId = useGameStore.getState().matchId;
+    if (matchId) {
+      toast.error('King ability not yet supported in multiplayer', {
+        description: 'Mine placement requires peer synchronization that is not yet implemented. For now the ability is disabled in P2P matches.',
+        duration: 5000,
+      });
+      return;
+    }
     if (canPlaceMine) {
       setMinePlacementMode(true);
     }

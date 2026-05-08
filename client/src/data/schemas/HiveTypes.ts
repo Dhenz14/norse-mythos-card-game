@@ -13,32 +13,46 @@
  *   custom_json id = "rp_<action>"
  */
 
-export const RAGNAROK_APP_ID = 'ragnarok-cards';
+import { isStarterEntitlementCardId } from '@shared/schemas/starterEntitlement';
+import { getRagnarokProtocolId } from '../../game/config/networkConfig';
 
-export type RagnarokAction =
-  | 'genesis'
-  | 'mint'
-  | 'transfer'
-  | 'burn'
-  | 'seal'
-  | 'match_start'
-  | 'match_result'
-  | 'queue_join'
-  | 'queue_leave'
-  | 'slash_evidence'
-  | 'team_submit'
-  | 'pack_open'
-  | 'card_transfer'
-  | 'level_up'
-  | 'reward_claim';
+export const RAGNAROK_APP_ID = getRagnarokProtocolId();
 
+export type CardOwnershipSource =
+  | 'nft' // Genesis card with Hive L1 identity.
+  | 'starter'; // Universal off-chain starter entitlement.
+
+export const STARTER_UID_PREFIX = 'starter-';
+export const STARTER_ENTITLEMENT_OWNER_ID = 'starter-entitlement';
+
+export function getStarterUid(cardId: number): string {
+  return `${STARTER_UID_PREFIX}${cardId}`;
+}
+
+/**
+ * Chain-level `custom_json` op id used at broadcast time.
+ *
+ * The canonical post-genesis form is the single id `'ragnarok-cards'` with
+ * the action name carried inside the payload (`{ app, action, ... }`). The
+ * `rp_*` variants are the pre-genesis legacy form, kept here because
+ * `HiveSync.broadcastCustomJson` still routes by them today; the long-term
+ * goal (separate phase) is to migrate every broadcast site to the canonical
+ * `'ragnarok-cards'` id and let the action live entirely in the payload.
+ *
+ * Canonical action names (`'mint_batch'`, `'pack_commit'`, …) are the source
+ * of truth for the protocol layer — see `CanonicalAction` /  `LegacyAction`
+ * in `shared/protocol-core/types.ts`.
+ */
 export type RagnarokTransactionType =
   | 'ragnarok-cards'
+  | 'ragnarok-cards-local'
+  | 'rk_game_testnet'
   | 'rp_genesis'
   | 'rp_mint'
   | 'rp_seal'
   | 'rp_team_submit'
   | 'rp_match_result'
+  | 'rp_campaign_result'
   | 'rp_card_transfer'
   | 'rp_pack_open'
   | 'rp_level_up'
@@ -141,6 +155,8 @@ export interface HiveCardAsset {
   uid: string;
   cardId: number;
   ownerId: string;
+  /** Present only for economic assets. Local/dev catalog records leave this unset. */
+  ownershipSource?: CardOwnershipSource;
   edition: 'alpha' | 'beta' | 'promo';
   foil: 'standard' | 'gold';
   rarity: string;
@@ -158,6 +174,15 @@ export interface HiveCardAsset {
   provenanceChain?: ProvenanceStamp[];
   compactedProvenance?: CompactedProvenance;
   officialMint?: OfficialMint;
+}
+
+export function isStarterEntitlementAsset(
+  card: Pick<HiveCardAsset, 'uid' | 'ownerId' | 'cardId'> & { ownershipSource?: CardOwnershipSource },
+): boolean {
+  if (!isStarterEntitlementCardId(card.cardId)) return false;
+  return card.ownershipSource === 'starter'
+    || card.uid.startsWith(STARTER_UID_PREFIX)
+    || card.ownerId === STARTER_ENTITLEMENT_OWNER_ID;
 }
 
 export interface HiveTokenBalance {
@@ -214,4 +239,3 @@ export const DEFAULT_TOKEN_BALANCE: HiveTokenBalance = {
   lastClaimTimestamp: 0,
 };
 
-export const RAGNAROK_CUSTOM_JSON_PREFIX = 'rp_';

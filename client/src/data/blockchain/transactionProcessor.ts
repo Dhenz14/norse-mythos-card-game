@@ -19,7 +19,7 @@
 
 import { useTransactionQueueStore } from './transactionQueueStore';
 import { getDataLayerMode } from '@/config/featureFlags';
-import type { TransactionEntry, PackagedMatchResult } from './types';
+import type { BlockchainActionType, TransactionEntry, PackagedMatchResult } from './types';
 import { hiveSync } from '../HiveSync';
 import { hiveEvents } from '../HiveEvents';
 import type { RagnarokTransactionType } from '../schemas/HiveTypes';
@@ -146,23 +146,26 @@ async function submitToMockServer(tx: TransactionEntry): Promise<void> {
 		trxId: data.trxId ?? `mock_${tx.id}`,
 		blockNum: data.blockNum ?? 0,
 	});
-	hiveEvents.emitTransactionConfirmed({ trxId: data.trxId ?? `mock_${tx.id}`, type: tx.actionType as any, status: 'confirmed' });
+	hiveEvents.emitTransactionConfirmed({ trxId: data.trxId ?? `mock_${tx.id}` });
 }
 
 // ---------------------------------------------------------------------------
 // Real Hive submission ('hive' mode)
 // ---------------------------------------------------------------------------
 
-// Maps internal BlockchainActionType to Hive custom_json op id
-const ACTION_TO_OP_ID: Partial<Record<string, RagnarokTransactionType>> = {
+// Maps internal BlockchainActionType to Hive custom_json op id.
+// Exhaustive — adding a new BlockchainActionType is a compile error until
+// every variant has a chain op mapped.
+const ACTION_TO_OP_ID: Record<BlockchainActionType, RagnarokTransactionType> = {
 	match_result:  'rp_match_result',
+	campaign_result: 'rp_campaign_result',
 	level_up:      'rp_level_up',
 	card_transfer: 'rp_card_transfer',
 	nft_mint:      'rp_pack_open',
 };
 
-// Card transfers require Active key; everything else uses Posting key
-const ACTIVE_KEY_ACTIONS = new Set(['card_transfer']);
+// Card transfers require Active key; everything else uses Posting key.
+const ACTIVE_KEY_ACTIONS: ReadonlySet<BlockchainActionType> = new Set(['card_transfer']);
 
 async function submitToHive(tx: TransactionEntry): Promise<void> {
 	const store = useTransactionQueueStore.getState();
@@ -176,10 +179,6 @@ async function submitToHive(tx: TransactionEntry): Promise<void> {
 	}
 
 	const opId = ACTION_TO_OP_ID[tx.actionType];
-	if (!opId) {
-		throw new Error(`No chain op mapped for action type: ${tx.actionType}`);
-	}
-
 	const useActiveKey = ACTIVE_KEY_ACTIONS.has(tx.actionType);
 
 	const result = await hiveSync.broadcastCustomJson(
@@ -189,7 +188,7 @@ async function submitToHive(tx: TransactionEntry): Promise<void> {
 	);
 
 	if (!result.success) {
-		hiveEvents.emitTransactionFailed({ trxId: tx.id, type: tx.actionType as any, status: 'failed', errorMessage: result.error ?? 'Keychain broadcast rejected' });
+		hiveEvents.emitTransactionFailed({ trxId: tx.id, errorMessage: result.error ?? 'Keychain broadcast rejected' });
 		throw new Error(result.error ?? 'Keychain broadcast rejected');
 	}
 
@@ -197,7 +196,7 @@ async function submitToHive(tx: TransactionEntry): Promise<void> {
 		trxId: result.trxId ?? null,
 		blockNum: result.blockNum ?? null,
 	});
-	hiveEvents.emitTransactionConfirmed({ trxId: result.trxId ?? '', type: tx.actionType as any, status: 'confirmed' });
+	hiveEvents.emitTransactionConfirmed({ trxId: result.trxId ?? '' });
 }
 
 // ---------------------------------------------------------------------------

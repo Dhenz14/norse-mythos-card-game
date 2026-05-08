@@ -7,7 +7,8 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChessPiece, ChessBoardPosition, ELEMENT_COLORS } from '../../types/ChessTypes';
+import { ChessPiece, ChessBoardPosition, ELEMENT_COLORS, BOARD_COLS, BOARD_ROWS } from '../../types/ChessTypes';
+import { useGameStore } from '../../stores/gameStore';
 
 interface AttackAnimationData {
   attacker: ChessPiece;
@@ -51,14 +52,26 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
   const [phase, setPhase] = useState<'idle' | 'moving' | 'impact' | 'done'>('idle');
   const animationIdRef = useRef<string | null>(null);
 
+  // Canonical->visual coordinate mapping must mirror ChessBoard's
+  // iteration order (commit 6d62811): canonical 'player' viewer renders
+  // row 6 at the top (so row 0 is at the bottom — first-mover's back
+  // rank closest to camera); canonical 'opponent' viewer flips 180°
+  // so row 0 is at the top and col 0 is on the right. Without this
+  // mirror, the attack animation positions itself in the unflipped
+  // viewport for both peers — the second-mover sees the animation
+  // appear "on the wrong side" of the board (the previously reported
+  // "movimiento como espejo").
+  const myCanonicalSide = useGameStore(s => s.myCanonicalSide) ?? 'player';
+  const isFlipped = myCanonicalSide === 'opponent';
+
   const calculatePixelPosition = useCallback((position: ChessBoardPosition) => {
-    const col = position.col;
-    const row = 6 - position.row;
+    const visualRow = isFlipped ? position.row : (BOARD_ROWS - 1 - position.row);
+    const visualCol = isFlipped ? (BOARD_COLS - 1 - position.col) : position.col;
     return {
-      x: boardOffset.x + col * cellSize + cellSize / 2,
-      y: boardOffset.y + row * cellSize + cellSize / 2
+      x: boardOffset.x + visualCol * cellSize + cellSize / 2,
+      y: boardOffset.y + visualRow * cellSize + cellSize / 2
     };
-  }, [cellSize, boardOffset]);
+  }, [cellSize, boardOffset, isFlipped]);
 
   useEffect(() => {
     if (!animation) {
@@ -67,30 +80,48 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
       return;
     }
 
-    // Create unique ID for this animation to prevent stale closure issues
-    const currentAnimationId = `${animation.attacker.id}-${animation.defender.id}-${Date.now()}`;
-    animationIdRef.current = currentAnimationId;
+    // Create unique ID for this animation based purely on attackers/defenders
+    const animationSignature = `${animation.attacker.id}-${animation.defender.id}`;
 
+    // Prevent infinite loop: if we are already playing this exact animation, ignore new generic prop triggers
+    if (animationIdRef.current === animationSignature) {
+      return;
+    }
+
+    animationIdRef.current = animationSignature;
     setPhase('moving');
 
     const moveTimeout = setTimeout(() => {
-      // Validate we're still handling the same animation
-      if (animationIdRef.current !== currentAnimationId) return;
+      if (animationIdRef.current !== animationSignature) return;
       setPhase('impact');
     }, 400);
 
     const completeTimeout = setTimeout(() => {
-      // Validate we're still handling the same animation
-      if (animationIdRef.current !== currentAnimationId) return;
+      if (animationIdRef.current !== animationSignature) return;
       setPhase('done');
       onAnimationComplete();
+      // NOTE: do NOT clear animationIdRef here. onAnimationComplete()
+      // calls completeAttackAnimation() in the slice which sets
+      // pendingAttackAnimation = null synchronously, but React doesn't
+      // propagate that change to this component's prop until the next
+      // render. If any other parent state change triggers a re-render
+      // BEFORE the prop nulls (boardState mutation, gameStatus update,
+      // window resize), this effect re-runs with `animation` still
+      // truthy. With the ref nulled here, the signature-equality guard
+      // would fail and the animation would replay -- visible as a
+      // flicker (the user-reported "parpadeo"). Leaving the ref set
+      // means the guard catches the stale-prop re-run, and the
+      // legitimate cleanup happens when the prop genuinely transitions
+      // to null via the early-return at the top of this effect.
     }, 800);
 
     return () => {
       clearTimeout(moveTimeout);
       clearTimeout(completeTimeout);
     };
-  }, [animation, onAnimationComplete]);
+    // Removed onAnimationComplete from dependencies to avoid loop if parent passes inline functions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animation]);
 
   if (!animation || phase === 'idle' || phase === 'done') {
     return null;
@@ -98,12 +129,16 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
 
   const attackerStart = calculatePixelPosition(animation.attackerPosition);
   const defenderPos = calculatePixelPosition(animation.defenderPosition);
-  const isPlayer = animation.attacker.owner === 'player';
+  // `isPlayer` here means "attacker is MY piece" — drives viewer-relative
+  // animation orientation (color glow, particle direction). Compare against
+  // the already-resolved canonical side so each peer animates from their
+  // own perspective.
+  const isPlayer = animation.attacker.owner === myCanonicalSide;
   const elementColor = ELEMENT_COLORS[animation.attacker.element] || '#ffffff';
 
   return (
     <AnimatePresence>
-      <div 
+      <div
         className="chess-attack-animation-overlay"
         style={{
           position: 'fixed',
@@ -124,8 +159,8 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
             opacity: 1
           }}
           animate={{
-            x: phase === 'moving' || phase === 'impact' 
-              ? defenderPos.x - cellSize / 2 
+            x: phase === 'moving' || phase === 'impact'
+              ? defenderPos.x - cellSize / 2
               : attackerStart.x - cellSize / 2,
             y: phase === 'moving' || phase === 'impact'
               ? defenderPos.y - cellSize / 2
@@ -152,7 +187,7 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
             zIndex: 1001
           }}
         >
-          <span 
+          <span
             className={`text-3xl ${!isPlayer ? 'transform rotate-180' : ''}`}
             style={{ color: PIECE_COLORS[animation.attacker.type] }}
           >
@@ -230,12 +265,12 @@ export const ChessAttackAnimation: React.FC<ChessAttackAnimationProps> = ({
               zIndex: 1002
             }}
           >
-            <div 
+            <div
               className="px-4 py-2 rounded-lg font-bold text-lg"
               style={{
                 background: 'linear-gradient(135deg, rgba(0,0,0,0.9), rgba(30,0,50,0.9))',
-                border: animation.isInstantKill 
-                  ? '2px solid #facc15' 
+                border: animation.isInstantKill
+                  ? '2px solid #facc15'
                   : '2px solid #ef4444',
                 color: animation.isInstantKill ? '#facc15' : '#ef4444',
                 textShadow: `0 0 10px ${animation.isInstantKill ? '#facc15' : '#ef4444'}`,

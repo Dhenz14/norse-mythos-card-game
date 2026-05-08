@@ -8,6 +8,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, BattlecryEffect, CardInstance } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoIdGen } from '../../../utils/seededRng';
 
 export default function executeEquipFrostmourne(
   context: GameContext,
@@ -23,7 +24,7 @@ export default function executeEquipFrostmourne(
     const summonCount = effect.summonCount || 0;
     
     const frostmourne: CardInstance = {
-      instanceId: `helgrind-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      instanceId: `helgrind-${cryptoIdGen()}`,
       card: {
         id: effect.weaponId || 3016,
         name: 'Helgrind',

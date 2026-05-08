@@ -14,7 +14,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Its mane already glows with the promise of dawn.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const celestialHorsesPets: CardData[] = [
 			trigger: 'on_buff',
 			description: 'After a friendly minion is buffed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50171,
 		name: 'Hrímfaxi Colt',
@@ -39,7 +39,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Frost falls from its hooves as it trots through shadow.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const celestialHorsesPets: CardData[] = [
 			trigger: 'on_draw_card',
 			description: 'After drawing a card',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50172,
 		name: 'Gullfaxi Colt',
@@ -64,7 +64,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Its golden hooves thunder across the plains even as a foal.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'basic',
@@ -75,7 +75,7 @@ export const celestialHorsesPets: CardData[] = [
 			trigger: 'on_survive_turn',
 			description: 'After surviving a turn',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -90,7 +90,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Its radiant mane heralds the dawn across all realms.',
 		keywords: ['divine_shield', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const celestialHorsesPets: CardData[] = [
 			description: 'After a friendly minion is buffed',
 		},
 		battlecry: { type: 'buff', targetType: 'friendly_minion', value: 2, buffHealth: 0 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50174,
 		name: 'Hrímfaxi, the Night Horse',
@@ -117,7 +117,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Pulling the moon, it drapes the night in shadow.',
 		keywords: ['stealth', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const celestialHorsesPets: CardData[] = [
 			description: 'After drawing a card',
 		},
 		battlecry: { type: 'draw', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50175,
 		name: "Gullfaxi, Hrungnir's Horse",
@@ -144,7 +144,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Its golden hooves thunder across the plains.',
 		keywords: ['taunt', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'adept',
@@ -157,7 +157,7 @@ export const celestialHorsesPets: CardData[] = [
 			description: 'After surviving a turn',
 		},
 		battlecry: { type: 'draw', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -172,7 +172,7 @@ export const celestialHorsesPets: CardData[] = [
 		flavorText: 'Day and night gallop as one — the sky bows to the celestial steed.',
 		keywords: ['divine_shield', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		petStage: 'master',
@@ -208,5 +208,5 @@ export const celestialHorsesPets: CardData[] = [
 				battlecry: { type: 'draw', value: 2, armor: 4 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

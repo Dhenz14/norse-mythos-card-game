@@ -11,7 +11,10 @@ import {
 } from './EffectTypes';
 
 export type CardType = 'minion' | 'spell' | 'weapon' | 'hero' | 'hero_power' | 'poker_spell' | 'artifact' | 'armor';
-export type CardRarity = 'basic' | 'common' | 'rare' | 'epic' | 'mythic' | 'token';
+// Canonical 4 tiers per `docs/RULEBOOK.md` Card Rarity table. Legacy values
+// (`'basic'`, `'token'`) are translated by `tryAdaptRarity` at boundaries.
+import type { Rarity } from '@shared/schemas/rarity';
+export type CardRarity = Rarity;
 export type HeroClass = 
   | 'neutral' 
   | 'mage' 
@@ -121,6 +124,7 @@ export interface Card {
   keywords?: string[];
   flavorText?: string;
   collectible?: boolean;
+  set?: 'starter' | 'genesis';
   
   // Effect properties
   battlecry?: BattlecryEffect;
@@ -248,7 +252,7 @@ export interface CardInstance {
     y: number;
   };
 
-  // NFT — present if this is a Hive L1 NFT card; absent for demo/dev cards
+  // NFT — present if this is a Hive L1 NFT card; absent for starter and local/dev cards
   nft_id?: string;
 }
 

@@ -2,7 +2,7 @@
 
 **Status**: Implementing
 **Date**: 2026-03-19
-**Affects**: `useP2PSync.ts`, `peerStore.ts`, `BlockchainSubscriber.ts`
+**Affects**: `useWireSync.ts`, `peerStore.ts`, `BlockchainSubscriber.ts`
 
 ---
 

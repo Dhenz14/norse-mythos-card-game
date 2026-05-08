@@ -5,7 +5,12 @@
  * See docs/DECENTRALIZED_INDEXER_DESIGN.md for full architecture.
  */
 
-import type { CanonicalAction } from './protocol-core/types';
+import {
+	RAGNAROK_PROTOCOL_IDS,
+	type CampaignDifficulty,
+	type CampaignSubmissionStatus,
+	type CanonicalAction,
+} from './protocol-core/types';
 
 // ============================================================
 // Constants
@@ -13,7 +18,7 @@ import type { CanonicalAction } from './protocol-core/types';
 
 export const INDEXER_VERSION = 1;
 export const RAGNAROK_INDEX_ACCOUNT = 'ragnarok-index';
-export const RAGNAROK_APP_IDS = ['ragnarok-cards', 'ragnarok_level_up'] as const;
+export const RAGNAROK_APP_IDS = [...RAGNAROK_PROTOCOL_IDS, 'ragnarok_level_up'] as const;
 export const RAGNAROK_LEGACY_PREFIX = 'rp_';
 
 export const CHUNK_SIZE_BLOCKS = 10_000;
@@ -57,6 +62,13 @@ export interface DerivedState {
 	loser?: string;
 	supplyAfter?: number;
 	runeChange?: number;
+	campaignId?: string;
+	campaignMissionId?: string;
+	campaignDifficulty?: CampaignDifficulty;
+	campaignLocalRunId?: string;
+	campaignLocalStartedAt?: number;
+	campaignSubmissionStatus?: CampaignSubmissionStatus;
+	transcriptCID?: string;
 }
 
 // ============================================================

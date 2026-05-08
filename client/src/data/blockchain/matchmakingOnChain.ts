@@ -20,6 +20,7 @@
  */
 
 import { hiveSync } from '../HiveSync';
+import { RAGNAROK_APP_ID } from '../schemas/HiveTypes';
 import { computePoW } from './proofOfWork';
 import { sha256Hash, canonicalStringify } from './hashUtils';
 import { getAllQueueEntries, getQueueEntry, deleteQueueEntry, putQueueEntry } from './replayDB';
@@ -70,7 +71,7 @@ export async function broadcastQueueJoin(params: QueueJoinParams): Promise<() =>
 	const { account, mode, elo, peerId, deckHash } = params;
 
 	const basePayload = {
-		app: 'ragnarok-cards',
+		app: RAGNAROK_APP_ID,
 		action: 'queue_join',
 		mode,
 		elo,
@@ -95,12 +96,15 @@ export async function broadcastQueueJoin(params: QueueJoinParams): Promise<() =>
 		blockNum: 0, // not yet on chain
 	});
 
-	// Fire-and-forget broadcast (Hive Keychain prompts user)
-	hiveSync.broadcastCustomJson(
+	const broadcastResult = await hiveSync.broadcastCustomJson(
 		'rp_queue_join',
 		payload as unknown as Record<string, unknown>,
 		false,
-	).catch(() => { /* user may reject */ });
+	);
+	if (!broadcastResult.success) {
+		await deleteQueueEntry(account);
+		throw new Error(broadcastResult.error || 'Failed to broadcast queue join');
+	}
 
 	return () => broadcastQueueLeave(account);
 }
@@ -114,7 +118,7 @@ export async function broadcastQueueLeave(account: string): Promise<void> {
 
 	hiveSync.broadcastCustomJson(
 		'rp_queue_leave',
-		{ app: 'ragnarok-cards', action: 'queue_leave' } as unknown as Record<string, unknown>,
+		{ app: RAGNAROK_APP_ID, action: 'queue_leave' } as unknown as Record<string, unknown>,
 		false,
 	).catch(() => { /* ignore */ });
 }

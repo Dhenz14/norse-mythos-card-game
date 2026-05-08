@@ -2,6 +2,7 @@
  * Game log utilities
  */
 import { GameLogEvent, GameLogEventType } from '../types';
+import { cryptoRng, cryptoIdGen } from './seededRng';
 
 /**
  * Creates a game log event
@@ -20,7 +21,7 @@ export function createGameLogEvent(data: {
   target?: number;
 }): GameLogEvent {
   return {
-    id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    id: `event_${cryptoIdGen()}_${cryptoRng().toString(36).substring(2, 9)}`,
     type: data.type,
     turn: 0, // This would be filled in with the current turn
     timestamp: Date.now(),

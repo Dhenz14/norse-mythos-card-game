@@ -12,6 +12,8 @@
   pointer-events: none;
   z-index: 1;
   mix-blend-mode: screen;
+  will-change: opacity;
+  transform: translateZ(0);
 }
 
 .element-image-fire { animation: element-pulse-simple 1.5s ease-in-out infinite alternate; }
@@ -65,6 +67,8 @@
   z-index: 5;
   border-radius: inherit;
   overflow: hidden;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .element-effect-fire {
@@ -126,6 +130,8 @@
   border: 3px solid rgba(255, 255, 255, 0.9);
   z-index: 40;
   animation: badge-pulse 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .element-badge-fire { animation: badge-pulse-fire 1s ease-in-out infinite alternate; }
@@ -154,6 +160,8 @@
   border-radius: inherit;
   pointer-events: none;
   z-index: 0;
+  will-change: opacity;
+  transform: translateZ(0);
 }
 
 .element-border-fire {
@@ -275,6 +283,8 @@
   pointer-events: none;
   z-index: 0;
   animation: god-aura-breathe 3s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 @keyframes god-aura-breathe {
@@ -333,6 +343,26 @@
   animation: matchup-mutual-pulse 1.2s ease-in-out infinite !important;
 }
 
+/*
+ * Capture-target indicator (lichess/chess.com style). Activates when
+ * the slice's `attackMoves` includes this piece's cell — meaning the
+ * currently-selected own piece can legally capture this enemy. Pure
+ * read of the slice's source of truth (no rule recomputation here).
+ */
+.chess-piece-attackable {
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.85), 0 0 36px rgba(239, 68, 68, 0.5), inset 0 0 14px rgba(239, 68, 68, 0.35);
+  animation: chess-piece-attackable-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes chess-piece-attackable-pulse {
+  0%, 100% {
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.85), 0 0 36px rgba(239, 68, 68, 0.5), inset 0 0 14px rgba(239, 68, 68, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(239, 68, 68, 1), 0 0 56px rgba(239, 68, 68, 0.7), inset 0 0 22px rgba(239, 68, 68, 0.55);
+  }
+}
+
 @keyframes matchup-advantage-pulse {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
@@ -346,6 +376,47 @@
 @keyframes matchup-mutual-pulse {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
+}
+
+/* Status Bars */
+.chess-piece-hp-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 30;
+  overflow: hidden;
+}
+
+.chess-piece-hp-fill {
+  height: 100%;
+  background: var(--gradient-chess-hp);
+  transition: width 0.3s ease-out;
+}
+
+.chess-piece-hp-fill.hp-warning {
+  background: linear-gradient(90deg, var(--warning-400), var(--warning-600));
+}
+
+.chess-piece-hp-fill.hp-danger {
+  background: linear-gradient(90deg, var(--danger-400), var(--danger-600));
+}
+
+.chess-piece-stats-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px 2px;
+  font-size: 10px;
+  font-weight: 800;
+  pointer-events: none;
+  z-index: 30;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 @media (prefers-reduced-motion: reduce) {

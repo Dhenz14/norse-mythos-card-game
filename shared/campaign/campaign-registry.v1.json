@@ -1,0 +1,5726 @@
+{
+  "campaignId": "war-of-pantheons",
+  "chapters": [
+    {
+      "faction": "norse",
+      "id": "norse",
+      "missionIds": [
+        "norse-1",
+        "norse-2",
+        "norse-3",
+        "norse-4",
+        "norse-5",
+        "norse-6",
+        "norse-7",
+        "norse-8",
+        "norse-9"
+      ]
+    },
+    {
+      "faction": "norse",
+      "id": "twilight",
+      "missionIds": [
+        "twilight-1",
+        "twilight-2",
+        "twilight-3",
+        "twilight-4",
+        "twilight-5",
+        "twilight-6",
+        "twilight-7",
+        "twilight-8",
+        "twilight-9"
+      ]
+    },
+    {
+      "faction": "greek",
+      "id": "greek",
+      "missionIds": [
+        "greek-1",
+        "greek-2",
+        "greek-3",
+        "greek-4",
+        "greek-5",
+        "greek-6",
+        "greek-7",
+        "greek-8",
+        "greek-9",
+        "greek-10"
+      ]
+    },
+    {
+      "faction": "egyptian",
+      "id": "egyptian",
+      "missionIds": [
+        "egyptian-1",
+        "egyptian-2",
+        "egyptian-3",
+        "egyptian-4",
+        "egyptian-5",
+        "egyptian-6",
+        "egyptian-7",
+        "egyptian-8",
+        "egyptian-9",
+        "egyptian-10"
+      ]
+    },
+    {
+      "faction": "celtic",
+      "id": "celtic",
+      "missionIds": [
+        "celtic-1",
+        "celtic-2",
+        "celtic-3",
+        "celtic-4",
+        "celtic-5",
+        "celtic-6",
+        "celtic-7",
+        "celtic-8",
+        "celtic-9",
+        "celtic-10"
+      ]
+    },
+    {
+      "faction": "eastern",
+      "id": "eastern",
+      "missionIds": [
+        "eastern-1",
+        "eastern-2",
+        "eastern-3",
+        "eastern-4",
+        "eastern-5",
+        "eastern-6",
+        "eastern-7",
+        "eastern-8",
+        "eastern-9",
+        "eastern-10"
+      ]
+    }
+  ],
+  "generatedFrom": "client-campaign-chapters",
+  "missions": [
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20004,
+        20004,
+        20005,
+        20005,
+        20010,
+        20010,
+        20011,
+        20011,
+        20012,
+        20012,
+        20013,
+        20013,
+        20014,
+        20014,
+        20015,
+        20015,
+        20020,
+        20020,
+        20021,
+        20021,
+        20022,
+        20022,
+        20023,
+        20023
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-thor",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ginnungagap",
+        "knight": "hero-gormr",
+        "queen": "hero-sinmara",
+        "rook": "hero-thryma"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20004,
+        20004,
+        20100,
+        20100,
+        20104,
+        20104,
+        20107,
+        20107,
+        20110,
+        20110,
+        20111,
+        20111,
+        20114,
+        20114,
+        20115,
+        20115,
+        20116,
+        20116,
+        20201,
+        20201,
+        20204,
+        20204,
+        20210,
+        20210,
+        20305,
+        20305
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-thorgrim",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": true,
+        "tightness": 0.2,
+        "tradeEfficiency": 0.3,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Ymir feeds on the void (Phase I)",
+          "effect": {
+            "type": "heal_self",
+            "value": 15
+          },
+          "flash": "blue",
+          "hpPercent": 75,
+          "quip": "You bleed me — and I drink from the void to refill the wound."
+        },
+        {
+          "description": "Ymir roars — primordial scream (Phase II)",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 40,
+          "quip": "Enough! The first scream of creation answers ME."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Ymir has 130 health — primordial giant",
+          "type": "extra_health",
+          "value": 30
+        },
+        {
+          "cardId": 20003,
+          "description": "Ymir spawns frost-giant offspring at start",
+          "type": "start_with_minion"
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ymir",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-thorgrim"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "norse-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20103,
+        20103,
+        20106,
+        20106,
+        20107,
+        20107,
+        20109,
+        20109,
+        20112,
+        20112,
+        20113,
+        20113,
+        20200,
+        20200,
+        20206,
+        20206,
+        20208,
+        20208,
+        20211,
+        20211,
+        20301,
+        20301,
+        20304,
+        20304
+      ],
+      "aiHeroClass": "shaman",
+      "aiHeroId": "hero-njord",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Bergelmir hardens with the cold of his grief",
+          "effect": {
+            "type": "add_armor",
+            "value": 8
+          },
+          "flash": "blue",
+          "hpPercent": 60,
+          "quip": "Bergelmir’s spear hardens with the rime of his oath — the cold loves the wronged."
+        },
+        {
+          "description": "Bergelmir invokes his ancestor’s rage",
+          "effect": {
+            "type": "enrage",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "Hear me, Ymir-father. Today I bring you sons."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Bergelmir has 115 health — survivor of the blood-flood",
+          "type": "extra_health",
+          "value": 15
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-njord",
+        "king": "king-brimir",
+        "knight": "hero-aegir",
+        "queen": "hero-hel",
+        "rook": "hero-valthrud"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "norse-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20103,
+        20103,
+        20108,
+        20108,
+        20109,
+        20109,
+        20111,
+        20111,
+        20112,
+        20112,
+        20116,
+        20116,
+        20202,
+        20202,
+        20205,
+        20205,
+        20208,
+        20208,
+        20214,
+        20214,
+        20215,
+        20215,
+        20301,
+        20301
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-skadi",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-gerd",
+        "king": "king-surtr",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-logi"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "norse-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20005,
+        20005,
+        20020,
+        20020,
+        20100,
+        20100,
+        20104,
+        20104,
+        20105,
+        20105,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20201,
+        20201,
+        20210,
+        20210,
+        20302,
+        20302,
+        20305,
+        20305,
+        20306,
+        20306
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-valthrud",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Vanguard breaches the unfinished gate",
+          "effect": {
+            "type": "damage_player",
+            "value": 6
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "Hear me, brothers below! The walls are not yet sealed!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Giant war-lord starts with +1 mana crystal",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ymir",
+        "knight": "hero-gormr",
+        "queen": "hero-hel",
+        "rook": "hero-valthrud"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "norse-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20004,
+        20004,
+        20016,
+        20016,
+        20021,
+        20021,
+        20100,
+        20100,
+        20101,
+        20101,
+        20103,
+        20103,
+        20106,
+        20106,
+        20109,
+        20109,
+        20112,
+        20112,
+        20113,
+        20113,
+        20204,
+        20204,
+        20205,
+        20205,
+        20208,
+        20208,
+        20211,
+        20211,
+        20303,
+        20303
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-odin",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "A blinding pulse from the corrupted shard",
+          "effect": {
+            "type": "damage_player",
+            "value": 5
+          },
+          "flash": "gold",
+          "hpPercent": 70,
+          "quip": "I show you what we showed Freyr. Look at the LIGHT."
+        },
+        {
+          "description": "Yggdrasil’s roots feed the dark elf",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "purple",
+          "hpPercent": 35,
+          "quip": "The roots remember all the names that ever fell into them."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Dark-elf lord draws an extra card each turn",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freyr",
+        "king": "king-yggdrasil",
+        "knight": "hero-hoder",
+        "queen": "hero-odin",
+        "rook": "hero-heimdall"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "norse-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20105,
+        20105,
+        20106,
+        20106,
+        20107,
+        20107,
+        20110,
+        20110,
+        20113,
+        20113,
+        20115,
+        20115,
+        20203,
+        20203,
+        20204,
+        20204,
+        20207,
+        20207,
+        20216,
+        20216
+      ],
+      "aiHeroClass": "druid",
+      "aiHeroId": "hero-idunn",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.8,
+        "heroPowerPriority": 0.7,
+        "prioritizeFace": false,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Vanir draw on the green earth",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "green",
+          "hpPercent": 65,
+          "quip": "Yggdrasil drinks. So do I."
+        },
+        {
+          "description": "Vanir vengeance flares",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "Idunn’s apples are not given to gods who burn their guests."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Vanir war-leader has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Vanir war-leader starts with +1 mana crystal",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-idunn",
+        "king": "king-yggdrasil",
+        "knight": "hero-ullr",
+        "queen": "hero-sol",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "norse-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20005,
+        20005,
+        20020,
+        20020,
+        20104,
+        20104,
+        20105,
+        20105,
+        20107,
+        20107,
+        20114,
+        20114,
+        20115,
+        20115,
+        20201,
+        20201,
+        20203,
+        20203,
+        20207,
+        20207,
+        20209,
+        20209,
+        20305,
+        20305
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-thorgrim",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Bergelmir’s ancient grief hardens him",
+          "effect": {
+            "type": "add_armor",
+            "value": 10
+          },
+          "flash": "blue",
+          "hpPercent": 80,
+          "quip": "I have been carrying this storm for an age. NOW it walks."
+        },
+        {
+          "description": "Bergelmir invokes the drowning",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "Hear me, Ymir-grandfather. The blood-flood walks again."
+        },
+        {
+          "description": "Bergelmir releases the deepest grief",
+          "effect": {
+            "type": "enrage",
+            "value": 12
+          },
+          "flash": "purple",
+          "hpPercent": 20,
+          "quip": "My wife survived with me on that log. She lived just long enough to bear our sons. Then she went into the cold. THEY are the price you should be paying."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Bergelmir has 120 health — ancient and terrible",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Bergelmir starts with +2 mana crystals",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "Bergelmir's hatred deals 1 damage to your hero each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-gerd",
+        "king": "king-surtr",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-thorgrim"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "norse-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20105,
+        20105,
+        20107,
+        20107,
+        20113,
+        20113,
+        20114,
+        20114,
+        20115,
+        20115,
+        20200,
+        20200,
+        20203,
+        20203,
+        20207,
+        20207,
+        20209,
+        20209,
+        20216,
+        20216
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-freya",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.95,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Odin marks the player (Phase I)",
+          "flash": "gold",
+          "hpPercent": 80,
+          "quip": "Huginn. Muninn. Watch closely. We will need to remember this one."
+        },
+        {
+          "description": "Yggdrasil empowers Odin (Phase II)",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "green",
+          "hpPercent": 55,
+          "quip": "Even Hlidskjalf has its limits. I draw on the seed of Yggdrasil."
+        },
+        {
+          "description": "Odin invokes Ragnarok (Phase III)",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "Then I will see you in Valhalla. SKOLL — TAKE THE SUN!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The forces of Ragnarok have 120 health",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Chaos starts with +2 mana crystals",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "The twilight draws an extra omen each turn",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freya",
+        "king": "king-surtr",
+        "knight": "hero-loki",
+        "queen": "hero-hel",
+        "rook": "hero-thryma"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "norse",
+      "id": "norse-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "norse-8"
+      ],
+      "starThresholds": {
+        "threeStar": 16,
+        "twoStar": 24
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20004,
+        20004,
+        20005,
+        20005,
+        20020,
+        20020,
+        20100,
+        20100,
+        20104,
+        20104,
+        20107,
+        20107,
+        20111,
+        20111,
+        20113,
+        20113,
+        20115,
+        20115,
+        20200,
+        20200,
+        20203,
+        20203,
+        20207,
+        20207,
+        20305,
+        20305
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-thorgrim",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Suttungr seals the cave",
+          "effect": {
+            "type": "add_armor",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "GUNNLOD! BAR THE INNER DOOR!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Suttungr has 115 health — mountain-blooded",
+          "type": "extra_health",
+          "value": 15
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-gerd",
+        "king": "king-surtr",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-thorgrim"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [
+        "norse-9"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20106,
+        20106,
+        20107,
+        20107,
+        20109,
+        20109,
+        20111,
+        20111,
+        20114,
+        20114,
+        20203,
+        20203,
+        20205,
+        20205,
+        20208,
+        20208,
+        20214,
+        20214,
+        20215,
+        20215
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-skadi",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Thiazi draws on his ancient years",
+          "effect": {
+            "type": "heal_self",
+            "value": 10
+          },
+          "flash": "blue",
+          "hpPercent": 60,
+          "quip": "I am older than the mountain you stand on. I do not need to tire."
+        },
+        {
+          "description": "Thiazi turns spiteful",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "If I cannot have her, no one can taste an apple ever again."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Thiazi (eagle-form) has 120 health",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Eagle’s eye — Thiazi draws an extra card each turn",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ymir",
+        "knight": "hero-skadi",
+        "queen": "hero-hel",
+        "rook": "hero-valthrud"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "twilight-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20020,
+        20020,
+        20100,
+        20100,
+        20105,
+        20105,
+        20107,
+        20107,
+        20109,
+        20109,
+        20113,
+        20113,
+        20114,
+        20114,
+        20200,
+        20200,
+        20203,
+        20203,
+        20204,
+        20204,
+        20207,
+        20207,
+        20209,
+        20209,
+        20305,
+        20305
+      ],
+      "aiHeroClass": "shaman",
+      "aiHeroId": "hero-jormungandr",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.7,
+        "prioritizeFace": false,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Jormungandr draws on the sea",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "blue",
+          "hpPercent": 65,
+          "quip": "The deep loves what is left in it."
+        },
+        {
+          "description": "The serpent’s breath turns the air to poison",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "green",
+          "hpPercent": 30,
+          "quip": "I am the venom that ends you. I am ALWAYS the venom that ends you."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Jormungandr has 130 health — it circles the world",
+          "type": "extra_health",
+          "value": 30
+        },
+        {
+          "description": "The deep gives the serpent endless venom",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-njord",
+        "king": "king-yggdrasil",
+        "knight": "hero-skadi",
+        "queen": "hero-ran",
+        "rook": "hero-aegir"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "twilight-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20020,
+        20020,
+        20100,
+        20100,
+        20104,
+        20104,
+        20105,
+        20105,
+        20107,
+        20107,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20115,
+        20115,
+        20201,
+        20201,
+        20203,
+        20203,
+        20210,
+        20210
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-fenrir",
+      "aiProfile": {
+        "aggression": 0.4,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.3,
+        "prioritizeFace": true,
+        "tightness": 0.2,
+        "tradeEfficiency": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Fenrir tests his strength against Gleipnir",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 70,
+          "quip": "Show me the rest of you. Show me ALL of you."
+        },
+        {
+          "description": "The wolf understands the trap",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 35,
+          "quip": "TYR! Where is your hand!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Fenrir has 125 health — the cosmos cannot hold him",
+          "type": "extra_health",
+          "value": 25
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freyr",
+        "king": "king-yggdrasil",
+        "knight": "hero-ullr",
+        "queen": "hero-freya",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "twilight-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20102,
+        20102,
+        20103,
+        20103,
+        20105,
+        20105,
+        20107,
+        20107,
+        20109,
+        20109,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20204,
+        20204,
+        20205,
+        20205,
+        20207,
+        20207,
+        20208,
+        20208
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-loki",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.95,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Loki places the mistletoe",
+          "effect": {
+            "type": "damage_player",
+            "value": 5
+          },
+          "flash": "purple",
+          "hpPercent": 75,
+          "quip": "Hod, hold out your hand. I have a present for you."
+        },
+        {
+          "description": "Loki enjoys the moment",
+          "effect": {
+            "type": "enrage",
+            "value": 7
+          },
+          "flash": "purple",
+          "hpPercent": 50,
+          "quip": "I always wondered which of these gods was Frigg’s favorite. Now we will know."
+        },
+        {
+          "description": "Loki guides Hod’s aim",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 25,
+          "quip": "Throw, brother. Throw straight. Let me guide your hand."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Loki cannot quite die yet — the story still needs him",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Loki always has one more trick than you do",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-baldr",
+        "king": "king-yggdrasil",
+        "knight": "hero-hoder",
+        "queen": "hero-frigg",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "twilight-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20020,
+        20020,
+        20100,
+        20100,
+        20102,
+        20102,
+        20103,
+        20103,
+        20105,
+        20105,
+        20107,
+        20107,
+        20109,
+        20109,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20203,
+        20203,
+        20204,
+        20204,
+        20205,
+        20205
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-loki",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.95,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Loki swaps disguises mid-fight",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "purple",
+          "hpPercent": 60,
+          "quip": "I have worn so many faces. I have a few left."
+        },
+        {
+          "description": "Loki turns vicious",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 25,
+          "quip": "You are very brave for a creature whose god I just killed."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Thokk has many faces and only one of them is hers",
+          "type": "extra_health",
+          "value": 25
+        },
+        {
+          "description": "Loki has read this scene before",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-frigg",
+        "king": "king-surtr",
+        "knight": "hero-hermod",
+        "queen": "hero-hel",
+        "rook": "hero-thryma"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "twilight-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20102,
+        20102,
+        20103,
+        20103,
+        20105,
+        20105,
+        20107,
+        20107,
+        20109,
+        20109,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20115,
+        20115,
+        20204,
+        20204
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-loki",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.95,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Loki shifts shape to slip the chains",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "purple",
+          "hpPercent": 70,
+          "quip": "A salmon was the wrong choice. I should have been a hawk."
+        },
+        {
+          "description": "Loki strikes back with fury",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 40,
+          "quip": "You think this is what I deserve. You think THIS is the worst the cosmos can do to me."
+        },
+        {
+          "description": "Loki uses Sigyn against you",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "purple",
+          "hpPercent": 15,
+          "quip": "My WIFE will be sitting in the dark with a bowl for an AGE because of you. Are you proud?"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The cosmos cannot quite kill its trickster",
+          "type": "extra_health",
+          "value": 30
+        },
+        {
+          "description": "Loki has had ages to plan this",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-vidar",
+        "king": "king-yggdrasil",
+        "knight": "hero-skadi",
+        "queen": "hero-sigyn",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "twilight-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20104,
+        20104,
+        20105,
+        20105,
+        20107,
+        20107,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20115,
+        20115,
+        20203,
+        20203,
+        20207,
+        20207,
+        20214,
+        20214
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-skadi",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.6,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Skoll catches Sol the sun",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 75,
+          "quip": "SKOLL! Now! While the goddess is tired!"
+        },
+        {
+          "description": "Hati catches Mani the moon",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "blue",
+          "hpPercent": 50,
+          "quip": "HATI! Bring down the moon!"
+        },
+        {
+          "description": "The dark closes in on all sides",
+          "effect": {
+            "type": "enrage",
+            "value": 12
+          },
+          "flash": "purple",
+          "hpPercent": 25,
+          "quip": "There is no light left to fear me by."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The wolves of the sky have been hungry an entire age",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "The cold is on every side",
+          "type": "extra_mana",
+          "value": 1
+        },
+        {
+          "description": "Fimbulvetr drains 1 HP from your hero each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-frigg",
+        "king": "king-yggdrasil",
+        "knight": "hero-vidar",
+        "queen": "hero-freya",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "twilight-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20001,
+        20001,
+        20002,
+        20002,
+        20003,
+        20003,
+        20004,
+        20004,
+        20020,
+        20020,
+        20100,
+        20100,
+        20102,
+        20102,
+        20103,
+        20103,
+        20105,
+        20105,
+        20107,
+        20107,
+        20111,
+        20111,
+        20113,
+        20113,
+        20114,
+        20114,
+        20115,
+        20115,
+        20204,
+        20204
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-loki",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.95,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Thor and Jormungandr kill each other",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "green",
+          "hpPercent": 80,
+          "quip": "THOR! BROTHER! Step into the serpent’s breath! The cosmos has been waiting!"
+        },
+        {
+          "description": "Tyr and Garm finish each other",
+          "effect": {
+            "type": "damage_player",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 60,
+          "quip": "TYR! GARM! Old enemies. Long contract. END IT."
+        },
+        {
+          "description": "Fenrir swallows Odin",
+          "effect": {
+            "type": "damage_player",
+            "value": 14
+          },
+          "flash": "gold",
+          "hpPercent": 40,
+          "quip": "ODIN. Look at me, brother. Look UP. Look at the WOLF."
+        },
+        {
+          "description": "Surtr the fire-giant raises his sword",
+          "effect": {
+            "type": "enrage",
+            "value": 15
+          },
+          "flash": "red",
+          "hpPercent": 20,
+          "quip": "And then, of course — SURTR, brother, do you have a moment?"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The end of the world has 140 HP and three of its own armies",
+          "type": "extra_health",
+          "value": 40
+        },
+        {
+          "description": "Surtr brings the fires of Muspelheim",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "Prophecy gives the enemy an extra card",
+          "type": "bonus_draw",
+          "value": 1
+        },
+        {
+          "description": "The world is ending. 2 damage every turn.",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-vidar",
+        "king": "king-yggdrasil",
+        "knight": "hero-thor",
+        "queen": "hero-freya",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "twilight",
+      "id": "twilight-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "twilight-8"
+      ],
+      "starThresholds": {
+        "threeStar": 18,
+        "twoStar": 28
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014,
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-nyx",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-demeter",
+        "king": "king-ginnungagap",
+        "knight": "hero-hermes",
+        "queen": "hero-nyx",
+        "rook": "hero-hades"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029,
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-hyperion",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.7,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Uranus presses down with the weight of stars",
+          "effect": {
+            "type": "add_armor",
+            "value": 8
+          },
+          "flash": "blue",
+          "hpPercent": 60,
+          "quip": "I press down. The Earth itself cannot lift me."
+        },
+        {
+          "description": "Uranus calls on the sky",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "GAIA! Hold him still! He is YOUR son!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Uranus's crushing sky deals 1 damage each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hera",
+        "king": "king-uranus",
+        "knight": "hero-apollo",
+        "queen": "hero-hyperion",
+        "rook": "hero-ares"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "greek-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044,
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-chronos",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Cronus consumes his fear",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 60,
+          "quip": "I have already swallowed everything that could threaten me. Now I will swallow you."
+        },
+        {
+          "description": "The swallowed gods stir",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "My BELLY! Something is moving in my BELLY!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Cronus has 105 health from Titan constitution",
+          "type": "extra_health",
+          "value": 5
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-demeter",
+        "king": "king-surtr",
+        "knight": "hero-hermes",
+        "queen": "hero-chronos",
+        "rook": "hero-hephaestus"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "greek-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059,
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-hephaestus",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Campe constricts",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "My coils are older than the chains the Cyclopes wear."
+        }
+      ],
+      "bossRules": [
+        {
+          "cardId": 20203,
+          "description": "Campe starts with a guardian serpent on the battlefield",
+          "type": "start_with_minion"
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-tartarus",
+        "knight": "hero-hermes",
+        "queen": "hero-hephaestus",
+        "rook": "hero-ares"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "greek-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074,
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-ares",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.75,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Atlas calls in the giant volley",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 65,
+          "quip": "HUNDRED-HANDERS! THROW! Three hundred boulders apiece!"
+        },
+        {
+          "description": "Atlas plants his feet",
+          "effect": {
+            "type": "add_armor",
+            "value": 12
+          },
+          "flash": "blue",
+          "hpPercent": 30,
+          "quip": "I am the wall the Olympians cannot get past."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Atlas has 110 health — mightiest of the Titan warriors",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Atlas rallies Titan reinforcements each turn",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-athena",
+        "king": "king-surtr",
+        "knight": "hero-apollo",
+        "queen": "hero-ares",
+        "rook": "hero-hephaestus"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "greek-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089,
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-zeus",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Zeus draws on the wrath of Olympus",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "My OWN cousin. Stealing from MY hearth."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Zeus's wrath grants 105 health",
+          "type": "extra_health",
+          "value": 5
+        },
+        {
+          "description": "Divine authority grants +1 mana",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hera",
+        "king": "king-gaia",
+        "knight": "hero-hermes",
+        "queen": "hero-zeus",
+        "rook": "hero-ares"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "greek-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104,
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-hades",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.7,
+        "efficiency": 0.5,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.4,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Typhon’s hundred heads roar at once",
+          "effect": {
+            "type": "enrage",
+            "value": 10
+          },
+          "flash": "red",
+          "hpPercent": 70,
+          "quip": "Ten more heads grow when one is cut. Ten more flames rise from each black eye."
+        },
+        {
+          "description": "Typhon’s wrath erupts",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 35,
+          "quip": "I will burn HERA. I will burn ARTEMIS. I will burn the SKY."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Typhon has 115 health — mightiest monster ever born",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Typhon's hundred dragon-heads deal 2 damage each turn",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-tartarus",
+        "knight": "hero-artemis",
+        "queen": "hero-hades",
+        "rook": "hero-ares"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "greek-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119,
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-ares",
+      "aiProfile": {
+        "aggression": 0.85,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.6,
+        "prioritizeFace": true,
+        "tightness": 0.4,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Porphyrion launches a giant volley",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 60,
+          "quip": "Throw the FLAMING OAKS! Throw the MOUNTAINS!"
+        },
+        {
+          "description": "Porphyrion calls on the prophecy that protects him",
+          "effect": {
+            "type": "add_armor",
+            "value": 14
+          },
+          "flash": "gold",
+          "hpPercent": 30,
+          "quip": "I am the KING of giants. I cannot fall to a god alone."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Porphyrion has 110 health — king of the Giants",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Giant fury grants +1 mana",
+          "type": "extra_mana",
+          "value": 1
+        },
+        {
+          "description": "The giant horde provides endless reinforcements",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-brimir",
+        "knight": "hero-artemis",
+        "queen": "hero-ares",
+        "rook": "hero-hephaestus"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "greek-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134,
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-athena",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.95,
+        "heroPowerPriority": 0.7,
+        "prioritizeFace": false,
+        "tightness": 0.9,
+        "tradeEfficiency": 0.95,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Athena raises the aegis",
+          "effect": {
+            "type": "add_armor",
+            "value": 10
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I am the strategy AND the wisdom. You will need to outthink BOTH."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Athena has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Athena's divine wisdom grants +1 mana",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hera",
+        "king": "king-gaia",
+        "knight": "hero-hermes",
+        "queen": "hero-athena",
+        "rook": "hero-heimdall"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "greek-8"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149,
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149
+      ],
+      "aiHeroClass": "druid",
+      "aiHeroId": "hero-demeter",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.9,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.85,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Gaia opens the lower gates",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "purple",
+          "hpPercent": 75,
+          "quip": "I open the rifts of Tartarus. The Titans stir in their chains."
+        },
+        {
+          "description": "Gaia draws on primordial Chaos",
+          "effect": {
+            "type": "heal_self",
+            "value": 14
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "Chaos itself comes back through me. I birthed it. It always comes home."
+        },
+        {
+          "description": "Gaia speaks the prophecy",
+          "effect": {
+            "type": "enrage",
+            "value": 14
+          },
+          "flash": "red",
+          "hpPercent": 25,
+          "quip": "Zeus will fall. As Cronus did. As Uranus did. The cycle DOES not stop. It only PAUSES."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Gaia's Remnant has 120 health — primordial endurance",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Primordial power grants +2 mana",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "The earth yields endless reinforcements",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hades",
+        "king": "king-ginnungagap",
+        "knight": "hero-apollo",
+        "queen": "hero-demeter",
+        "rook": "hero-poseidon"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "greek",
+      "id": "greek-10",
+      "missionNumber": 10,
+      "prerequisiteIds": [
+        "greek-9"
+      ],
+      "starThresholds": {
+        "threeStar": 16,
+        "twoStar": 24
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014,
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-ullr",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-maat",
+        "king": "king-gaia",
+        "knight": "hero-khepri",
+        "queen": "hero-ammit",
+        "rook": "hero-baldur"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029,
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-serqet",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Serqet strikes with venom",
+          "effect": {
+            "type": "damage_player",
+            "value": 6
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "My tail drips poison faster than your heart can race."
+        }
+      ],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-maat",
+        "king": "king-gaia",
+        "knight": "hero-serqet",
+        "queen": "hero-ammit",
+        "rook": "hero-hephaestus"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "egyptian-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044,
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-maat",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.7,
+        "prioritizeFace": false,
+        "tightness": 0.9,
+        "tradeEfficiency": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Ma’at calls on the laws of the cosmos",
+          "effect": {
+            "type": "add_armor",
+            "value": 8
+          },
+          "flash": "gold",
+          "hpPercent": 60,
+          "quip": "The forty-two negative confessions. Recite them. NOW."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Ma'at draws wisdom from the scales",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-maat",
+        "king": "king-yggdrasil",
+        "knight": "hero-khepri",
+        "queen": "hero-ammit",
+        "rook": "hero-heimdall"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "egyptian-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059,
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-logi",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.5,
+        "prioritizeFace": true,
+        "tightness": 0.4,
+        "tradeEfficiency": 0.4,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Ammit lunges with all three jaws",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "I have eaten more pharaohs than you can name. Add yourself to the list."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Ammit has 105 health",
+          "type": "extra_health",
+          "value": 5
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-aphrodite",
+        "king": "king-tartarus",
+        "knight": "hero-serqet",
+        "queen": "hero-ammit",
+        "rook": "hero-ares"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "egyptian-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074,
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-ammit",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.7,
+        "efficiency": 0.4,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.3,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Set unleashes the desert storm",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "red",
+          "hpPercent": 60,
+          "quip": "My SANDSTORM scoured kingdoms off the map."
+        },
+        {
+          "description": "Set draws on his oldest crime",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "My BROTHER’S BLOOD is on every grain of sand."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Set has 105 health",
+          "type": "extra_health",
+          "value": 5
+        },
+        {
+          "description": "Sandstorm deals 1 damage each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-surtr",
+        "knight": "hero-serqet",
+        "queen": "hero-ammit",
+        "rook": "hero-logi"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "egyptian-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089,
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-fujin",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.8,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Ra blinds you with the eye of the sun",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "gold",
+          "hpPercent": 65,
+          "quip": "My EYE is the sun itself. Look at it. LOOK."
+        },
+        {
+          "description": "Ra raises the solar barge",
+          "effect": {
+            "type": "add_armor",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 30,
+          "quip": "I have sailed twelve hours through serpents. THIS is hour ONE."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Ra has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Ra channels solar energy (+1 mana)",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hestia",
+        "king": "king-audumbla",
+        "knight": "hero-apollo",
+        "queen": "hero-fujin",
+        "rook": "hero-baldur"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "egyptian-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104,
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-fujin",
+      "aiProfile": {
+        "aggression": 0.4,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.9,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Isis weaves a spell of restoration",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I tricked Ra into giving me his TRUE name. There is no spell I cannot speak."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Isis has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Isis weaves extra cards from magic",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freya",
+        "king": "king-ginnungagap",
+        "knight": "hero-hermes",
+        "queen": "hero-sol",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "egyptian-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119,
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-eir",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.8,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Anubis calls the four sons of Horus",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "purple",
+          "hpPercent": 60,
+          "quip": "I open the canopic jars. The four sons of Horus are watching you."
+        },
+        {
+          "description": "Anubis turns judge to executioner",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 30,
+          "quip": "No god has ever escaped my chamber by being clever. Be unclever, then. Try strength."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Anubis has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Anubis channels death energy (+1 mana)",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-maat",
+        "king": "king-tartarus",
+        "knight": "hero-nyx",
+        "queen": "hero-hel",
+        "rook": "hero-vidar"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "egyptian-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134,
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-dionysus",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.6,
+        "efficiency": 0.6,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.4,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Apophis tightens around the barge",
+          "effect": {
+            "type": "damage_player",
+            "value": 9
+          },
+          "flash": "purple",
+          "hpPercent": 70,
+          "quip": "My coils stretch from the start of time to the end of it."
+        },
+        {
+          "description": "Apophis lunges for the sun",
+          "effect": {
+            "type": "enrage",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 35,
+          "quip": "The sun. Mine. ALWAYS mine."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Apophis has 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Apophis' darkness deals 2 damage each turn",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ginnungagap",
+        "knight": "hero-nyx",
+        "queen": "hero-hades",
+        "rook": "hero-logi"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "egyptian-8"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149,
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-freya",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.9,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.9,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Osiris reads from the Book of the Dead",
+          "effect": {
+            "type": "heal_self",
+            "value": 14
+          },
+          "flash": "gold",
+          "hpPercent": 75,
+          "quip": "I open the Book of the Dead. Every spell I needed to come back is in here."
+        },
+        {
+          "description": "Osiris draws on his family",
+          "effect": {
+            "type": "add_armor",
+            "value": 12
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "My WIFE put me back together. My SON avenged me. I am the LEAST alone god in this hall."
+        },
+        {
+          "description": "Osiris becomes the patient executioner",
+          "effect": {
+            "type": "enrage",
+            "value": 13
+          },
+          "flash": "purple",
+          "hpPercent": 25,
+          "quip": "I have an eternity. You have a heartbeat. Use it carefully."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Osiris has 120 health",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Osiris wields death's power (+2 mana)",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "Osiris draws from the Book of the Dead",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-maat",
+        "king": "king-yggdrasil",
+        "knight": "hero-khepri",
+        "queen": "hero-hel",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "egyptian",
+      "id": "egyptian-10",
+      "missionNumber": 10,
+      "prerequisiteIds": [
+        "egyptian-9"
+      ],
+      "starThresholds": {
+        "threeStar": 16,
+        "twoStar": 24
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014,
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014
+      ],
+      "aiHeroClass": "druid",
+      "aiHeroId": "hero-fjorgyn",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.4,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The druid draws on the forest's life force",
+          "effect": {
+            "type": "heal_self",
+            "value": 8
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "The roots remember EVERY footstep. The forest is not finished with you."
+        }
+      ],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-idunn",
+        "king": "king-yggdrasil",
+        "knight": "hero-fjora",
+        "queen": "hero-kvasir",
+        "rook": "hero-baldur"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029,
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-persephone",
+      "aiProfile": {
+        "aggression": 0.6,
+        "bluffFrequency": 0.7,
+        "efficiency": 0.5,
+        "prioritizeFace": false,
+        "tightness": 0.4,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Morrigan triples herself",
+          "effect": {
+            "type": "enrage",
+            "value": 8
+          },
+          "flash": "purple",
+          "hpPercent": 50,
+          "quip": "Maiden. Mother. Crone. THREE Morrigans, ONE quarry."
+        }
+      ],
+      "bossRules": [],
+      "campaignArmy": {
+        "bishop": "hero-sigyn",
+        "king": "king-ginnungagap",
+        "knight": "hero-nyx",
+        "queen": "hero-hel",
+        "rook": "hero-vidar"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "celtic-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044,
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-vili",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.1,
+        "efficiency": 0.5,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.4,
+        "usesHeroPower": false
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Cu Chulainn enters his warp spasm",
+          "effect": {
+            "type": "enrage",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "My eye sinks. My muscles re-arrange. The WARP SPASM is on me."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Cu Chulainn's warp spasm grants extra vitality",
+          "type": "extra_health",
+          "value": 5
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-gerd",
+        "king": "king-surtr",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "celtic-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059,
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-kvasir",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Salmon reads your future moves",
+          "effect": {
+            "type": "add_armor",
+            "value": 8
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I know what you will do BEFORE you do it."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The Salmon grants extra wisdom (bonus draw)",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-idunn",
+        "king": "king-yggdrasil",
+        "knight": "hero-loki",
+        "queen": "hero-odin",
+        "rook": "hero-heimdall"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "celtic-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074,
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-mani",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.6,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": true,
+        "tightness": 0.5,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Balor’s evil eye opens",
+          "effect": {
+            "type": "damage_player",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "OPEN. THE. EYE."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Balor has 105 health",
+          "type": "extra_health",
+          "value": 5
+        },
+        {
+          "description": "Balor's Evil Eye deals 1 damage each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ginnungagap",
+        "knight": "hero-myrka",
+        "queen": "hero-hades",
+        "rook": "hero-logi"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "celtic-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089,
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-hera",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.7,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Dagda taps the resurrection end of his club",
+          "effect": {
+            "type": "heal_self",
+            "value": 14
+          },
+          "flash": "green",
+          "hpPercent": 50,
+          "quip": "My club has TWO ENDS, friend. The OTHER one heals me."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The Dagda has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "The cauldron grants +1 mana",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freya",
+        "king": "king-buri",
+        "knight": "hero-ullr",
+        "queen": "hero-odin",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "celtic-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104,
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-bragi",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Tir na nOg restores its guardians",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "Look at the FIELDS. Look at the LIGHT. Why would you want to leave?"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Tir na nOg's guardians have 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Time flows strangely here (bonus draw)",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freya",
+        "king": "king-audumbla",
+        "knight": "hero-fjora",
+        "queen": "hero-sol",
+        "rook": "hero-baldur"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "celtic-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119,
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119
+      ],
+      "aiHeroClass": "hunter",
+      "aiHeroId": "hero-aegir",
+      "aiProfile": {
+        "aggression": 0.8,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.5,
+        "tradeEfficiency": 0.6,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Wild Hunt closes in",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 50,
+          "quip": "HOUNDS! Tighten the circle! Drive them to me!"
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Cernunnos has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "The Wild Hunt grants +1 mana",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-gerd",
+        "king": "king-ymir",
+        "knight": "hero-skadi",
+        "queen": "hero-sinmara",
+        "rook": "hero-magni"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "celtic-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134,
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134
+      ],
+      "aiHeroClass": "paladin",
+      "aiHeroId": "hero-tyr",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.85,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Brigid the Smith strikes",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "red",
+          "hpPercent": 65,
+          "quip": "I am the SMITH. The hammer falls."
+        },
+        {
+          "description": "Brigid the Healer mends herself",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "green",
+          "hpPercent": 35,
+          "quip": "I am the HEALER. I undo the work of the smith."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Brigid has 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Brigid channels triple power (+2 mana)",
+          "type": "extra_mana",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-eir",
+        "king": "king-surtr",
+        "knight": "hero-apollo",
+        "queen": "hero-sol",
+        "rook": "hero-tyr"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "celtic-8"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149,
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149
+      ],
+      "aiHeroClass": "paladin",
+      "aiHeroId": "hero-baldur",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.9,
+        "heroPowerPriority": 0.7,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Lugh the warrior strikes",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "red",
+          "hpPercent": 75,
+          "quip": "I am the WARRIOR. Areadbhar is hungry."
+        },
+        {
+          "description": "Lugh the smith hardens his armor",
+          "effect": {
+            "type": "add_armor",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I am the SMITH. I have forged a thousand things you will never see."
+        },
+        {
+          "description": "Lugh the sorcerer unfolds his last art",
+          "effect": {
+            "type": "enrage",
+            "value": 13
+          },
+          "flash": "gold",
+          "hpPercent": 25,
+          "quip": "I am the SORCERER. I have read every page of every book ever written in the Otherworld."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Lugh has 120 health",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Lugh wields all arts (+2 mana)",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "Lugh draws from mastery of all crafts",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-freya",
+        "king": "king-borr",
+        "knight": "hero-loki",
+        "queen": "hero-odin",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "celtic",
+      "id": "celtic-10",
+      "missionNumber": 10,
+      "prerequisiteIds": [
+        "celtic-9"
+      ],
+      "starThresholds": {
+        "threeStar": 16,
+        "twoStar": 24
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014,
+        20000,
+        20001,
+        20002,
+        20003,
+        20004,
+        20005,
+        20006,
+        20007,
+        20008,
+        20009,
+        20010,
+        20011,
+        20012,
+        20013,
+        20014
+      ],
+      "aiHeroClass": "warrior",
+      "aiHeroId": "hero-thorgrim",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.8,
+        "prioritizeFace": true,
+        "tightness": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [],
+      "bossRules": [
+        {
+          "description": "The Dragon has 110 health",
+          "type": "extra_health",
+          "value": 10
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-kamimusubi",
+        "king": "king-brimir",
+        "knight": "hero-tsukuyomi",
+        "queen": "hero-fujin",
+        "rook": "hero-sarutahiko"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-1",
+      "missionNumber": 1,
+      "prerequisiteIds": [],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029,
+        20015,
+        20016,
+        20017,
+        20018,
+        20019,
+        20020,
+        20021,
+        20022,
+        20023,
+        20024,
+        20025,
+        20026,
+        20027,
+        20028,
+        20029
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-fujin",
+      "aiProfile": {
+        "aggression": 0.4,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.85,
+        "heroPowerPriority": 0.8,
+        "prioritizeFace": false,
+        "tightness": 0.8,
+        "tradeEfficiency": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Amaterasu floods the field with light",
+          "effect": {
+            "type": "damage_player",
+            "value": 7
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I am the SUN. There is no shadow you can stand in here."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Amaterasu has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Divine solar energy (+1 mana)",
+          "type": "extra_mana",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-kamimusubi",
+        "king": "king-audumbla",
+        "knight": "hero-apollo",
+        "queen": "hero-sol",
+        "rook": "hero-baldur"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-2",
+      "missionNumber": 2,
+      "prerequisiteIds": [
+        "eastern-1"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044,
+        20030,
+        20031,
+        20032,
+        20033,
+        20034,
+        20035,
+        20036,
+        20037,
+        20038,
+        20039,
+        20040,
+        20041,
+        20042,
+        20043,
+        20044
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-hoenir",
+      "aiProfile": {
+        "aggression": 0.3,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.9,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.9,
+        "tradeEfficiency": 0.9,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Jade Emperor calls in the entire celestial court",
+          "effect": {
+            "type": "add_armor",
+            "value": 9
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "CELESTIAL bureaucracy will deal with you in EVERY universe."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The Jade Emperor has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Celestial bureaucracy grants extra resources",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-hera",
+        "king": "king-borr",
+        "knight": "hero-hermes",
+        "queen": "hero-odin",
+        "rook": "hero-heimdall"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-3",
+      "missionNumber": 3,
+      "prerequisiteIds": [
+        "eastern-2"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059,
+        20045,
+        20046,
+        20047,
+        20048,
+        20049,
+        20050,
+        20051,
+        20052,
+        20053,
+        20054,
+        20055,
+        20056,
+        20057,
+        20058,
+        20059
+      ],
+      "aiHeroClass": "shaman",
+      "aiHeroId": "hero-ran",
+      "aiProfile": {
+        "aggression": 0.85,
+        "bluffFrequency": 0.3,
+        "efficiency": 0.6,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Susanoo unleashes the typhoon",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "blue",
+          "hpPercent": 50,
+          "quip": "TYPHOON. Now. ALL of it."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Susanoo has 110 health",
+          "type": "extra_health",
+          "value": 10
+        },
+        {
+          "description": "Typhoon deals 1 damage each turn",
+          "type": "passive_damage",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-surtr",
+        "knight": "hero-tsukuyomi",
+        "queen": "hero-fujin",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-4",
+      "missionNumber": 4,
+      "prerequisiteIds": [
+        "eastern-3"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074,
+        20060,
+        20061,
+        20062,
+        20063,
+        20064,
+        20065,
+        20066,
+        20067,
+        20068,
+        20069,
+        20070,
+        20071,
+        20072,
+        20073,
+        20074
+      ],
+      "aiHeroClass": "rogue",
+      "aiHeroId": "hero-gormr",
+      "aiProfile": {
+        "aggression": 0.7,
+        "bluffFrequency": 0.9,
+        "efficiency": 0.6,
+        "prioritizeFace": false,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Sun Wukong cycles through transformations",
+          "effect": {
+            "type": "enrage",
+            "value": 10
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I HAVE seventy-two FORMS. I am about to use forty of them."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Sun Wukong has 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "72 transformations grant extra cards",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-kamimusubi",
+        "king": "king-ginnungagap",
+        "knight": "hero-loki",
+        "queen": "hero-loki",
+        "rook": "hero-sarutahiko"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-5",
+      "missionNumber": 5,
+      "prerequisiteIds": [
+        "eastern-4"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089,
+        20075,
+        20076,
+        20077,
+        20078,
+        20079,
+        20080,
+        20081,
+        20082,
+        20083,
+        20084,
+        20085,
+        20086,
+        20087,
+        20088,
+        20089
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-izanami",
+      "aiProfile": {
+        "aggression": 0.5,
+        "bluffFrequency": 0.5,
+        "efficiency": 0.7,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.7,
+        "tradeEfficiency": 0.7,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Izanami’s grief becomes armor",
+          "effect": {
+            "type": "add_armor",
+            "value": 12
+          },
+          "flash": "purple",
+          "hpPercent": 50,
+          "quip": "My grief HARDENS me. Look at it. LOOK at what death made of me."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Izanami has 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Yomi's decay deals 2 damage each turn",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-tartarus",
+        "knight": "hero-tsukuyomi",
+        "queen": "hero-izanami",
+        "rook": "hero-vidar"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-6",
+      "missionNumber": 6,
+      "prerequisiteIds": [
+        "eastern-5"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104,
+        20090,
+        20091,
+        20092,
+        20093,
+        20094,
+        20095,
+        20096,
+        20097,
+        20098,
+        20099,
+        20100,
+        20101,
+        20102,
+        20103,
+        20104
+      ],
+      "aiHeroClass": "priest",
+      "aiHeroId": "hero-freyr",
+      "aiProfile": {
+        "aggression": 0.2,
+        "bluffFrequency": 0.2,
+        "efficiency": 0.95,
+        "heroPowerPriority": 0.9,
+        "prioritizeFace": false,
+        "tightness": 0.95,
+        "tradeEfficiency": 0.95,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Ganesha solves the puzzle in his head while you fight",
+          "effect": {
+            "type": "heal_self",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 50,
+          "quip": "I have FOUR hands and one of them is holding the puzzle."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Ganesha has 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Divine wisdom grants +2 mana",
+          "type": "extra_mana",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-kamimusubi",
+        "king": "king-yggdrasil",
+        "knight": "hero-hermes",
+        "queen": "hero-odin",
+        "rook": "hero-sarutahiko"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-7",
+      "missionNumber": 7,
+      "prerequisiteIds": [
+        "eastern-6"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119,
+        20105,
+        20106,
+        20107,
+        20108,
+        20109,
+        20110,
+        20111,
+        20112,
+        20113,
+        20114,
+        20115,
+        20116,
+        20117,
+        20118,
+        20119
+      ],
+      "aiHeroClass": "shaman",
+      "aiHeroId": "hero-gefjon",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.6,
+        "efficiency": 0.9,
+        "prioritizeFace": true,
+        "tightness": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The poison Halahala rises from the churning",
+          "effect": {
+            "type": "damage_player",
+            "value": 8
+          },
+          "flash": "green",
+          "hpPercent": 60,
+          "quip": "POISON rises before the elixir. Drink it, Shiva! Save us!"
+        },
+        {
+          "description": "The Amrita rises from the cosmic ocean",
+          "effect": {
+            "type": "enrage",
+            "value": 11
+          },
+          "flash": "gold",
+          "hpPercent": 30,
+          "quip": "AMRITA. The nectar. NOW."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Cosmic forces have 115 health",
+          "type": "extra_health",
+          "value": 15
+        },
+        {
+          "description": "Cosmic energy grants +2 mana",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "The churning produces extra resources",
+          "type": "bonus_draw",
+          "value": 1
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-brimir",
+        "knight": "hero-tsukuyomi",
+        "queen": "hero-fujin",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-8",
+      "missionNumber": 8,
+      "prerequisiteIds": [
+        "eastern-7"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134,
+        20120,
+        20121,
+        20122,
+        20123,
+        20124,
+        20125,
+        20126,
+        20127,
+        20128,
+        20129,
+        20130,
+        20131,
+        20132,
+        20133,
+        20134
+      ],
+      "aiHeroClass": "warlock",
+      "aiHeroId": "hero-dionysus",
+      "aiProfile": {
+        "aggression": 0.95,
+        "bluffFrequency": 0.4,
+        "efficiency": 0.7,
+        "heroPowerPriority": 0.7,
+        "prioritizeFace": true,
+        "tightness": 0.3,
+        "tradeEfficiency": 0.5,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "Kali’s dance accelerates",
+          "effect": {
+            "type": "damage_player",
+            "value": 9
+          },
+          "flash": "red",
+          "hpPercent": 65,
+          "quip": "My garland of skulls grows by one head each step. KEEP COUNT."
+        },
+        {
+          "description": "Kali enters the destruction phase",
+          "effect": {
+            "type": "enrage",
+            "value": 13
+          },
+          "flash": "purple",
+          "hpPercent": 30,
+          "quip": "I am TIME. Time always wins."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "Kali has 120 health",
+          "type": "extra_health",
+          "value": 20
+        },
+        {
+          "description": "Time's power grants +2 mana",
+          "type": "extra_mana",
+          "value": 2
+        },
+        {
+          "description": "Kali's dance deals 2 damage each turn",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-ran",
+        "king": "king-ginnungagap",
+        "knight": "hero-nyx",
+        "queen": "hero-izanami",
+        "rook": "hero-logi"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-9",
+      "missionNumber": 9,
+      "prerequisiteIds": [
+        "eastern-8"
+      ],
+      "starThresholds": {
+        "threeStar": 12,
+        "twoStar": 20
+      }
+    },
+    {
+      "aiDeckCardIds": [
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149,
+        20135,
+        20136,
+        20137,
+        20138,
+        20139,
+        20140,
+        20141,
+        20142,
+        20143,
+        20144,
+        20145,
+        20146,
+        20147,
+        20148,
+        20149
+      ],
+      "aiHeroClass": "mage",
+      "aiHeroId": "hero-hyperion",
+      "aiProfile": {
+        "aggression": 0.9,
+        "bluffFrequency": 0.6,
+        "efficiency": 0.9,
+        "prioritizeFace": true,
+        "tightness": 0.8,
+        "usesHeroPower": true
+      },
+      "allowedDifficulties": [
+        "normal",
+        "heroic",
+        "mythic"
+      ],
+      "bossPhases": [
+        {
+          "description": "The Norse end-times manifest",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "red",
+          "hpPercent": 85,
+          "quip": "I am NORSE Ragnarok. The wolf. The serpent. The fire-giant. ALL of it."
+        },
+        {
+          "description": "The Greek end-times manifest",
+          "effect": {
+            "type": "damage_player",
+            "value": 12
+          },
+          "flash": "gold",
+          "hpPercent": 70,
+          "quip": "I am GREEK Gigantomachy. The Giants. Typhon. Gaia’s tired final breath."
+        },
+        {
+          "description": "The Egyptian end-times manifest",
+          "effect": {
+            "type": "add_armor",
+            "value": 16
+          },
+          "flash": "red",
+          "hpPercent": 55,
+          "quip": "I am EGYPTIAN apocalypse. The Sun barge swallowed by Apophis. The dawn that does not come."
+        },
+        {
+          "description": "The Celtic end-times manifest",
+          "effect": {
+            "type": "heal_self",
+            "value": 18
+          },
+          "flash": "green",
+          "hpPercent": 35,
+          "quip": "I am CELTIC ending. The Otherworld closes its mists for the last time. The Tuatha go into the mounds and never come out."
+        },
+        {
+          "description": "All endings simultaneous",
+          "effect": {
+            "type": "enrage",
+            "value": 18
+          },
+          "flash": "purple",
+          "hpPercent": 15,
+          "quip": "And I am EASTERN finality. Kali’s last dance. The dragon swallows its tail. THE COSMOS BREATHES OUT."
+        }
+      ],
+      "bossRules": [
+        {
+          "description": "The World-Ender has 130 health",
+          "type": "extra_health",
+          "value": 30
+        },
+        {
+          "description": "All mythologies' power combined (+3 mana)",
+          "type": "extra_mana",
+          "value": 3
+        },
+        {
+          "description": "Draws from every pantheon's arsenal",
+          "type": "bonus_draw",
+          "value": 2
+        },
+        {
+          "description": "The unraveling deals 2 damage each turn",
+          "type": "passive_damage",
+          "value": 2
+        }
+      ],
+      "campaignArmy": {
+        "bishop": "hero-poseidon",
+        "king": "king-ginnungagap",
+        "knight": "hero-loki",
+        "queen": "hero-zeus",
+        "rook": "hero-thor"
+      },
+      "campaignId": "war-of-pantheons",
+      "chapterId": "eastern",
+      "id": "eastern-10",
+      "missionNumber": 10,
+      "prerequisiteIds": [
+        "eastern-9"
+      ],
+      "starThresholds": {
+        "threeStar": 20,
+        "twoStar": 30
+      }
+    }
+  ],
+  "version": 1
+}

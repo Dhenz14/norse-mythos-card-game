@@ -13,6 +13,7 @@ import cardDatabase from '../../../services/cardDatabase';
 import { v4 as uuidv4 } from 'uuid';
 import { isMinion, getAttack, getHealth } from '../../../utils/cards/typeGuards';
 import { MAX_BATTLEFIELD_SIZE } from '../../../constants/gameConstants';
+import { cryptoRng } from '../../../utils/seededRng';
 
 
 /**
@@ -63,7 +64,7 @@ export default function executeFillBoard(
           break;
         }
         
-        const randomIndex = Math.floor(Math.random() * candidateMinions.length);
+        const randomIndex = Math.floor(cryptoRng() * candidateMinions.length);
         const selectedCard = candidateMinions[randomIndex];
         
         const cardId = typeof selectedCard.id === 'number' ? selectedCard.id : parseInt(String(selectedCard.id), 10) || 99990;
@@ -96,7 +97,7 @@ export default function executeFillBoard(
             description: cardData.description || '',
             manaCost: cardData.manaCost || 0,
             type: 'minion',
-            rarity: cardData.rarity || 'token',
+            rarity: cardData.rarity || 'common',
             heroClass: cardData.heroClass || (cardData as any).class || 'neutral',
             attack: cardAttack,
             health: cardHealth,
@@ -109,7 +110,7 @@ export default function executeFillBoard(
             description: 'Summoned by fill_board effect',
             manaCost: 1,
             type: 'minion',
-            rarity: 'token',
+            rarity: 'common',
             heroClass: 'neutral',
             attack: summonAttack !== undefined ? summonAttack : 1,
             health: summonHealth !== undefined ? summonHealth : 1,
@@ -123,7 +124,7 @@ export default function executeFillBoard(
           description: 'Summoned by fill_board effect',
           manaCost: 1,
           type: 'minion',
-          rarity: 'token',
+          rarity: 'common',
           heroClass: 'neutral',
           attack: summonAttack !== undefined ? summonAttack : 1,
           health: summonHealth !== undefined ? summonHealth : 1,

@@ -162,25 +162,6 @@ const norseArtifacts: ArtifactCardData[] = [
 		categories: ['norse_artifact']
 	},
 	{
-		id: 29808,
-		name: 'Trident of the Deep',
-		manaCost: 6,
-		type: 'artifact',
-		rarity: 'epic',
-		heroClass: 'shaman',
-		heroId: 'hero-poseidon',
-		attack: 2,
-		description: 'After your hero attacks, Freeze the target. If the target is already Frozen, destroy it.',
-		flavorText: 'The seas obey only one master — and his trident brooks no defiance.',
-		keywords: ['artifact'],
-		collectible: true,
-		artifactEffect: {
-			type: 'trident_of_deep',
-			onHeroAttack: { freeze: true, destroyIfFrozen: true }
-		},
-		categories: ['norse_artifact']
-	},
-	{
 		id: 29809,
 		name: 'Oathblade',
 		manaCost: 7,
@@ -642,7 +623,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		type: 'artifact',
 		rarity: 'epic',
 		heroClass: 'priest',
-		heroId: 'hero-frey',
+		heroId: 'hero-freyr',
 		attack: 2,
 		description: 'Your minions have +1 Attack. When a friendly minion attacks alone (no others attacked this turn), it deals double damage.',
 		flavorText: 'The Summer Sword fights on its own. Freyr gave it away to win Gerd\'s love — and at Ragnarok, he will fall for it.',
@@ -651,7 +632,7 @@ const norseArtifacts: ArtifactCardData[] = [
 		artifactEffect: {
 			type: 'sumarbrander',
 			passiveMinionAttackBuff: 1,
-			soloAttackDoubleDamage: true
+			singleAttackDoubleDamage: true
 		},
 		categories: ['norse_artifact']
 	},
@@ -864,32 +845,6 @@ const norseArtifacts: ArtifactCardData[] = [
 			endOfTurn: { gainManaCrystal: 1 },
 			onGainManaCrystal: { gainArmor: 1 },
 			minionCostReduction: { manaThreshold: 8, reduction: 1 }
-		},
-		categories: ['norse_artifact']
-	},
-
-	// ═══════════════════════════════════════════════════════════════
-	// NORSE — KNIGHTS (Rogue)
-	// ═══════════════════════════════════════════════════════════════
-
-	{
-		id: 29931,
-		name: 'Mistletoe Arrow',
-		manaCost: 5,
-		type: 'artifact',
-		rarity: 'epic',
-		heroClass: 'rogue',
-		heroId: 'hero-hoder',
-		attack: 1,
-		description: 'Your attacks bypass Taunt and Divine Shield. After your hero attacks, if the target survives, deal 2 damage to it at end of turn.',
-		flavorText: 'The only thing in creation that had not sworn to spare Baldur. Guided by treachery, it found its mark.',
-		keywords: ['artifact'],
-		collectible: true,
-		artifactEffect: {
-			type: 'mistletoe_arrow',
-			bypassTaunt: true,
-			bypassDivineShield: true,
-			onHeroAttack: { lingeringDamage: 2 }
 		},
 		categories: ['norse_artifact']
 	},

@@ -4,6 +4,7 @@
  */
 
 import { CardInstance } from '../../types/CardTypes';
+import { cryptoRng } from '../seededRng';
 
 // Status effect types
 export type StatusEffectType = 
@@ -134,7 +135,7 @@ export function canMinionAct(minion: CardInstance): { canAct: boolean; reason?: 
     return { canAct: false, reason: 'Frozen - cannot act this turn' };
   }
   if (minion.isParalyzed) {
-    const roll = Math.random();
+    const roll = cryptoRng();
     if (roll < 0.5) {
       return { canAct: false, reason: 'Paralyzed - action failed (50% chance)' };
     }

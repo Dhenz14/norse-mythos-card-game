@@ -7,8 +7,8 @@
  */
 
 import type {
-	StateAdapter, CardAsset, GenesisRecord, EloRecord,
-	TokenBalance, MatchAnchorRecord, PackCommitRecord, SupplyRecord,
+	StateAdapter, CardAsset, GenesisRecord,
+	MatchAnchorRecord, PackCommitRecord, SupplyRecord,
 } from '../../shared/protocol-core/types';
 import {
 	getCard as csGetCard, putCard as csPutCard, deleteCard as csDeleteCard,
@@ -21,6 +21,9 @@ import {
 	getMatchAnchor as csGetMatchAnchor, setMatchAnchor as csSetMatchAnchor,
 	getPackCommit as csGetPackCommit, setPackCommit as csSetPackCommit,
 	hasRewardClaim as csHasRewardClaim, addRewardClaim as csAddRewardClaim,
+	advanceCampaignNonce as csAdvanceCampaignNonce,
+	getCampaignSubmission as csGetCampaignSubmission, setCampaignSubmission as csSetCampaignSubmission,
+	getCampaignProgress as csGetCampaignProgress, setCampaignProgress as csSetCampaignProgress,
 	isSlashed as csIsSlashed, addSlashed as csAddSlashed,
 	getQueueEntry as csGetQueueEntry, setQueueEntry as csSetQueueEntry,
 	deleteQueueEntryFn as csDeleteQueueEntry,
@@ -29,7 +32,6 @@ import {
 	type SupplyCounterRecord,
 	type MatchAnchorStateRecord,
 	type PackCommitStateRecord,
-	type TokenBalanceRecord,
 } from './chainState';
 
 // ============================================================
@@ -168,11 +170,21 @@ export const serverStateAdapter: StateAdapter = {
 	async hasRewardClaim(account, rewardId) { return csHasRewardClaim(`${account}:${rewardId}`); },
 	async putRewardClaim(account, rewardId) { csAddRewardClaim(`${account}:${rewardId}`); },
 
+	async advanceCampaignNonce(account, nonce) { return csAdvanceCampaignNonce(account, nonce); },
+	async getCampaignSubmission(submissionKey) {
+		return csGetCampaignSubmission(submissionKey) ?? null;
+	},
+	async putCampaignSubmission(submission) { csSetCampaignSubmission(submission); },
+	async getCampaignProgress(account, campaignId, missionId) {
+		return csGetCampaignProgress(account, campaignId, missionId) ?? null;
+	},
+	async putCampaignProgress(progress) { csSetCampaignProgress(progress); },
+
 	async isSlashed(account) { return csIsSlashed(account); },
 	async slash(account) { csAddSlashed(account); },
 
 	async getQueueEntry(account) { return csGetQueueEntry(account) ?? null; },
-	async putQueueEntry(account, data) { csSetQueueEntry(account, { timestamp: data.timestamp }); },
+	async putQueueEntry(account, data) { csSetQueueEntry(account, data); },
 	async deleteQueueEntry(account) { csDeleteQueueEntry(account); },
 
 	// v1.1: Pack NFTs + companion transfers

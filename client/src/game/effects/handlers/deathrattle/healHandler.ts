@@ -10,6 +10,7 @@ import { GameContext } from '../../../GameContext';
 import { Card, CardInstance } from '../../../types/CardTypes';
 import { DeathrattleEffect } from '../../../types';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a heal deathrattle effect
@@ -57,7 +58,7 @@ export default function executeHealHeal(
       case 'random_friendly_minion':
         const friendly = context.getFriendlyMinions();
         if (friendly.length > 0) {
-          targets = [friendly[Math.floor(Math.random() * friendly.length)]];
+          targets = [friendly[Math.floor(cryptoRng() * friendly.length)]];
         }
         break;
       default:

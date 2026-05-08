@@ -7,6 +7,7 @@ import { debug } from '../../../config/debugConfig';
 import { GameContext } from '../../../GameContext';
 import { Card, SpellEffect } from '../../../types/CardTypes';
 import { EffectResult } from '../../../types/EffectTypes';
+import { cryptoRng } from '../../../utils/seededRng';
 
 /**
  * Execute a Damage effect
@@ -78,7 +79,7 @@ export default function executeDamageDamage(
       let selectedTargets = targets;
       if (targetsCount > 0 && targetsCount < targets.length) {
         // Shuffle and select random targets if more available than needed
-        selectedTargets = [...targets].sort(() => Math.random() - 0.5).slice(0, targetsCount);
+        selectedTargets = [...targets].sort(() => cryptoRng() - 0.5).slice(0, targetsCount);
       }
       
       // Calculate actual damage to apply

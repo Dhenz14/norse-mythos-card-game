@@ -5,14 +5,16 @@
  * Components import this instead of directly using unifiedCombatStore.
  */
 
+import { useMemo } from 'react';
 import { useUnifiedCombatStore } from '../stores/unifiedCombatStore';
-import { 
-  ChessPiece, 
-  ChessBoardPosition, 
+import {
+  ChessPiece,
+  ChessBoardPosition,
   ChessBoardState,
   ChessCollision,
   ArmySelection
 } from '../types/ChessTypes';
+import type { HeroDeckLoadout } from '../deck/heroDeckRules';
 
 interface InstantKillEvent {
   position: ChessBoardPosition;
@@ -35,7 +37,12 @@ export interface ChessCombatAdapter {
   lastInstantKill: InstantKillEvent | null;
   pendingAttackAnimation: PendingAttackAnimation | null;
   
-  initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => void;
+  initializeBoard: (
+    playerArmy: ArmySelection,
+    opponentArmy: ArmySelection,
+    idGen: () => string,
+    playerDeckLoadout?: HeroDeckLoadout,
+  ) => void;
   selectPiece: (piece: ChessPiece | null) => void;
   movePiece: (to: ChessBoardPosition) => ChessCollision | null;
   getPieceAt: (position: ChessBoardPosition) => ChessPiece | null;
@@ -47,7 +54,6 @@ export interface ChessCombatAdapter {
   clearPendingCombat: () => void;
   resolveCombat: (result: { winner: ChessPiece; loser: ChessPiece; winnerNewHealth: number }) => void;
   setSharedDeck: (cardIds: number[]) => void;
-  executeAITurn: () => void;
   updatePieceStamina: (pieceId: string, stamina: number) => void;
   updatePieceHealth: (pieceId: string, health: number) => void;
   incrementAllStamina: () => void;
@@ -55,87 +61,133 @@ export interface ChessCombatAdapter {
 }
 
 export function useChessCombatAdapter(): ChessCombatAdapter {
-  const unified = useUnifiedCombatStore();
+  const boardState = useUnifiedCombatStore(s => s.boardState);
+  const pendingCombat = useUnifiedCombatStore(s => s.pendingCombat);
+  const lastInstantKill = useUnifiedCombatStore(s => s.lastInstantKill);
+  const pendingAttackAnimation = useUnifiedCombatStore(s => s.pendingAttackAnimation);
+  const initializeBoardFn = useUnifiedCombatStore(s => s.initializeBoard);
+  const initializeKingAbilities = useUnifiedCombatStore(s => s.initializeKingAbilities);
+  const selectPieceFn = useUnifiedCombatStore(s => s.selectPiece);
+  const movePieceFn = useUnifiedCombatStore(s => s.movePiece);
+  const getPieceAtFn = useUnifiedCombatStore(s => s.getPieceAt);
+  const getValidMovesFn = useUnifiedCombatStore(s => s.getValidMoves);
+  const completeAttackAnimationFn = useUnifiedCombatStore(s => s.completeAttackAnimation);
+  const nextTurnFn = useUnifiedCombatStore(s => s.nextTurn);
+  const resetFn = useUnifiedCombatStore(s => s.reset);
+  const clearPendingCombatFn = useUnifiedCombatStore(s => s.clearPendingCombat);
+  const resolveCombatFn = useUnifiedCombatStore(s => s.resolveCombat);
+  const setSharedDeckFn = useUnifiedCombatStore(s => s.setSharedDeck);
+  const updatePieceStaminaFn = useUnifiedCombatStore(s => s.updatePieceStamina);
+  const updatePieceHealthFn = useUnifiedCombatStore(s => s.updatePieceHealth);
+  const incrementAllStaminaFn = useUnifiedCombatStore(s => s.incrementAllStamina);
+  const setGameStatusFn = useUnifiedCombatStore(s => s.setGameStatus);
 
-  return {
-    boardState: unified.boardState,
-    pendingCombat: unified.pendingCombat,
-    lastInstantKill: unified.lastInstantKill,
-    pendingAttackAnimation: unified.pendingAttackAnimation,
+  return useMemo(() => ({
+    boardState,
+    pendingCombat,
+    lastInstantKill,
+    pendingAttackAnimation,
 
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => {
-      unified.initializeBoard(playerArmy, opponentArmy);
-      unified.initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
+    initializeBoard: (
+      playerArmy: ArmySelection,
+      opponentArmy: ArmySelection,
+      idGen: () => string,
+      playerDeckLoadout?: HeroDeckLoadout,
+    ) => {
+      initializeBoardFn(playerArmy, opponentArmy, idGen, playerDeckLoadout);
+      initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 
     selectPiece: (piece: ChessPiece | null) => {
-      unified.selectPiece(piece);
+      selectPieceFn(piece);
     },
 
     movePiece: (to: ChessBoardPosition): ChessCollision | null => {
-      return unified.movePiece(to) as ChessCollision | null;
+      return movePieceFn(to) as ChessCollision | null;
     },
 
     getPieceAt: (position: ChessBoardPosition): ChessPiece | null => {
-      return unified.getPieceAt(position);
+      return getPieceAtFn(position);
     },
 
     getValidMoves: (piece: ChessPiece) => {
-      return unified.getValidMoves(piece);
+      return getValidMovesFn(piece);
     },
 
     nextTurn: () => {
-      unified.nextTurn();
+      nextTurnFn();
     },
 
     completeAttackAnimation: () => {
-      unified.completeAttackAnimation();
+      completeAttackAnimationFn();
     },
 
     resetBoard: () => {
-      unified.reset();
+      resetFn();
     },
     
     clearPendingCombat: () => {
-      unified.clearPendingCombat();
+      clearPendingCombatFn();
     },
 
     resolveCombat: (result: { winner: ChessPiece; loser: ChessPiece; winnerNewHealth: number }) => {
-      unified.resolveCombat(result);
+      resolveCombatFn(result);
     },
 
     setSharedDeck: (cardIds: number[]) => {
-      unified.setSharedDeck(cardIds);
-    },
-
-    executeAITurn: () => {
-      unified.executeAITurn();
+      setSharedDeckFn(cardIds);
     },
 
     updatePieceStamina: (pieceId: string, stamina: number) => {
-      unified.updatePieceStamina(pieceId, stamina);
+      updatePieceStaminaFn(pieceId, stamina);
     },
 
     updatePieceHealth: (pieceId: string, health: number) => {
-      unified.updatePieceHealth(pieceId, health);
+      updatePieceHealthFn(pieceId, health);
     },
 
     incrementAllStamina: () => {
-      unified.incrementAllStamina();
+      incrementAllStaminaFn();
     },
 
     setGameStatus: (status: ChessBoardState['gameStatus']) => {
-      unified.setGameStatus(status);
+      setGameStatusFn(status);
     },
-  };
+  }), [
+    boardState,
+    pendingCombat,
+    lastInstantKill,
+    pendingAttackAnimation,
+    initializeBoardFn,
+    initializeKingAbilities,
+    selectPieceFn,
+    movePieceFn,
+    getPieceAtFn,
+    getValidMovesFn,
+    completeAttackAnimationFn,
+    nextTurnFn,
+    resetFn,
+    clearPendingCombatFn,
+    resolveCombatFn,
+    setSharedDeckFn,
+    updatePieceStaminaFn,
+    updatePieceHealthFn,
+    incrementAllStaminaFn,
+    setGameStatusFn,
+  ]);
 }
 
 export function getChessCombatStoreActions() {
   const unified = useUnifiedCombatStore.getState();
 
   return {
-    initializeBoard: (playerArmy: ArmySelection, opponentArmy: ArmySelection) => {
-      unified.initializeBoard(playerArmy, opponentArmy);
+    initializeBoard: (
+      playerArmy: ArmySelection,
+      opponentArmy: ArmySelection,
+      idGen: () => string,
+      playerDeckLoadout?: HeroDeckLoadout,
+    ) => {
+      unified.initializeBoard(playerArmy, opponentArmy, idGen, playerDeckLoadout);
       unified.initializeKingAbilities(playerArmy.king.id, opponentArmy.king.id);
     },
 
@@ -173,10 +225,6 @@ export function getChessCombatStoreActions() {
 
     setSharedDeck: (cardIds: number[]) => {
       unified.setSharedDeck(cardIds);
-    },
-
-    executeAITurn: () => {
-      unified.executeAITurn();
     },
 
     updatePieceStamina: (pieceId: string, stamina: number) => {

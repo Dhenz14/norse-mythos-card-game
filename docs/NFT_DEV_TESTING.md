@@ -38,7 +38,7 @@ Browser:
 - **Replay engine** is client-side: browser fetches ops, applies deterministic rules, builds IndexedDB
 - **No HAF / no backend indexer required** — the browser IS the indexer
 - **21 op types**: genesis, seal, mint, transfer, burn, pack_commit, pack_reveal, reward_claim, match_anchor, match_result, level_up, queue_join, queue_leave, slash_evidence, card_transfer, pack_mint, pack_distribute, pack_transfer, pack_burn, card_replicate, card_merge
-- **Supply caps**: 2,000/common, 1,000/rare, 500/epic, 250/mythic per card ID
+- **Supply caps**: canonical per-card-per-rarity caps live in [`docs/RULEBOOK.md`](RULEBOOK.md) (Card Rarity table); enforced at seed by `server/seedCardSupply.ts`
 
 ## Test Flow
 
@@ -143,7 +143,7 @@ The transfer appends a `ProvenanceStamp` to the card's history. Both sender and 
 - After commit lands in an irreversible block, `pack_reveal` derives card contents using `SHA256(trxId + block_hash)` as seed
 - This prevents manipulation — neither player nor anyone else can predict the cards before the irreversible block is finalized
 
-> **Note:** In dev/local mode, pack opening bypasses commit-reveal and opens instantly with client-side RNG.
+> **Note:** In local/dev mode, pack opening bypasses commit-reveal and opens instantly with client-side RNG.
 
 ## Key Files for Hive Devs
 
@@ -191,15 +191,15 @@ Or visit: `https://hivehub.dev/@ragnarok` and look for `custom_json` operations 
 
 ## Data Layer Modes
 
-The game has 3 modes (set in `featureFlags.ts`):
+The game separates production ownership from local/dev runtime access:
 
-| Mode | Chain Ops | Collection | NFT Ownership |
-|------|-----------|------------|---------------|
-| `local` (default) | No-ops | localStorage | Unlimited copies |
-| `hive` | Real Hive L1 | IndexedDB from chain | Enforced per-card |
-| `test` | Mock server | Server-side | Server-managed |
+| Mode | Chain Ops | Collection | Ownership / Progression |
+|------|-----------|------------|-------------------------|
+| `local` / local-dev (default) | No-ops | localStorage/catalog runtime | Unrestricted catalog access for development; no economic ownership, no `CardXP`, no `level_up` |
+| `hive` / mainnet | Real Hive L1 | IndexedDB from chain | Genesis NFT ownership enforced per card; fixed starter entitlement allowed off-chain |
+| `test` | Mock server | Server-side | Server-managed harness data; not economic ownership |
 
-To switch to Hive mode, the user logs in via Keychain — mode auto-detects.
+To switch to Hive/mainnet mode, the user logs in via Keychain — mode auto-detects.
 
 ## Security Notes
 

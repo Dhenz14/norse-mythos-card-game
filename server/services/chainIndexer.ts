@@ -17,10 +17,10 @@ import {
 	type ProtocolCoreDeps,
 	type CardDataProvider,
 	type RewardProvider,
-	type SignatureVerifier,
 } from '../../shared/protocol-core';
 import { serverStateAdapter } from './serverStateAdapter';
 import { serverSignatureVerifier } from './hiveSignatureVerifier';
+import { campaignRegistryProvider } from '../../shared/campaign/registry';
 import {
 	registerAccount,
 	getBlockCursor, setBlockCursor,
@@ -29,6 +29,7 @@ import {
 	stopPersistence,
 	saveState,
 } from './chainState';
+import { RAGNAROK_APP_IDS, RAGNAROK_LEGACY_PREFIX } from '../../shared/indexer-types';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -161,6 +162,7 @@ function buildDeps(): ProtocolCoreDeps {
 		state: serverStateAdapter,
 		cards: serverCardData,
 		rewards: serverRewards,
+		campaigns: campaignRegistryProvider,
 		sigs: serverSignatureVerifier,
 	};
 }
@@ -221,7 +223,7 @@ async function scanBlocks(): Promise<number> {
 
 			// Quick pre-filter
 			const opId = opData.id ?? '';
-			if (!opId.startsWith('rp_') && opId !== 'ragnarok-cards' && opId !== 'ragnarok_level_up') continue;
+			if (!opId.startsWith(RAGNAROK_LEGACY_PREFIX) && !(RAGNAROK_APP_IDS as readonly string[]).includes(opId)) continue;
 
 			const broadcaster = opData.required_posting_auths?.[0] ?? opData.required_auths?.[0] ?? '';
 			if (!broadcaster) continue;

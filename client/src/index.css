@@ -1,9 +1,19 @@
 /* Design tokens MUST be first - single source of truth for all CSS variables */
 @import './styles/design-tokens.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Preserve v3 default behavior: borders without explicit color use obsidian-700.
+   Without this, Tailwind v4 defaults to currentColor which would break dark UI. */
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--obsidian-700);
+	}
+}
 
 /* Force emoji to render as monochrome text glyphs (not colorful platform-specific emoji).
    This makes ⚔️🛡️⚡ etc. look like professional UI icons instead of chat emoji. */
@@ -16,32 +26,6 @@
 
 :root {
   /* =============================================
-     SHADCN/UI THEME VARIABLES (Required by Tailwind)
-     These MUST remain here - they're consumed by shadcn components.
-     All other design tokens are in: client/src/styles/design-tokens.css
-     ============================================= */
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
-  --radius: 0.5rem;
-
-  /* =============================================
      LEGACY ALIASES (for backward compatibility)
      These reference the centralized design-tokens.css values.
      New code should use design-tokens.css variables directly.
@@ -52,18 +36,18 @@
   --grid-gap: var(--gap-sm, 6px);
   
   /* Legacy color aliases */
-  --primary-gold: var(--color-gold, #FFD700);
-  --secondary-grey: #4A4A4A;
-  --glow-yellow: #FFF3D4;
+  --primary-gold: var(--gold-300);
+  --secondary-grey: var(--obsidian-600);
+  --glow-yellow: var(--gold-glow);
   --shadow-black: rgba(0, 0, 0, 0.4);
-  --game-bg-color: var(--color-amber-primary, #92400e);
+  --game-bg-color: var(--obsidian-950);
   
   /* Legacy Norse aliases */
-  --norse-primary: var(--color-amber-primary, #92400e);
-  --norse-secondary: var(--color-amber-secondary, #78350f);
-  --norse-accent: var(--color-gold, #FFD700);
-  --norse-text: var(--text-primary, #f3f4f6);
-  --norse-border: #9ca3af;
+  --norse-primary: var(--obsidian-800);
+  --norse-secondary: var(--obsidian-900);
+  --norse-accent: var(--gold-300);
+  --norse-text: var(--ink-100);
+  --norse-border: var(--ink-400);
   
   /* UI scaling (game-specific) */
   --reference-width: 1920px;
@@ -84,21 +68,21 @@
   --z-tooltips: var(--z-hover, 500);
   --z-modals: 1000;
   
-  /* Card glow effects (game-specific) */
-  --card-playable-glow: 0 0 15px rgba(120, 255, 120, 0.8), 0 0 30px rgba(0, 255, 0, 0.4);
-  --card-targetable-glow: 0 0 15px rgba(255, 120, 120, 0.8), 0 0 30px rgba(255, 0, 0, 0.4);
-  --card-highlighted-glow: 0 0 15px rgba(255, 255, 120, 0.8), 0 0 30px rgba(255, 255, 0, 0.4);
-  --card-legendary-glow: var(--shadow-glow-gold, 0 0 25px rgba(255, 215, 0, 0.7));
-  --card-epic-glow: 0 0 25px rgba(163, 53, 238, 0.7), 0 0 10px rgba(163, 53, 238, 0.4);
-  --card-standard-glow: var(--shadow-glow-blue, 0 0 25px rgba(0, 112, 221, 0.7));
+  /* Card glow effects (game-specific) - Fast GPU 1-layer versions */
+  --card-playable-glow: 0 0 15px var(--success-glow);
+  --card-targetable-glow: 0 0 15px var(--danger-glow);
+  --card-highlighted-glow: 0 0 15px var(--gold-glow);
+  --card-legendary-glow: var(--shadow-glow-gold);
+  --card-epic-glow: var(--rarity-epic-glow);
+  --card-standard-glow: var(--rarity-rare-glow);
 
   /* Opponent zone styling */
-  --opponent-zone-bg: rgba(139, 0, 0, 0.05);
+  --opponent-zone-bg: var(--zone-opponent-bg);
   --opponent-zone-border: rgba(139, 0, 0, 0.1);
   --opponent-zone-shadow: rgba(139, 0, 0, 0.1);
 
   /* Player zone styling */
-  --player-zone-bg: rgba(0, 100, 0, 0.05);
+  --player-zone-bg: var(--zone-player-bg);
   --player-zone-border: rgba(0, 100, 0, 0.1);
   --player-zone-shadow: rgba(0, 100, 0, 0.1);
 
@@ -114,13 +98,55 @@
   --dragging-card-scale: 0.6;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+/* =============================================
+   CARD TEXT UTILITY CLASSES
+   Migrated from CardTextStyles.css (orphaned).
+   Used by: textFormatUtils.tsx, SimpleCard.tsx, TargetingOverlay.tsx
+   ============================================= */
 
+/* Highlighted numbers inside card text (inline HTML via dangerouslySetInnerHTML) */
+.number-value {
+  font-weight: 700;
+  color: var(--danger-500);
+  font-size: inherit;
+}
+
+.damage-value {
+  font-weight: 700;
+  color: var(--danger-400);
+  font-size: inherit;
+}
+
+/* Card body description container */
+.card-description {
+  color: var(--ink-0);
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  background: transparent;
+  border: none;
+  overflow: visible;
+}
+
+/* Mana cost badge text */
+.mana-value {
+  color: var(--stat-mana, var(--bifrost-300));
+  font-weight: 700;
+  font-size: inherit;
+}
+
+@layer base {
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    font-family: var(--type-ui);
+    background: var(--obsidian-950);
+    color: var(--ink-0);
+    -webkit-font-smoothing: antialiased;
     margin: 0;
     padding: 0;
     overflow: visible; /* Changed from hidden to visible to prevent card clipping */
@@ -259,36 +285,15 @@ canvas {
 /* 
  * Special class for cards being played/placed on the battlefield 
  * NOTE: This style has been moved to CardTransformationManager.ts
- * and is kept here only as a fallback
+ * and is kept here only as a fallback. Optimized for GPU.
  */
 .card-being-played {
   z-index: 3000 !important; /* Higher than dragging for the placement animation */
-  transition: transform 0.4s cubic-bezier(0.11, 0.65, 0.33, 1.5), 
-              box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.2, 1.2) !important;
-  box-shadow: 
-    0 0 40px rgba(70, 130, 255, 0.9),
-    0 0 20px rgba(220, 255, 250, 1),
-    0 0 60px rgba(30, 100, 255, 0.7) !important;
+  transition: transform 0.4s cubic-bezier(0.11, 0.65, 0.33, 1.5) !important;
   pointer-events: none; /* Prevent any interactions during placement animation */
   animation: card-play-pulse 0.6s ease-in-out !important;
   will-change: transform;
   transform: scale(var(--dragging-card-scale)) !important; /* Use consistent scale while animating */
-}
-
-/* Special animation for the card placement pulse */
-@keyframes card-play-pulse {
-  0% { transform: scale(1.2); filter: brightness(1); }
-  50% { transform: scale(1.35); filter: brightness(1.5); }
-  100% { transform: scale(1.2); filter: brightness(1); }
-}
-
-/* Battlefield card holographic effects */
-@keyframes prismatic-shift {
-  0% { filter: hue-rotate(0deg) saturate(1.5); }
-  25% { filter: hue-rotate(90deg) saturate(1.8); }
-  50% { filter: hue-rotate(180deg) saturate(2); }
-  75% { filter: hue-rotate(270deg) saturate(1.8); }
-  100% { filter: hue-rotate(360deg) saturate(1.5); }
 }
 
 @keyframes shine-gold {
@@ -307,7 +312,7 @@ canvas {
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  mix-blend-mode: color-dodge;
+  opacity: 0.3; /* GPU friendly, instead of mix-blend-mode */
 }
 
 .legendary-holographic {
@@ -317,7 +322,7 @@ canvas {
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  mix-blend-mode: color-dodge;
+  opacity: 0.35; /* GPU friendly */
 }
 
 /* Special animation for the card damage shake */
@@ -345,12 +350,11 @@ canvas {
 .taunt-frame::before {
   content: '';
   position: absolute;
-  inset: -5px;
-  background: linear-gradient(135deg, #8B4513, #A0522D, #D2691E, #8B4513);
+  inset: -3px;
+  background: linear-gradient(135deg, var(--obsidian-600), var(--gold-700), var(--gold-800), var(--obsidian-600));
   z-index: -1;
-  border-radius: 15px;
-  opacity: 0.75;
-  filter: blur(3px);
+  border-radius: 12px;
+  opacity: 0.8;
 }
 
 /* Tooltip styles for keyword icons */
@@ -561,7 +565,7 @@ canvas {
 
 .game-area-container.opponent-area {
   height: var(--opponent-area-height);
-  background-color: rgba(139, 0, 0, 0.05);
+  background-color: var(--opponent-zone-bg);
   margin-top: 180px; /* Increased margin to move battlefield down further (was 96px) */
 }
 
@@ -578,7 +582,7 @@ canvas {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background-color: rgba(0, 100, 0, 0.05);
+  background-color: var(--player-zone-bg);
   position: relative;
   z-index: 200;
 }

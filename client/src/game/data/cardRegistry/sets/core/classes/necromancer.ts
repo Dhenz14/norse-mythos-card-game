@@ -20,7 +20,7 @@ export const necromancerCards: CardData[] = [
       value: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4001,
@@ -40,7 +40,7 @@ export const necromancerCards: CardData[] = [
       discoveryCount: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4002,
@@ -61,7 +61,7 @@ export const necromancerCards: CardData[] = [
       summonCardId: 4900
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4003,
@@ -75,7 +75,7 @@ export const necromancerCards: CardData[] = [
     rarity: "common",
     class: "Necromancer",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4004,
@@ -94,7 +94,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4006,
@@ -115,7 +115,7 @@ export const necromancerCards: CardData[] = [
       value: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4007,
@@ -136,7 +136,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4009,
@@ -151,7 +151,7 @@ export const necromancerCards: CardData[] = [
     class: "Necromancer",
     race: "Undead",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4010,
@@ -172,7 +172,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4011,
@@ -194,7 +194,7 @@ export const necromancerCards: CardData[] = [
       buffHealth: 2
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4100,
@@ -210,7 +210,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4105,
@@ -228,7 +228,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4106,
@@ -246,7 +246,7 @@ export const necromancerCards: CardData[] = [
       count: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4108,
@@ -264,7 +264,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4109,
@@ -281,7 +281,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4110,
@@ -298,7 +298,7 @@ export const necromancerCards: CardData[] = [
       discoveryCount: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4111,
@@ -315,12 +315,12 @@ export const necromancerCards: CardData[] = [
       count: 3
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // ===== NEW NECROMANCER SPELLS =====
   {
     id: 4112,
-    name: "Corpse Explosion",
+    name: "Necromancer's Corpse Explosion",
     manaCost: 3,
     description: "Destroy a friendly minion. Deal damage equal to its Attack to all enemies.",
     flavorText: "In death, they serve one final, explosive purpose.",
@@ -333,7 +333,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4113,
@@ -352,7 +352,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4114,
@@ -368,7 +368,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4115,
@@ -386,7 +386,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4116,
@@ -406,7 +406,7 @@ export const necromancerCards: CardData[] = [
       }
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4117,
@@ -424,7 +424,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4118,
@@ -444,7 +444,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4119,
@@ -461,7 +461,7 @@ export const necromancerCards: CardData[] = [
       summonCardId: 4900
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4200,
@@ -475,11 +475,11 @@ export const necromancerCards: CardData[] = [
     rarity: "common",
     class: "Necromancer",
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4900,
-    name: "Skeleton",
+    name: "Necromancer's Skeleton",
     manaCost: 1,
     attack: 2,
     health: 1,
@@ -491,7 +491,7 @@ export const necromancerCards: CardData[] = [
     race: "Undead",
     keywords: ["rush"],
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 4901,
@@ -506,7 +506,7 @@ export const necromancerCards: CardData[] = [
     class: "Necromancer",
     race: "Undead",
     collectible: false,
-    set: "core"
+    set: "genesis"
   },
 
   // ═══════════════════════════════════════════════════════════════
@@ -528,7 +528,7 @@ export const necromancerCards: CardData[] = [
     keywords: ["taunt", "deathrattle"],
     deathrattle: { type: "summon", summonCardId: 4900, value: 2 },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36102,
@@ -545,7 +545,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36103,
@@ -562,7 +562,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36104,
@@ -583,7 +583,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36105,
@@ -601,7 +601,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36106,
@@ -621,11 +621,11 @@ export const necromancerCards: CardData[] = [
       value: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36107,
-    name: "Plague of Undeath",
+    name: "Plague of Zombies",
     manaCost: 5,
     description: "Transform all enemy minions into 2/2 Zombies.",
     flavorText: "The living become the dead. The dead become the army.",
@@ -638,7 +638,7 @@ export const necromancerCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36108,
@@ -655,7 +655,7 @@ export const necromancerCards: CardData[] = [
     keywords: ["deathrattle"],
     deathrattle: { type: "return_to_hand_cost_increase", value: 1 },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36109,
@@ -671,7 +671,7 @@ export const necromancerCards: CardData[] = [
     race: "Undead",
     keywords: ["lifesteal"],
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36110,
@@ -690,7 +690,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36111,
@@ -709,7 +709,7 @@ export const necromancerCards: CardData[] = [
       targetType: "none"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 36112,
@@ -730,7 +730,7 @@ export const necromancerCards: CardData[] = [
     },
     deathrattle: { type: "summon_devoured_copies" },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
 
   // === Shadow & Mass Resurrection Expansion ===
@@ -751,7 +751,7 @@ export const necromancerCards: CardData[] = [
       requiresTarget: true
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38702,
@@ -769,24 +769,7 @@ export const necromancerCards: CardData[] = [
       healValue: 4
     },
     collectible: true,
-    set: "core"
-  },
-  {
-    id: 38703,
-    name: "Mass Resurrection",
-    manaCost: 9,
-    description: "Summon 3 random friendly minions that died this game.",
-    flavorText: "They rise not as they were, but as they are needed.",
-    type: "spell",
-    rarity: "rare",
-    class: "Necromancer",
-    spellEffect: {
-      type: "mass_resurrect",
-      value: 3,
-      targetType: "none"
-    },
-    collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38704,
@@ -803,7 +786,7 @@ export const necromancerCards: CardData[] = [
       targetType: "all_enemy_minions"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38705,
@@ -823,7 +806,7 @@ export const necromancerCards: CardData[] = [
       target: "friendly_undead"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38706,
@@ -842,7 +825,7 @@ export const necromancerCards: CardData[] = [
       summonHealth: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38707,
@@ -864,7 +847,7 @@ export const necromancerCards: CardData[] = [
       setStats: { attack: 1, health: 1 }
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   // === Early Game Expansion ===
   {
@@ -885,7 +868,7 @@ export const necromancerCards: CardData[] = [
       class: "Necromancer"
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38709,
@@ -907,7 +890,7 @@ export const necromancerCards: CardData[] = [
       summonHealth: 1
     },
     collectible: true,
-    set: "core"
+    set: "genesis"
   },
   {
     id: 38710,
@@ -922,6 +905,6 @@ export const necromancerCards: CardData[] = [
     class: "Necromancer",
     race: "Undead",
     collectible: true,
-    set: "core"
+    set: "genesis"
   }
 ];

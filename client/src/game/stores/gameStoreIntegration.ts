@@ -15,9 +15,11 @@
 
 import { GameEventBus } from '@/core/events/GameEventBus';
 import { initializeAudioSubscriber } from '@/game/subscribers/AudioSubscriber';
+import { initializeAudioBusSubscriber } from '@/game/subscribers/AudioBusSubscriber';
 import { initializeNotificationSubscriber } from '@/game/subscribers/NotificationSubscriber';
 import { initializeAnimationSubscriber } from '@/game/subscribers/AnimationSubscriber';
 import { initializeDailyQuestSubscriber } from '@/game/subscribers/DailyQuestSubscriber';
+import { initializeStarterReputationSubscriber } from '@/game/subscribers/StarterReputationSubscriber';
 import { isBlockchainPackagingEnabled } from '../config/featureFlags';
 import { debug } from '../config/debugConfig';
 import { getNFTBridge } from '../nft';
@@ -42,9 +44,11 @@ export function initializeGameStoreIntegration(): () => void {
 
   // Initialize UI subscribers
   cleanupFunctions.push(initializeAudioSubscriber());
+  cleanupFunctions.push(initializeAudioBusSubscriber());
   cleanupFunctions.push(initializeNotificationSubscriber());
   cleanupFunctions.push(initializeAnimationSubscriber());
   cleanupFunctions.push(initializeDailyQuestSubscriber());
+  cleanupFunctions.push(initializeStarterReputationSubscriber());
 
   if (getNFTBridge().isHiveMode()) {
     const bridge = getNFTBridge();

@@ -25,7 +25,7 @@ export interface SimpleCardData {
   health?: number;
   description?: string;
   type: 'minion' | 'spell' | 'weapon' | 'artifact' | 'armor';
-  rarity?: 'basic' | 'common' | 'rare' | 'epic' | 'mythic';
+  rarity?: 'common' | 'rare' | 'epic' | 'mythic';
   tribe?: string;
   cardClass?: string;
   keywords?: string[];
@@ -103,30 +103,30 @@ const getCardTypeIcon = (type: string): string => {
 };
 
 const ELEMENT_BADGE: Record<string, { icon: string; color: string }> = {
-  fire: { icon: '\u{1F525}', color: '#ff6b35' },
-  water: { icon: '\u{1F4A7}', color: '#4fc3f7' },
-  grass: { icon: '\u{1F33F}', color: '#66bb6a' },
-  electric: { icon: '\u{26A1}', color: '#fdd835' },
-  light: { icon: '\u{2728}', color: '#ffd54f' },
-  dark: { icon: '\u{1F311}', color: '#9c27b0' },
-  ice: { icon: '\u{2744}\u{FE0F}', color: '#81d4fa' }
+  fire: { icon: '\u{1F525}', color: 'var(--element-fire)' },
+  water: { icon: '\u{1F4A7}', color: 'var(--element-water)' },
+  grass: { icon: '\u{1F33F}', color: 'var(--element-wind)' },
+  electric: { icon: '\u{26A1}', color: 'var(--warning-400)' },
+  light: { icon: '\u{2728}', color: 'var(--element-holy)' },
+  dark: { icon: '\u{1F311}', color: 'var(--element-shadow)' },
+  ice: { icon: '\u{2744}\u{FE0F}', color: 'var(--element-water)' }
 };
 
 const getClassColor = (cardClass?: string): string => {
   const colors: Record<string, string> = {
-    warrior: '#C79C6E',
-    mage: '#69CCF0',
-    hunter: '#ABD473',
-    paladin: '#F58CBA',
-    priest: '#FFFFFF',
-    rogue: '#FFF569',
-    shaman: '#0070DE',
-    warlock: '#9482C9',
-    druid: '#FF7D0A',
-    berserker: '#A330C9',
-    deathknight: '#C41F3B'
+    warrior: 'var(--class-warrior)',
+    mage: 'var(--class-mage)',
+    hunter: 'var(--class-hunter)',
+    paladin: 'var(--class-paladin)',
+    priest: 'var(--class-priest)',
+    rogue: 'var(--class-rogue)',
+    shaman: 'var(--class-shaman)',
+    warlock: 'var(--class-warlock)',
+    druid: 'var(--class-druid)',
+    berserker: 'var(--class-berserker)',
+    deathknight: 'var(--class-deathknight)'
   };
-  return colors[cardClass?.toLowerCase() || ''] || '#4a5568';
+  return colors[cardClass?.toLowerCase() || ''] || 'var(--obsidian-500)';
 };
 
 /**
@@ -214,7 +214,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
   const isArmor = card.type === 'armor';
 
   const classColor = getClassColor(card.cardClass);
-  const artPath = getCardArtPath(card.name, card.id);
+  const artPath = getCardArtPath(card.id);
   const cardTheme = useMemo(() => getCardTheme(card.name, card.element), [card.name, card.element]);
 
   const nameClass = card.name.length > 24 ? 'name-extreme' : card.name.length > 18 ? 'name-very-long' : card.name.length > 13 ? 'name-long' : '';
@@ -223,7 +223,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   const evolutionClass = card.evolutionLevel === 1 ? 'evolution-mortal'
     : card.evolutionLevel === 2 ? 'evolution-ascended'
-    : card.evolutionLevel === 3 ? 'evolution-divine' : '';
+      : card.evolutionLevel === 3 ? 'evolution-divine' : '';
 
   const evolutionStars = card.evolutionLevel ? '★'.repeat(card.evolutionLevel) : '';
 
@@ -233,6 +233,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
   const cardRef = useRef<HTMLDivElement>(null);
   const holo = useHoloTracking(cardRef);
+  const [loadError, setLoadError] = useState(false);
 
   const handleHoloLeave = useCallback((e: React.MouseEvent) => {
     holo.onMouseLeave(e);
@@ -301,7 +302,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
     setBadgeTooltip({
       keyword: card.petStage === 'master' ? 'Master Evolution' : 'Evolution',
       icon: '\u{1F504}',
-      color: '#00e5ff',
+      color: 'var(--element-water)',
       x: rect.left + rect.width / 2,
       y: rect.top,
       isEvolveInfo: true,
@@ -386,6 +387,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       data-card-type={card.type}
       data-evolution-level={card.evolutionLevel}
     >
+      <div className="card-hover-glow" />
       <div className={`card-mana stat-emblem ${card.bloodPrice ? 'blood-price-mana' : ''}`}>
         <svg className="stat-emblem-bg mana-emblem-bg" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
           <polygon points="20,2 38,20 20,38 2,20" fill={card.bloodPrice ? 'url(#mana-blood)' : 'url(#mana-emblem)'} stroke={card.bloodPrice ? '#fca5a5' : '#93C5FD'} strokeWidth="1.5" />
@@ -431,16 +433,29 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
       <div
         ref={artRef}
         className={`card-art-container${!owned ? ' art-locked' : ''}`}
-        style={artPath && owned ? undefined : { background: `linear-gradient(135deg, ${classColor}40 0%, ${classColor}20 100%)` }}
+        style={artPath && owned && !loadError ? undefined : { background: `linear-gradient(135deg, color-mix(in srgb, ${classColor} 25%, transparent) 0%, color-mix(in srgb, ${classColor} 12%, transparent) 100%)` }}
       >
-        {artPath && artInView && owned ? (
-          <img src={artPath} alt="" className="card-art-image" draggable={false} loading="lazy" decoding="async" width={256} height={256} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        {artPath && artInView && owned && !loadError ? (
+          <img
+            src={artPath}
+            alt=""
+            className="card-art-image"
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+            width={256}
+            height={256}
+            onError={() => {
+              console.error(`[SimpleCard] Failed to load art for ${card.name}: ${artPath}`);
+              setLoadError(true);
+            }}
+          />
         ) : !owned ? (
           <div className="card-art-locked">
             <span className="lock-icon">🔒</span>
             <span className="lock-text">Not Owned</span>
           </div>
-        ) : !artPath ? (
+        ) : (!artPath || loadError) ? (
           <div className="card-art-icon">
             <span>{getCardTypeIcon(card.type)}</span>
           </div>
@@ -449,7 +464,7 @@ export const SimpleCard: React.FC<SimpleCardProps> = React.memo(({
 
       <div className="card-name-banner">
         <span className={`card-name ${nameClass}`}>{card.name}</span>
-        {card.rarity && card.rarity !== 'basic' && card.rarity !== 'common' && (
+        {card.rarity && card.rarity !== 'common' && (
           <span className={`rarity-gem rarity-gem-${card.rarity}`} />
         )}
       </div>

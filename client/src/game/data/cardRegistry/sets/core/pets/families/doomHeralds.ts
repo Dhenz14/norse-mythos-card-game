@@ -14,7 +14,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: 'The moon-chaser already hungers for the light.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const doomHeraldsPets: CardData[] = [
 			trigger: 'on_destroy',
 			description: 'After destroying an enemy minion',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50221,
 		name: 'Gullinkambi Chick',
@@ -39,7 +39,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: 'Its first peep cracks across the silence of Valhalla.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const doomHeraldsPets: CardData[] = [
 			trigger: 'on_summon',
 			description: 'After a minion is summoned',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50222,
 		name: 'Cinder Whelp',
@@ -64,7 +64,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: "A spark from Muspelheim's eternal forge.",
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -76,7 +76,7 @@ export const doomHeraldsPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -91,7 +91,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: 'The wolf that stalks the moon, bringing eternal night.',
 		keywords: ['stealth', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -105,7 +105,7 @@ export const doomHeraldsPets: CardData[] = [
 			description: 'After destroying an enemy minion',
 		},
 		battlecry: { type: 'damage', targetType: 'enemy_hero', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50224,
 		name: 'Gullinkambi, Ragnarok Rooster',
@@ -118,7 +118,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: 'Its crow signals the end of days.',
 		keywords: ['battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -132,7 +132,7 @@ export const doomHeraldsPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'aoe_damage', targetType: 'all_enemies', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50225,
 		name: 'Cinderstorm Wyrm',
@@ -145,7 +145,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: "A dragon of Muspelheim's core, its flames never fade.",
 		keywords: ['rush', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -159,7 +159,7 @@ export const doomHeraldsPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'damage', targetType: 'random_enemy', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -174,7 +174,7 @@ export const doomHeraldsPets: CardData[] = [
 		flavorText: 'The end has come. The herald announces the twilight of the gods.',
 		keywords: ['stealth'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		petStage: 'master',
@@ -210,5 +210,5 @@ export const doomHeraldsPets: CardData[] = [
 				battlecry: { type: 'aoe_damage', targetType: 'all_enemies', value: 4 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

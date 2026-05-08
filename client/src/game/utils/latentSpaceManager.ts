@@ -23,6 +23,7 @@
 
 import { CardData } from '../types';
 import { debug } from '../config/debugConfig';
+import { cryptoRng } from './seededRng';
 
 // Types for latent space operations
 export interface LatentVector {
@@ -102,7 +103,7 @@ export function addNoiseToLatent(
   noiseAmount = 0.1, 
   seed?: number
 ): LatentVector {
-  const noisySeed = seed || Math.random() * 10000;
+  const noisySeed = seed || cryptoRng() * 10000;
   const noisyValues = new Float32Array(latent.values.length);
   
   // Add controlled noise to each dimension
@@ -134,7 +135,7 @@ export function interpolateLatents(
   const { 
     method = 'linear',
     strength = 1.0,
-    seed = Math.random() * 10000 
+    seed = cryptoRng() * 10000 
   } = options;
   
   // Early returns for edge cases

@@ -18,6 +18,7 @@ const matchmakingQueue: QueuedPlayer[] = [];
 const activeMatches = new Map<string, { player1: string; player2: string; createdAt: number }>();
 
 const QUEUE_STALE_MS = 5 * 60 * 1000; // 5 minutes
+const ACTIVE_MATCH_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const QUEUE_FILE = path.join(process.cwd(), 'data', 'matchmaking-queue.json');
 
 let dataDirEnsured = false;
@@ -81,7 +82,7 @@ function removeStaleQueueEntries() {
 		saveQueue();
 	}
 	for (const [matchId, match] of activeMatches.entries()) {
-		if (now - match.createdAt > 300_000) {
+		if (now - match.createdAt > ACTIVE_MATCH_TTL_MS) {
 			activeMatches.delete(matchId);
 		}
 	}
@@ -186,7 +187,7 @@ router.post('/queue', queueAuth, async (req: Request, res: Response) => {
 
 			setTimeout(() => {
 				activeMatches.delete(matchId);
-			}, 120_000);
+			}, ACTIVE_MATCH_TTL_MS);
 
 			return res.json({
 				success: true,

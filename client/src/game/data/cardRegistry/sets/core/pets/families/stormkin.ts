@@ -14,7 +14,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'The sun-chaser pup crackles with static from birth.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const stormkinPets: CardData[] = [
 			trigger: 'on_summon',
 			description: 'After a minion is summoned',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50131,
 		name: 'Spark Drake',
@@ -39,7 +39,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'Its scales ripple with the charge of distant thunder.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const stormkinPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50132,
 		name: "Frey's Bolt",
@@ -64,7 +64,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'A spark of divine power from the god of the harvest.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -76,7 +76,7 @@ export const stormkinPets: CardData[] = [
 			trigger: 'on_destroy',
 			description: 'After destroying an enemy minion',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -91,7 +91,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'Skoll descends from the sky in a blaze of lightning.',
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		weakness: { element: 'grass', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const stormkinPets: CardData[] = [
 			trigger: 'on_summon',
 			description: 'After a minion is summoned',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50134,
 		name: "Hraesvelgr's Bolt",
@@ -117,7 +117,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'The wind-eagle strikes with the force of a gale.',
 		keywords: ['rush', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'fire',
 		weakness: { element: 'water', bonusDamage: 2 },
@@ -131,7 +131,7 @@ export const stormkinPets: CardData[] = [
 			description: 'After dealing damage to an enemy',
 		},
 		battlecry: { type: 'damage', targetType: 'random_enemy', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50135,
 		name: "Frey's Thunder",
@@ -144,7 +144,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'The thunder of Frey is felt before it is seen.',
 		keywords: ['stealth', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'dark',
 		weakness: { element: 'light', bonusDamage: 2 },
@@ -158,7 +158,7 @@ export const stormkinPets: CardData[] = [
 			description: 'After destroying an enemy minion',
 		},
 		battlecry: { type: 'damage', targetType: 'enemy_hero', value: 2 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -173,7 +173,7 @@ export const stormkinPets: CardData[] = [
 		flavorText: 'The corpse-swallower spreads its wings and the world shudders.',
 		keywords: ['windfury', 'rush'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'electric',
 		petStage: 'master',
@@ -208,5 +208,5 @@ export const stormkinPets: CardData[] = [
 				deathrattle: { type: 'damage', targetType: 'enemy_hero', value: 4 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];

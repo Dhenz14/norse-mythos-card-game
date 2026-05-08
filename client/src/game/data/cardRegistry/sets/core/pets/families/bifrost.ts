@@ -14,7 +14,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'Its song carries across all Nine Realms.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -26,7 +26,7 @@ export const bifrostPets: CardData[] = [
 			trigger: 'on_buff',
 			description: 'After a friendly minion is buffed',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50151,
 		name: 'Sun Foal',
@@ -39,7 +39,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'Sired by the horses that pull the sun across the sky.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -51,7 +51,7 @@ export const bifrostPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50152,
 		name: "Sleipnir's Foal",
@@ -64,7 +64,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'Eight-legged even as a foal, it runs between worlds.',
 		keywords: [],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'basic',
@@ -75,7 +75,7 @@ export const bifrostPets: CardData[] = [
 			trigger: 'on_survive_turn',
 			description: 'After surviving a turn',
 		},
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 2 (Adept) ──────────────────────────────────────────────
 	{
@@ -90,7 +90,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'It races across the rainbow bridge, carrying allies between realms.',
 		keywords: ['rush', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -104,7 +104,7 @@ export const bifrostPets: CardData[] = [
 			description: 'After a friendly minion is buffed',
 		},
 		battlecry: { type: 'grant_rush', targetType: 'friendly_minion', value: 1 },
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50154,
 		name: "Arvakr's Glow",
@@ -117,7 +117,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'Arvakr blazes across the sky, pulling the sun in its wake.',
 		keywords: ['rush', 'windfury'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		weakness: { element: 'dark', bonusDamage: 2 },
@@ -130,7 +130,7 @@ export const bifrostPets: CardData[] = [
 			trigger: 'on_deal_damage',
 			description: 'After dealing damage to an enemy',
 		},
-	} as CardData,
+	} satisfies CardData,
 	{
 		id: 50155,
 		name: "Sleipnir's Shadow",
@@ -143,7 +143,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: "Odin's steed gallops so fast the wind strikes twice.",
 		keywords: ['windfury', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'neutral',
 		petStage: 'adept',
@@ -156,7 +156,7 @@ export const bifrostPets: CardData[] = [
 			description: 'After surviving a turn',
 		},
 		battlecry: { type: 'buff', targetType: 'friendly_minion', buffAttack: 2, buffHealth: 0 },
-	} as CardData,
+	} satisfies CardData,
 
 	// ── Stage 3 (Master) ─────────────────────────────────────────────
 	{
@@ -171,7 +171,7 @@ export const bifrostPets: CardData[] = [
 		flavorText: 'The all-seeing guardian calls forth the final battle.',
 		keywords: ['rush', 'windfury', 'battlecry'],
 		class: 'Neutral',
-		set: 'core',
+		set: 'genesis',
 		collectible: true,
 		element: 'light',
 		petStage: 'master',
@@ -206,5 +206,5 @@ export const bifrostPets: CardData[] = [
 				battlecry: { type: 'buff', targetType: 'all_friendly_minions', buffAttack: 2, buffHealth: 0 },
 			},
 		],
-	} as CardData,
+	} satisfies CardData,
 ];
